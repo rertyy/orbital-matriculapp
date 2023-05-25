@@ -1,4 +1,4 @@
-package com.example.frontend.ui
+package com.example.frontend.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,6 +36,7 @@ fun LoginScreen(onNavigate: () -> Unit) {
     Login()
 }
 
+// TODO: login navigation, REST API, jwt, viewmodel and context
 @Composable
 fun Login() {
     var username by remember { mutableStateOf("") }

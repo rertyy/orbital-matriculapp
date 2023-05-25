@@ -1,4 +1,4 @@
-package com.example.frontend.ui
+package com.example.frontend.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,9 +31,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DateFormat.getDateTimeInstance
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun HomeScreen() {
@@ -58,7 +54,6 @@ fun CurrentTime() {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    // TODO: make it update every second rather than only on rerender, and change
     LaunchedEffect(true) {
         while (true) {
             val currentTimeString = getDateTimeInstance()

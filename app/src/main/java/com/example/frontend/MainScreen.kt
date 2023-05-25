@@ -20,9 +20,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.frontend.ui.ForumScreen
-import com.example.frontend.ui.HomeScreen
-import com.example.frontend.ui.LoginScreen
+import com.example.frontend.ui.screens.ForumScreen
+import com.example.frontend.ui.screens.HomeScreen
+import com.example.frontend.ui.screens.LoginScreen
 
 
 data class BottomNavItem(
@@ -30,6 +30,7 @@ data class BottomNavItem(
     val icon: ImageVector,
 )
 
+// TODO implement the remaining navi screens to uncomment these BottomNavItems
 val bottomNavItems = listOf(
     BottomNavItem(
         name = AppScreen.Home.name,
