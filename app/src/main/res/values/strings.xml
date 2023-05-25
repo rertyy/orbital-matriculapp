@@ -11,4 +11,6 @@
     <string name="acads">Acads</string>
     <string name="main">Main\n</string>
     <string name="home">Home</string>
+    <string name="login">login</string>
+    <string name="loginPage">Click here to login</string>
 </resources>
