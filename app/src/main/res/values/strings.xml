@@ -1,16 +1,13 @@
 <resources>
     <string name="app_name">frontend</string>
-    <string name="login_button">Login</string>
     <string name="username">Username</string>
-    <string name="password">Password</string>
-    <string name="forget_password">Forget Password</string>
     <string name="forum">Forum</string>
     <string name="social">Social</string>
-    <string name="search">Search</string>
     <string name="links">Links</string>
     <string name="acads">Acads</string>
-    <string name="main">Main\n</string>
     <string name="home">Home</string>
     <string name="login">login</string>
     <string name="loginPage">Click here to login</string>
+    <string name="welcome">MatriculApp</string>
+    <string name="deadlines">Deadlines</string>
 </resources>

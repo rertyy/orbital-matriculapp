@@ -24,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.frontend.ui.theme.FrontendTheme
@@ -54,6 +55,8 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         Log.d(TAG, "onResume Called")
     }
+
+
 
     override fun onRestart() {
         super.onRestart()

@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -87,6 +88,8 @@ fun MainApp(
             )
         }
     ) { innerPadding ->
+        // TODO: what even is viewmodel
+        // TODO: when to use context and not
         // val uiState by viewModel.uiState.collectAsState()
 
         NavHost(
@@ -95,12 +98,15 @@ fun MainApp(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(route = AppScreen.Home.name) {
+                val context = LocalContext.current
                 HomeScreen()
             }
             composable(route = AppScreen.Forum.name) {
+                val context = LocalContext.current
                 ForumScreen()
             }
             composable(route = AppScreen.Login.name) {
+                val context = LocalContext.current
                 LoginScreen { navController.navigate(AppScreen.Login.name) }
             }
         }
@@ -124,5 +130,6 @@ fun AppBottomNavigationBar(
         }
     }
 }
+
 
 
