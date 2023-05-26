@@ -10,4 +10,6 @@
     <string name="loginPage">Click here to login</string>
     <string name="welcome">MatriculApp</string>
     <string name="deadlines">Deadlines</string>
+    <string name="loginFailed">Wrong username or password</string>
+    <string name="loginSuccessful">Login successful!</string>
 </resources>
