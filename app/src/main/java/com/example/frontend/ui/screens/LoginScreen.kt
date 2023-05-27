@@ -60,7 +60,6 @@ fun Login() {
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
-    val loginResponse = LoginResponse(false, "")
     var loginSuccessful by rememberSaveable { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
@@ -81,7 +80,7 @@ fun Login() {
                 .align(alignment = Alignment.Start)
         )
         Spacer(modifier = Modifier.height(10.dp))
-        TextField(
+        TextField( // TODO change keyboard action
             value = username,
             onValueChange = { username = it },
             label = { Text(stringResource(id = R.string.username)) },
@@ -90,7 +89,7 @@ fun Login() {
                 .padding(bottom = 8.dp)
         )
 
-        TextField(
+        TextField( // TODO change keyboard action
             value = password,
             onValueChange = { password = it },
             label = { Text(stringResource(id = R.string.username)) },
@@ -141,6 +140,9 @@ fun LoginScreenPreview() {
 
 // TODO the scope is wrong, i think correct one is in the viewmodel?
 fun performLogin(loginRequest: LoginRequest, loginSuccessful: (Boolean) -> Unit) {
+    Log.d("Login", "Performing login")
+    Log.d("LoginUsername", loginRequest.username.toString())
+    Log.d("LoginPassword", loginRequest.password.toString())
 
     CoroutineScope(Dispatchers.Main).launch {
         try {
