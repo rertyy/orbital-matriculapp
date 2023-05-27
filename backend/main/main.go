@@ -1,12 +1,33 @@
 package main
 
 import (
-	_ "github.com/lib/pq"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
-// TODO make an .env or a .config file to store these values
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
 
-/*
+type LoginResponse struct {
+	Message string `json:"message"`
+}
+
+// TODO modularise
+func main() {
+	r := mux.NewRouter()
+
+	r.HandleFunc("/login", handleLogin).Methods("POST")
+	log.Println("Server started on http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", r))
+}
+
 const (
 	host   = "localhost"
 	port   = 5432
@@ -56,30 +77,28 @@ func loginRequest(username string, password string) (bool, error) {
 
 }
 
+func handleLogin(w http.ResponseWriter, r *http.Request) {
+	var request LoginRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-// // Insert
-//sqlStatement := `INSERT INTO users (age, email, first_name, last_name)
-//	VALUES ($1, $2, $3, $4)
-//	RETURNING id`
-//id := 0
-//err = db.QueryRow(sqlStatement, 30, "jon2@calhoun.io", "Jonathan", "Calhoun").Scan(&id)
-//if err != nil {
-//	panic(err)
-//}
-//fmt.Println("New record ID is:", id)
-//log.Println("New record ID is:", id)
+	result, err := loginRequest(request.Username, request.Password)
 
-// // Update
-//sqlStatement := `UPDATE users
-//		SET first_name = $2, last_name = $3
-//		WHERE id = $1
-//		RETURNING id, email;`
-//var email string
-//var id int
-//err = db.QueryRow(sqlStatement, 1, "NewFirst", "NewLast").Scan(&id, &email)
-//
-//if err != nil {
-//	panic(err)
-//}
-//fmt.Println(id, email)
-*/
+	if result {
+		response := LoginResponse{
+			Message: "Login successful",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		err := json.NewEncoder(w).Encode(response)
+		if err != nil {
+			return
+		}
+		return
+
+	}
+
+	http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+}
