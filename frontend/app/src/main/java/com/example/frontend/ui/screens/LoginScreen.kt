@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,7 +26,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,11 +38,13 @@ import com.example.frontend.ui.theme.FrontendTheme
 import com.google.gson.JsonParseException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun LoginScreen(onNavigate: () -> Unit) {
@@ -61,6 +67,7 @@ fun Login() {
     var password by rememberSaveable { mutableStateOf("") }
 
     var loginSuccessful by rememberSaveable { mutableStateOf(false) }
+    var loginError by rememberSaveable { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -80,26 +87,38 @@ fun Login() {
                 .align(alignment = Alignment.Start)
         )
         Spacer(modifier = Modifier.height(10.dp))
-        TextField( // TODO change keyboard action
+        TextField(
             value = username,
             onValueChange = { username = it },
             label = { Text(stringResource(id = R.string.username)) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
         )
 
-        TextField( // TODO change keyboard action
+        TextField( // TODO add keyboard listener
             value = password,
             onValueChange = { password = it },
             label = { Text(stringResource(id = R.string.username)) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         )
 
         Button(
-            onClick = { performLogin(LoginRequest(username, password)) { loginSuccessful = it }
+            onClick = {
+                performLogin(
+                    LoginRequest(username, password),
+                    { loginSuccessful = it },
+                    { loginError = it})
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -108,7 +127,15 @@ fun Login() {
 
         // TODO change loginResponse
         if (loginSuccessful) {
-            Text("Login successful")
+            Text("Login successful", color = Color.Green)
+        }
+        if (loginError && !loginSuccessful) {
+            Text("Login error", color = Color.Red)
+            LaunchedEffect(Unit) {
+                delay(3.seconds)
+                loginError = false
+            }
+
         }
 
     }
@@ -139,7 +166,7 @@ fun LoginScreenPreview() {
 
 
 // TODO the scope is wrong, i think correct one is in the viewmodel?
-fun performLogin(loginRequest: LoginRequest, loginSuccessful: (Boolean) -> Unit) {
+fun performLogin(loginRequest: LoginRequest, loginSuccessful: (Boolean) -> Unit, loginError: (Boolean) -> Unit) {
     Log.d("Login", "Performing login")
     Log.d("LoginUsername", loginRequest.username.toString())
     Log.d("LoginPassword", loginRequest.password.toString())
@@ -153,25 +180,27 @@ fun performLogin(loginRequest: LoginRequest, loginSuccessful: (Boolean) -> Unit)
                 loginSuccessful(true) // TODO this is definitely not secure
             } else {
                 Log.e("Login", authenticationResponse.toString())
+                loginError(true)
             }
-        } catch (e: SocketTimeoutException) {
-            // Handle timeout exception
-            Log.e("Login", "Error: ${e.message}")
-        } catch (e: UnknownHostException) {
-            // Handle unknown host exception
-            Log.e("Login", "Error: ${e.message}")
-        } catch (e: IOException) {
-            // Handle general IO exception
-            Log.e("Login", "Error: ${e.message}")
-        } catch (e: HttpException) {
-            // Handle specific HTTP error codes
-            Log.e("Login", "Error: ${e.message}")
-        } catch (e: JsonParseException) {
-            // Handle JSON parsing exception
-            Log.e("Login", "Error: ${e.message}")
+//        } catch (e: SocketTimeoutException) {
+//            // Handle timeout exception
+//            Log.e("Login", "Error: ${e.message}")
+//        } catch (e: UnknownHostException) {
+//            // Handle unknown host exception
+//            Log.e("Login", "Error: ${e.message}")
+//        } catch (e: IOException) {
+//            // Handle general IO exception
+//            Log.e("Login", "Error: ${e.message}")
+//        } catch (e: HttpException) {
+//            // Handle specific HTTP error codes
+//            Log.e("Login", "Error: ${e.message}")
+//        } catch (e: JsonParseException) {
+//            // Handle JSON parsing exception
+//            Log.e("Login", "Error: ${e.message}")
         } catch (e: Exception) {
             // Handle other exceptions
             Log.d("Login", "Error: ${e.message}")
+            loginError(true)
 
         }
     }
