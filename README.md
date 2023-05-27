@@ -1,7 +1,5 @@
-Using icons from Google Material Icons
+Orbital
 
-frontend repo at this link: https://github.com/rertyy/orbital
+frontend repo at this link: https://github.com/rertyy/orbital-frontend/
 
-backend repo at this link: INSERT_LINK_HERE
-
-backend hosted at: INSERT_LINK_HERE
+backend repo at this link: https://github.com/rertyy/orbital-backend/
