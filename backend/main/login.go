@@ -27,6 +27,7 @@ var users = []User{
 	{Username: "user2", Password: "pass2"},
 }
 
+// test
 func main() {
 	r := mux.NewRouter()
 
