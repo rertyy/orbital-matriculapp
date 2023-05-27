@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
+    // test
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
         Log.d(TAG, "onCreate Called")
