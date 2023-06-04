@@ -51,7 +51,7 @@ fun HomeScreen() {
 // TODO: shift logic to viewmodel
 @Composable
 fun CurrentTime() {
-    var currentTime by rememberSaveable { mutableStateOf("")}
+    var currentTime by rememberSaveable { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
