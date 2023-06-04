@@ -1,6 +1,5 @@
 package com.example.frontend.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -20,8 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -29,21 +31,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.R
-import com.example.frontend.network.AuthApiService
 import com.example.frontend.ui.theme.FrontendTheme
-import com.google.gson.JsonParseException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -60,18 +55,15 @@ fun LoginScreen(onNavigate: () -> Unit) {
     Login()
 }
 
-// TODO: login navigation, REST API, jwt, viewmodel and context, lock functions if user not logged in
+// TODO: hide / un-hide password, login navigation, jwt, context, lock functions if user not logged in
 @Composable
-fun Login() {
-    var username by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
+fun Login(loginViewModel: LoginViewModel = viewModel()) {
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
-    var loginSuccessful by rememberSaveable { mutableStateOf(false) }
-    var loginError by rememberSaveable { mutableStateOf(false) }
-
-    val coroutineScope = rememberCoroutineScope()
-
-    TestLogin(loginSuccessful, onChange = { loginSuccessful = it } )
+    TestLogin(
+        loginViewModel.loginSuccessful,
+        onChange = { loginViewModel.loginSuccessful()}
+    )
 
     Column(
         modifier = Modifier
@@ -87,10 +79,13 @@ fun Login() {
                 .align(alignment = Alignment.Start)
         )
         Spacer(modifier = Modifier.height(10.dp))
+
         TextField(
-            value = username,
-            onValueChange = { username = it },
+            value = loginViewModel.username,
+            onValueChange = { loginViewModel.changeUsername(it) },
             label = { Text(stringResource(id = R.string.username)) },
+            placeholder = { Text(stringResource(id = R.string.username)) },
+
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
@@ -101,13 +96,29 @@ fun Login() {
         )
 
         TextField( // TODO add keyboard listener
-            value = password,
-            onValueChange = { password = it },
-            label = { Text(stringResource(id = R.string.username)) },
+            value = loginViewModel.password,
+            onValueChange = { loginViewModel.changePassword(it) },
+            label = { Text(stringResource(id = R.string.password)) },
+            placeholder = { Text(stringResource(id = R.string.password)) },
+
+            visualTransformation = PasswordVisualTransformation(),
+
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
             ),
+            trailingIcon = {
+                val image = if (passwordVisible)
+                    Icons.Filled.Visibility
+                else Icons.Filled.VisibilityOff
+
+                // Please provide localized description for accessibility services
+                val description = if (passwordVisible) "Hide password" else "Show password"
+
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(imageVector = image, description)
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
@@ -115,25 +126,31 @@ fun Login() {
 
         Button(
             onClick = {
-                performLogin(
-                    LoginRequest(username, password),
-                    { loginSuccessful = it },
-                    { loginError = it})
+                loginViewModel.performLogin()
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Login")
+            Text(stringResource(id = R.string.login))
+        }
+        Button(
+            onClick = {
+                loginViewModel.registerUser()
+            },
+            modifier = Modifier
+        ) {
+            Text(stringResource(id = R.string.register))
         }
 
+
         // TODO change loginResponse
-        if (loginSuccessful) {
+        if (loginViewModel.loginSuccessful) {
             Text("Login successful", color = Color.Green)
         }
-        if (loginError && !loginSuccessful) {
+        if (loginViewModel.loginError && !loginViewModel.loginSuccessful) {
             Text("Login error", color = Color.Red)
             LaunchedEffect(Unit) {
-                delay(3.seconds)
-                loginError = false
+                delay(3.seconds) // TODO: check if this will delay if triggered multiple times
+                loginViewModel.resetLoginError()
             }
 
         }
@@ -141,16 +158,6 @@ fun Login() {
     }
 }
 
-
-data class LoginRequest(
-    val username: String?,
-    val password: String?
-)
-
-data class LoginResponse(
-    val success: Boolean,
-    val message: String,
-)
 
 
 @Preview(showBackground = true)
@@ -165,47 +172,6 @@ fun LoginScreenPreview() {
 
 
 
-// TODO the scope is wrong, i think correct one is in the viewmodel?
-fun performLogin(loginRequest: LoginRequest, loginSuccessful: (Boolean) -> Unit, loginError: (Boolean) -> Unit) {
-    Log.d("Login", "Performing login")
-    Log.d("LoginUsername", loginRequest.username.toString())
-    Log.d("LoginPassword", loginRequest.password.toString())
-
-    CoroutineScope(Dispatchers.Main).launch {
-        try {
-            val loginResponse = AuthApiService.retrofitService.authenticateLogin(loginRequest)
-            val authenticationResponse = loginResponse.body()
-            if (loginResponse.isSuccessful) {
-                Log.d("Login", authenticationResponse.toString())
-                loginSuccessful(true) // TODO this is definitely not secure
-            } else {
-                Log.e("Login", authenticationResponse.toString())
-                loginError(true)
-            }
-//        } catch (e: SocketTimeoutException) {
-//            // Handle timeout exception
-//            Log.e("Login", "Error: ${e.message}")
-//        } catch (e: UnknownHostException) {
-//            // Handle unknown host exception
-//            Log.e("Login", "Error: ${e.message}")
-//        } catch (e: IOException) {
-//            // Handle general IO exception
-//            Log.e("Login", "Error: ${e.message}")
-//        } catch (e: HttpException) {
-//            // Handle specific HTTP error codes
-//            Log.e("Login", "Error: ${e.message}")
-//        } catch (e: JsonParseException) {
-//            // Handle JSON parsing exception
-//            Log.e("Login", "Error: ${e.message}")
-        } catch (e: Exception) {
-            // Handle other exceptions
-            Log.d("Login", "Error: ${e.message}")
-            loginError(true)
-
-        }
-    }
-}
-
 @Composable
 fun TestLogin(
     checked: Boolean,
@@ -218,7 +184,7 @@ fun TestLogin(
             .size(20.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = "Testing purpose only: enable login Successful:",
+        Text(text = "Debug purpose only: enable login Successful:",
             fontSize = 10.sp )
         Switch(
             checked = checked,

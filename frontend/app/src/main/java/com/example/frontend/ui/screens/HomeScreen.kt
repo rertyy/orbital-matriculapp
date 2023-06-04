@@ -48,6 +48,7 @@ fun HomeScreen() {
 
 
 
+// TODO: shift logic to viewmodel
 @Composable
 fun CurrentTime() {
     var currentTime by rememberSaveable { mutableStateOf("")}
@@ -85,6 +86,7 @@ fun CurrentTime() {
                 .align(alignment = Alignment.CenterHorizontally)
         )
         Spacer(modifier = Modifier.height(10.dp))
+
         Text(
             text = currentTime,
             fontSize = 30.sp,
@@ -92,7 +94,8 @@ fun CurrentTime() {
                 .padding(bottom = 16.dp)
                 .align(alignment = Alignment.CenterHorizontally)
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        // TODO separate to different function and hoist state
+        Spacer(modifier = Modifier.height(20.dp))
         Box(
             modifier = Modifier
                 .background(
@@ -102,6 +105,38 @@ fun CurrentTime() {
         ) {
             Text(
                 text = stringResource(id = R.string.deadlines),
+                fontSize = 30.sp,
+                modifier = Modifier
+                    .padding(top = 5.dp,bottom = 5.dp)
+                    .fillMaxWidth()
+            )
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        Box(
+            modifier = Modifier
+                .background(
+                    color = Color.Cyan,
+                    shape = RoundedCornerShape(16.dp)
+                )
+        ) {
+            Text(
+                text = stringResource(id = R.string.reminders),
+                fontSize = 30.sp,
+                modifier = Modifier
+                    .padding(top = 5.dp,bottom = 5.dp)
+                    .fillMaxWidth()
+            )
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        Box(
+            modifier = Modifier
+                .background(
+                    color = Color.Green,
+                    shape = RoundedCornerShape(16.dp)
+                )
+        ) {
+            Text(
+                text = stringResource(id = R.string.events),
                 fontSize = 30.sp,
                 modifier = Modifier
                     .padding(top = 5.dp,bottom = 5.dp)
