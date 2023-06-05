@@ -71,10 +71,10 @@ dependencies {
     // Retrofit
     def retrofit_version = "2.9.0"
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    // Retrofit with scalar Converter
     implementation "com.squareup.retrofit2:converter-scalars:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
+    // you only need one converter so I just used retrofit-gson
 //    // Retrofit with Kotlin serialization Converter
 //    implementation "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
 //    // Kotlin serialization
@@ -101,6 +101,7 @@ dependencies {
 
 
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation platform('androidx.compose:compose-bom:2022.10.00')

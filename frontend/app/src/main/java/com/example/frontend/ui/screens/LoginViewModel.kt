@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.frontend.network.AuthApiService
 import kotlinx.coroutines.launch
 
+// TODO dependency injection to allow for API testing
+// by separating the API service call from the view model
 class LoginViewModel: ViewModel() {
     var username: String by mutableStateOf("")
         private set
@@ -21,10 +23,12 @@ class LoginViewModel: ViewModel() {
     var loginError by mutableStateOf(false)
         private set
 
+    var registerSuccessful by mutableStateOf(false)
+        private set
+    var registerError by mutableStateOf(false)
+        private set
 
-    fun registerUser() {
-        TODO("Not yet implemented")
-    }
+
 
     fun changeUsername(username: String) {
         this.username = username
@@ -38,6 +42,11 @@ class LoginViewModel: ViewModel() {
         this.loginSuccessful = true
     }
 
+    // for debug only
+    fun toggleLogin() {
+        this.loginSuccessful = !loginSuccessful
+    }
+
     fun resetLoginError() {
         this.loginError = false
     }
@@ -46,6 +55,40 @@ class LoginViewModel: ViewModel() {
         this.loginError = true
     }
 
+    private fun triggerRegisterSuccessful() {
+        this.registerSuccessful = true
+    }
+    private fun triggerRegisterError() {
+        this.registerError = true
+    }
+
+
+    fun registerUser() {
+        Log.d("Register", "Performing registration")
+        Log.d("RegisterUsername", username)
+        Log.d("RegisterPassword", password)
+        Log.d("RegisterEmail", email)
+
+        viewModelScope.launch {
+            try {
+                val request = RegisterRequest(username, password, email)
+                val registerResponse = AuthApiService.retrofitService.registerUser(request)
+                val body = registerResponse.body()
+                if (registerResponse.isSuccessful) {
+                    Log.d("Register", body.toString())
+                    triggerRegisterSuccessful()
+                } else {
+                    Log.e("Register", body.toString())
+                    triggerRegisterError()
+                }
+            } catch (e: Exception) {
+                // Handle other exceptions
+                Log.d("Register", "Error: ${e.message}")
+                triggerRegisterError()
+            }
+
+        }
+    }
 
     fun performLogin() {
         Log.d("Login", "Performing login")
@@ -87,12 +130,8 @@ class LoginViewModel: ViewModel() {
             }
         }
     }
-
-
-
-
-
 }
+
 
 
 
@@ -104,4 +143,10 @@ data class LoginRequest(
 data class LoginResponse(
     val success: Boolean,
     val message: String,
+)
+
+data class RegisterRequest(
+    val username: String,
+    val password: String,
+    val email: String
 )

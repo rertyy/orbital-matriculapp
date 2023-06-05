@@ -3,6 +3,8 @@ package com.example.frontend.network
 
 import com.example.frontend.ui.screens.LoginRequest
 import com.example.frontend.ui.screens.LoginResponse
+import com.example.frontend.ui.screens.LoginViewModel
+import com.example.frontend.ui.screens.RegisterRequest
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.http.Field
@@ -24,12 +26,18 @@ interface LoginApiService {
     suspend fun authenticateLogin(
         @Body request: LoginRequest
     ): Response<LoginResponse>
+
+    @POST("/register")
+    suspend fun registerUser(
+        @Body request: RegisterRequest
+    ): Response<RegisterRequest>
+
 }
 
-
+// TODO: comment the below out and replace w DI
+// to keep as comment for posterity
 val retrofit: Retrofit = Retrofit.Builder()
-    .baseUrl(BASE_URL) // Replace with your actual backend URL
-    // .client(okHttpClient) // seems like its unnecessary to make own?
+    .baseUrl(BASE_URL)
     .addConverterFactory(GsonConverterFactory.create())
     .build()
 

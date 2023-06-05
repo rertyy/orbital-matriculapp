@@ -1,4 +1,6 @@
 package com.example.frontend.ui.screens
 
-class HomeScreenViewModel {
+import androidx.lifecycle.ViewModel
+
+class HomeScreenViewModel: ViewModel() {
 }

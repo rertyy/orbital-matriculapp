@@ -15,5 +15,7 @@
     <string name="password">Password</string>
     <string name="events">Upcoming Events</string>
     <string name="reminders">Reminders</string>
-    <string name="register">Register</string>
+    <string name="register">Click here to register</string>
+    <string name="hide_password">Hide password</string>
+    <string name="show_password">Show password</string>
 </resources>
