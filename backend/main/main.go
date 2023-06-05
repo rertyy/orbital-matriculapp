@@ -164,7 +164,8 @@ func registerRequest(username string, password string) (bool, error) {
 		return false, err
 	}
 	sqlUpdate := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3);`
-	_, err = db.Exec(sqlUpdate, username, password, "test@test.com")
+	_, err = db.Exec(sqlUpdate, username, password, "test3@test.com")
+	log.Println("Successfully registered")
 	if err != nil {
 		return true, err
 	}
