@@ -16,17 +16,12 @@ class LoginViewModel: ViewModel() {
         private set
     var password: String by mutableStateOf("")
         private set
-    var email: String by mutableStateOf("")
-        private set
+
     var loginSuccessful by mutableStateOf(false)
         private set
     var loginError by mutableStateOf(false)
         private set
 
-    var registerSuccessful by mutableStateOf(false)
-        private set
-    var registerError by mutableStateOf(false)
-        private set
 
 
 
@@ -55,40 +50,8 @@ class LoginViewModel: ViewModel() {
         this.loginError = true
     }
 
-    private fun triggerRegisterSuccessful() {
-        this.registerSuccessful = true
-    }
-    private fun triggerRegisterError() {
-        this.registerError = true
-    }
 
 
-    fun registerUser() {
-        Log.d("Register", "Performing registration")
-        Log.d("RegisterUsername", username)
-        Log.d("RegisterPassword", password)
-        Log.d("RegisterEmail", email)
-
-        viewModelScope.launch {
-            try {
-                val request = RegisterRequest(username, password, email)
-                val registerResponse = AuthApiService.retrofitService.registerUser(request)
-                val body = registerResponse.body()
-                if (registerResponse.isSuccessful) {
-                    Log.d("Register", body.toString())
-                    triggerRegisterSuccessful()
-                } else {
-                    Log.e("Register", body.toString())
-                    triggerRegisterError()
-                }
-            } catch (e: Exception) {
-                // Handle other exceptions
-                Log.d("Register", "Error: ${e.message}")
-                triggerRegisterError()
-            }
-
-        }
-    }
 
     fun performLogin() {
         Log.d("Login", "Performing login")
@@ -145,8 +108,3 @@ data class LoginResponse(
     val message: String,
 )
 
-data class RegisterRequest(
-    val username: String,
-    val password: String,
-    val email: String
-)

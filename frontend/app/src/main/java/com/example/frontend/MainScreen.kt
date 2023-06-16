@@ -31,6 +31,7 @@ data class BottomNavItem(
 )
 
 // TODO implement the remaining navi screens to uncomment these BottomNavItems
+// TODO isolate the navi screens into separate package
 val bottomNavItems = listOf(
     BottomNavItem(
         name = AppScreen.Home.name,
@@ -44,21 +45,10 @@ val bottomNavItems = listOf(
         name = AppScreen.Login.name,
         icon = Icons.Rounded.Lock
     ),
-//    BottomNavItem(
-//        name = AppScreen.Social.name,
-//        icon = Icons.Rounded.ShoppingCart
-//    ),
-//    BottomNavItem(
-//        name = AppScreen.Links.name,
-//        icon = Icons.Rounded.ShoppingCart
-//    ),
-//    BottomNavItem(
-//        name = AppScreen.Acads.name,
-//        icon = Icons.Rounded.ShoppingCart
-//    ),
 )
 
 
+// TODO recheck what screens we want
 enum class AppScreen(@StringRes val title: Int) {
     Home(title = R.string.home),
     Forum(title = R.string.forum),
