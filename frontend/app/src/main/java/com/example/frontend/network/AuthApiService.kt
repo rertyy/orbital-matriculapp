@@ -18,7 +18,7 @@ import retrofit2.http.Body
 
 
 private const val BASE_URL =
-    "http://10.0.2.2:8080/" // TODO BACKEND URL.
+    "http://10.0.2.2:8080/" // TODO backend URL to host.
 // NB https://stackoverflow.com/questions/5495534/java-net-connectexception-localhost-127-0-0-18080-connection-refused
 
 interface LoginApiService {
