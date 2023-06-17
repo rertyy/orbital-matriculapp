@@ -86,7 +86,6 @@ fun Login(loginViewModel: LoginViewModel = viewModel()) {
             onValueChange = { loginViewModel.changeUsername(it) },
             label = { Text(stringResource(id = R.string.username)) },
             placeholder = { Text(stringResource(id = R.string.username)) },
-
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
@@ -136,7 +135,7 @@ fun Login(loginViewModel: LoginViewModel = viewModel()) {
         if (loginViewModel.loginError && !loginViewModel.loginSuccessful) {
             Text("Login error", color = Color.Red)
             LaunchedEffect(Unit) {
-                delay(3.seconds) // TODO: check if this will delay if triggered multiple times
+                delay(1.seconds) // TODO: check if this will delay if triggered multiple times
                 loginViewModel.resetLoginError()
             }
 
