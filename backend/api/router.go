@@ -1,8 +1,9 @@
-package main
+package api
 
 import (
 	"database/sql"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 )
 
 type Handler struct {

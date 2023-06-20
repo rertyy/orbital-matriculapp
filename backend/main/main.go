@@ -1,36 +1,28 @@
 package main
 
 import (
-	"database/sql"
 	"github.com/joho/godotenv"
 	"log"
 	"net/http"
+	"orbital-backend/api"
+	db2 "orbital-backend/db"
 	"os"
 )
 
-type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-type LoginResponse struct {
-	Message string `json:"message"`
-}
-
-var db *sql.DB
-
 // https://go.dev/doc/tutorial/database-access#add_data
 
-// TODO modularise
 func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	db, err = Connect()
+	db, err := db2.Connect()
+	if db == nil || err != nil {
+		panic(err)
+	}
 
-	r := SetupRouter(&Handler{DB: db})
+	r := api.SetupRouter(&api.Handler{DB: db})
 	http.Handle("/", r)
 
 	serverPort := os.Getenv("SERVER_PORT")

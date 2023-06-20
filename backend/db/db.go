@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"database/sql"
@@ -19,29 +19,31 @@ func Connect() (*sql.DB, error) {
 		"password=%s dbname=%s sslmode=disable",
 		psqlHost, psqlPort, psqlUser, psqlPass, psqlDbname)
 
-	// not sure if reassignment err here is a good idea
-	// note that if you introduce db first, don't shadow it
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		panic(err)
 	}
 
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(db)
+	// Note that this closes the db when Connect() returns so don't use it
+	//defer func(db *sql.DB) {
+	//	err := db.Close()
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//}(db)
 
-	err = db.Ping()
-	if err != nil {
+	errPing := db.Ping()
+	if errPing != nil {
 		panic(err)
 	}
 	log.Println("Successfully connected!")
 
 	//sqlStatement := `SELECT username, password FROM users WHERE username=$1 AND password=$2;`
-	//row := db.QueryRow(sqlStatement, "user1", "password")
-	//log.Println("row: ", row)
+	//var username string
+	//var password string
+	//err2 := db.QueryRow(sqlStatement, "user1", "password").Scan(&username, &password)
+	//fmt.Println(err2)
+	//fmt.Println(username, password)
 
 	return db, err
 }

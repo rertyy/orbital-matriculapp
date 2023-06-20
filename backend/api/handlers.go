@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"database/sql"
@@ -15,7 +15,7 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := loginRequest(request.Username, request.Password)
+	result, err := h.loginRequest(request.Username, request.Password)
 
 	if result {
 		response := LoginResponse{
@@ -33,14 +33,14 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 }
 
-func loginRequest(username string, password string) (bool, error) {
+func (h *Handler) loginRequest(username string, password string) (bool, error) {
 	log.Println("loginRequest")
 
 	// to re-look https://go.dev/doc/database/querying
 
 	sqlStatement := `SELECT username, password FROM users WHERE username=$1 AND password=$2;`
-	row := db.QueryRow(sqlStatement, username, password)
-	log.Println("row: ", row)
+	row := h.DB.QueryRow(sqlStatement, username, password)
+	//log.Println("row: ", &row)
 	switch err := row.Scan(&username, &password); err {
 	case sql.ErrNoRows:
 		log.Println("Wrong username or password")
@@ -49,17 +49,17 @@ func loginRequest(username string, password string) (bool, error) {
 		log.Println("Login successful")
 		return true, nil
 	default:
-		log.Println("Wrong username or password")
+		log.Println("Unknown err", err)
 		return false, err
 	}
 
 }
 
-func registerRequest(username string, password string) (bool, error) {
+func (h *Handler) registerRequest(username string, password string) (bool, error) {
 	log.Println("loginRequest")
 
 	sqlStatement := `SELECT username FROM users WHERE username=$1;`
-	row := db.QueryRow(sqlStatement, username)
+	row := h.DB.QueryRow(sqlStatement, username)
 	switch err := row.Scan(&username); err {
 	case sql.ErrNoRows:
 		log.Println("User not found")
@@ -67,11 +67,11 @@ func registerRequest(username string, password string) (bool, error) {
 		log.Println("Username already taken")
 		return false, err
 	default:
-		log.Println("Unknown error")
+		log.Println("Unknown err", err)
 		return false, err
 	}
 	sqlUpdate := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3);`
-	_, err := db.Exec(sqlUpdate, username, password, "test3@test.com")
+	_, err := h.DB.Exec(sqlUpdate, username, password, "test3@test.com")
 	log.Println("Successfully registered")
 	if err != nil {
 		return true, err
@@ -88,7 +88,7 @@ func (h *Handler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := registerRequest(request.Username, request.Password)
+	result, err := h.registerRequest(request.Username, request.Password)
 
 	if result {
 		response := LoginResponse{
