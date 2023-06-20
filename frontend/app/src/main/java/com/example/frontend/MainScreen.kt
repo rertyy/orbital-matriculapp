@@ -15,12 +15,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.frontend.ui.screens.ForumScreen
+import com.example.frontend.ui.screens.PostsViewModel
 import com.example.frontend.ui.screens.HomeScreen
 import com.example.frontend.ui.screens.LoginScreen
 
@@ -94,7 +96,11 @@ fun MainApp(
             }
             composable(route = AppScreen.Forum.name) {
                 val context = LocalContext.current
-                ForumScreen()
+                val postViewModel: PostsViewModel = viewModel()
+                ForumScreen(
+                    postsUiState = postViewModel.postsUiState,
+                    retryAction = { postViewModel.getAllPosts() },
+                )
             }
             composable(route = AppScreen.Login.name) {
                 val context = LocalContext.current

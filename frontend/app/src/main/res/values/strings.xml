@@ -19,4 +19,7 @@
     <string name="hide_password">Hide password</string>
     <string name="show_password">Show password</string>
     <string name="email">Email</string>
+    <string name="retry">Click to retry</string>
+    <string name="loading_failed">Failed to load</string>
+    <string name="loading">Loading posts\n</string>
 </resources>

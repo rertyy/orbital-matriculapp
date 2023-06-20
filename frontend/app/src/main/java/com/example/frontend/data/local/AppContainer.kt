@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.frontend.data
+package com.example.frontend.data.local
 
 import android.content.Context
 

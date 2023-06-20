@@ -79,7 +79,7 @@ dependencies {
     // you only need one converter so I just used retrofit-gson
 //    // Retrofit with Kotlin serialization Converter
 //    implementation "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
-//    // Kotlin serialization
+    // Kotlin serialization
 //    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0"
     // GSON
 //    implementation 'com.google.code.gson:gson:2.10.1'
