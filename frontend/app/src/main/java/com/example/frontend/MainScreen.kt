@@ -81,8 +81,6 @@ fun MainApp(
             )
         }
     ) { innerPadding ->
-        // TODO: what even is viewmodel
-        // TODO: when to use context and not
         // val uiState by viewModel.uiState.collectAsState()
 
         NavHost(

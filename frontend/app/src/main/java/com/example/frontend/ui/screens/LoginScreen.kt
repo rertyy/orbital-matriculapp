@@ -63,7 +63,7 @@ fun Login(loginViewModel: LoginViewModel = viewModel()) {
 
     TestLogin(
         loginViewModel.loginSuccessful,
-        onChange = { loginViewModel.toggleLogin()}
+        onChange = { loginViewModel.toggleLogin() }
     )
 
     Column(
@@ -102,15 +102,16 @@ fun Login(loginViewModel: LoginViewModel = viewModel()) {
             label = { Text(stringResource(id = R.string.password)) },
             placeholder = { Text(stringResource(id = R.string.password)) },
             visualTransformation = if (passwordVisible) VisualTransformation.None
-                    else PasswordVisualTransformation(),
+            else PasswordVisualTransformation(),
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
             ),
             trailingIcon = {
-                val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                val image =
+                    if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                 val description = if (passwordVisible) stringResource(R.string.hide_password)
-                        else stringResource(R.string.show_password)
+                else stringResource(R.string.show_password)
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(imageVector = image, description)
                 }
@@ -146,7 +147,6 @@ fun Login(loginViewModel: LoginViewModel = viewModel()) {
 }
 
 
-
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
@@ -155,8 +155,6 @@ fun LoginScreenPreview() {
     }
 
 }
-
-
 
 
 @Composable
@@ -171,8 +169,10 @@ fun TestLogin(
             .size(20.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = "Debug purpose only: enable login Successful:",
-            fontSize = 10.sp )
+        Text(
+            text = "Debug purpose only: enable login Successful:",
+            fontSize = 10.sp
+        )
         Switch(
             checked = checked,
             onCheckedChange = onChange,

@@ -99,7 +99,8 @@ fun Register(registerViewModel: RegisterViewModel = viewModel()) {
                 imeAction = ImeAction.Done
             ),
             trailingIcon = {
-                val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                val image =
+                    if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                 val description = if (passwordVisible) stringResource(R.string.hide_password)
                 else stringResource(R.string.show_password)
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
@@ -139,7 +140,7 @@ fun Register(registerViewModel: RegisterViewModel = viewModel()) {
             LaunchedEffect(Unit) {
                 delay(3.seconds) // TODO: check if this will delay if triggered multiple times
                 registerViewModel.resetRegisterError()
-                }
+            }
 
         }
 

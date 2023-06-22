@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 
-open class UserInterfaceViewModel: ViewModel() {
+open class UserInterfaceViewModel : ViewModel() {
     var username: String by mutableStateOf("")
         private set
     var password: String by mutableStateOf("")

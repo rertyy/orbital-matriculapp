@@ -48,7 +48,6 @@ fun HomeScreen() {
 }
 
 
-
 // TODO: shift logic to viewmodel
 @Composable
 fun CurrentTime(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
@@ -79,7 +78,7 @@ fun CurrentTime(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text (
+        Text(
             text = stringResource(id = R.string.welcome),
             fontSize = 50.sp,
             modifier = Modifier
@@ -108,7 +107,7 @@ fun CurrentTime(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
                 text = stringResource(id = R.string.deadlines),
                 fontSize = 30.sp,
                 modifier = Modifier
-                    .padding(top = 5.dp,bottom = 5.dp)
+                    .padding(top = 5.dp, bottom = 5.dp)
                     .fillMaxWidth()
             )
         }
@@ -124,7 +123,7 @@ fun CurrentTime(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
                 text = stringResource(id = R.string.reminders),
                 fontSize = 30.sp,
                 modifier = Modifier
-                    .padding(top = 5.dp,bottom = 5.dp)
+                    .padding(top = 5.dp, bottom = 5.dp)
                     .fillMaxWidth()
             )
         }
@@ -140,7 +139,7 @@ fun CurrentTime(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
                 text = stringResource(id = R.string.events),
                 fontSize = 30.sp,
                 modifier = Modifier
-                    .padding(top = 5.dp,bottom = 5.dp)
+                    .padding(top = 5.dp, bottom = 5.dp)
                     .fillMaxWidth()
             )
         }

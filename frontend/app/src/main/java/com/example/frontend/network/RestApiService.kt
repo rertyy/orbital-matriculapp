@@ -3,7 +3,7 @@ package com.example.frontend.network
 
 import com.example.frontend.ui.screens.LoginRequest
 import com.example.frontend.ui.screens.LoginResponse
-import com.example.frontend.ui.screens.Posts
+import com.example.frontend.ui.screens.Post
 import com.example.frontend.ui.screens.RegisterRequest
 import retrofit2.Retrofit
 import retrofit2.http.POST
@@ -29,7 +29,7 @@ interface ApiService {
     ): Response<RegisterRequest>
 
     @GET("/posts")
-    suspend fun getAllPosts(): List<Posts>
+    suspend fun getAllPosts(): List<Post>
 
 }
 

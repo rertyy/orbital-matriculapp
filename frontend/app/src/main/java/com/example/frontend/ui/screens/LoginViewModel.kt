@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 
 // TODO dependency injection to allow for API testing
 // by separating the API service call from the view model
-class LoginViewModel: UserInterfaceViewModel() {
+class LoginViewModel : UserInterfaceViewModel() {
 
 
     var loginSuccessful by mutableStateOf(false)
@@ -34,8 +34,6 @@ class LoginViewModel: UserInterfaceViewModel() {
     private fun triggerLoginError() {
         this.loginError = true
     }
-
-
 
 
     fun performLogin() {
@@ -79,8 +77,6 @@ class LoginViewModel: UserInterfaceViewModel() {
         }
     }
 }
-
-
 
 
 data class LoginRequest(

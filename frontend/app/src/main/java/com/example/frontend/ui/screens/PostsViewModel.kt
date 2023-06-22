@@ -11,16 +11,18 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-data class Posts(
-    val id: Int = 0,
-    val title: String = "",
-    val content: String = "",
-    val author: String = "",
-    val date: String = ""
+data class Post(
+    val title: String,
+    val body: String,
+    val categoryName: String,
+    val createdBy: String,
+    val createdAt: String,
+    val lastUpdated: String
 )
 
+
 sealed interface PostsUiState {
-    data class Success(val posts: List<Posts>) : PostsUiState
+    data class Success(val posts: List<Post>) : PostsUiState
     object Error : PostsUiState
     object Loading : PostsUiState
 }
