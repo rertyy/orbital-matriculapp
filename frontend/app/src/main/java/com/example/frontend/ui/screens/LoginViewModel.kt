@@ -4,36 +4,21 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.network.AuthApiService
+import com.example.frontend.network.RestApiService
 import kotlinx.coroutines.launch
 
 // TODO dependency injection to allow for API testing
 // by separating the API service call from the view model
-class LoginViewModel: ViewModel() {
-    var username: String by mutableStateOf("")
-        private set
-    var password: String by mutableStateOf("")
-        private set
+class LoginViewModel : UserInterfaceViewModel() {
+
 
     var loginSuccessful by mutableStateOf(false)
         private set
     var loginError by mutableStateOf(false)
         private set
 
-
-
-
-    fun changeUsername(username: String) {
-        this.username = username
-    }
-
-    fun changePassword(password: String) {
-        this.password = password
-    }
-
-    fun loginSuccessful() {
+    private fun loginSuccessful() {
         this.loginSuccessful = true
     }
 
@@ -51,8 +36,6 @@ class LoginViewModel: ViewModel() {
     }
 
 
-
-
     fun performLogin() {
         Log.d("Login", "Performing login")
         Log.d("LoginUsername", username)
@@ -61,7 +44,7 @@ class LoginViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 val request = LoginRequest(username, password)
-                val loginResponse = AuthApiService.retrofitService.authenticateLogin(request)
+                val loginResponse = RestApiService.retrofitService.authenticateLogin(request)
                 val authenticationResponse = loginResponse.body()
                 if (loginResponse.isSuccessful) {
                     Log.d("Login", authenticationResponse.toString())
@@ -94,8 +77,6 @@ class LoginViewModel: ViewModel() {
         }
     }
 }
-
-
 
 
 data class LoginRequest(

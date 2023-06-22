@@ -1,11 +1,11 @@
-package com.example.frontend.data
+package com.example.frontend.data.local
 
 import kotlinx.coroutines.flow.Flow
 
 /**
  * Repository that provides insert, update, delete, and retrieve of [Hyperlink] from a given data source.
  */
-class OfflineHyperlinksRepository(private val hyperlinkDao: HyperlinkDao) : HyperlinksRepository  {
+class OfflineHyperlinksRepository(private val hyperlinkDao: HyperlinkDao) : HyperlinksRepository {
     override fun getAllHyperlinksStream(): Flow<List<Hyperlink>> = hyperlinkDao.getAllHyperlinks()
 
     override fun getHyperlinkStream(id: Int): Flow<Hyperlink?> = hyperlinkDao.getHyperlink(id)

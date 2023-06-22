@@ -1,4 +1,4 @@
-package com.example.frontend.data
+package com.example.frontend.data.local
 
 import kotlinx.coroutines.flow.Flow
 
