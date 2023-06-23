@@ -122,13 +122,14 @@ fun RegistrationScreen(
         ) {
             Text(stringResource(id = R.string.register))
         }
+
         Button(
             onClick = {
-                registerViewModel.registerUser()
+                onNavigateToLogin()
             },
             modifier = Modifier
         ) {
-            Text(stringResource(id = R.string.register))
+            Text(stringResource(id = R.string.loginInstead))
         }
 
 

@@ -24,4 +24,5 @@
     <string name="loading">Loading posts\n</string>
     <string name="calendar">Calendar</string>
     <string name="registration">Registration</string>
+    <string name="loginInstead">Back to login page</string>
 </resources>

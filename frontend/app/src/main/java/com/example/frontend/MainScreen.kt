@@ -108,21 +108,18 @@ fun MainApp(
                 val context = LocalContext.current
                 CalendarScreen(navController = navController)
             }
-//            composable(route = AppScreen.Login.route) {
-//                val context = LocalContext.current
-//                LoginScreen { navController.navigate(AppScreen.Login.route) }
-//            }
-            authNavGraph(navController)
+
+            authNavGraph(navController) // right now, this is the fourth button at the bottom
         }
     }
 }
 
 fun NavGraphBuilder.authNavGraph(navController: NavController) {
     navigation(
-        startDestination = RootNavGraph.Auth.route,
-        route = "auth_graph"
+        startDestination = AuthNavGraph.Login.route, // this is the first screen you go to when you open auth_graph
+        route = RootNavGraph.Auth.route // this is the URL to get to this navGraph
     ) {
-        composable(route = AuthNavGraph.Login.route) {
+        composable(AuthNavGraph.Login.route) {
             val context = LocalContext.current
             LoginScreen(onNavigateToRegister = { navController.navigate(AuthNavGraph.Registration.route) })
         }
