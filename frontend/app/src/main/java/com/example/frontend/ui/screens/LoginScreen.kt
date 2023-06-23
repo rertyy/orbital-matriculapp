@@ -43,7 +43,7 @@ import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun LoginScreen(onNavigate: () -> Unit) {
+fun LoginScreen(onNavigateToRegister: () -> Unit) {
 //    Button(onClick = onNavigate) {
 //        Column {
 //            Text(

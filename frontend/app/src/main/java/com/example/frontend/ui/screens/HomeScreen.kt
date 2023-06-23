@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.frontend.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -34,7 +35,7 @@ import kotlinx.coroutines.launch
 import java.text.DateFormat.getDateTimeInstance
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -94,6 +95,7 @@ fun CurrentTime(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
                 .padding(bottom = 16.dp)
                 .align(alignment = Alignment.CenterHorizontally)
         )
+        
         // TODO separate to different function and hoist state
         Spacer(modifier = Modifier.height(20.dp))
         Box(

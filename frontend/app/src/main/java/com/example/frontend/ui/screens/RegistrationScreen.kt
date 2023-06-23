@@ -29,16 +29,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.frontend.R
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
-@Preview
 @Composable
-fun Register(registerViewModel: RegisterViewModel = viewModel()) {
+fun RegistrationScreen(
+    onNavigateToLogin: () -> Unit,
+    registerViewModel: RegisterViewModel = viewModel()
+) {
     var passwordVisible by remember { mutableStateOf(false) }
 
     Column(

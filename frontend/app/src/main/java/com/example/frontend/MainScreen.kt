@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Today
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -16,49 +17,42 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.example.frontend.ui.screens.CalendarScreen
 import com.example.frontend.ui.screens.ForumScreen
 import com.example.frontend.ui.screens.PostsViewModel
 import com.example.frontend.ui.screens.HomeScreen
 import com.example.frontend.ui.screens.LoginScreen
+import com.example.frontend.ui.screens.RegistrationScreen
 
 
-data class BottomNavItem(
-    val name: String,
-    val icon: ImageVector,
-)
-
-// TODO implement the remaining navi screens to uncomment these BottomNavItems
-// TODO isolate the navi screens into separate package
-val bottomNavItems = listOf(
-    BottomNavItem(
-        name = AppScreen.Home.name,
-        icon = Icons.Rounded.Home
-    ),
-    BottomNavItem(
-        name = AppScreen.Forum.name,
-        icon = Icons.Rounded.Person
-    ),
-    BottomNavItem(
-        name = AppScreen.Login.name,
-        icon = Icons.Rounded.Lock
-    ),
-)
-
-
-// TODO recheck what screens we want
-enum class AppScreen(@StringRes val title: Int) {
-    Home(title = R.string.home),
-    Forum(title = R.string.forum),
-    Social(title = R.string.social),
-    Links(title = R.string.links),
-    Acads(title = R.string.acads),
-    Login(title = R.string.login)
+sealed class RootNavGraph(val route: String, val icon: ImageVector, @StringRes val title: Int) {
+    object Home : RootNavGraph("home", Icons.Rounded.Home, R.string.home)
+    object Calendar : RootNavGraph("calendar", Icons.Rounded.Today, R.string.calendar)
+    object Forum : RootNavGraph("forum", Icons.Rounded.Person, R.string.forum)
+    object Auth : RootNavGraph("auth", Icons.Rounded.Lock, R.string.login)
 }
+
+val bottomNavList = listOf(
+    RootNavGraph.Home,
+    RootNavGraph.Calendar,
+    RootNavGraph.Forum,
+    RootNavGraph.Auth
+)
+
+sealed class AuthNavGraph(val route: String, val icon: ImageVector, @StringRes val title: Int) {
+    object Login : AuthNavGraph("login", Icons.Rounded.Lock, R.string.login)
+    object Registration : AuthNavGraph("registration", Icons.Rounded.Lock, R.string.registration)
+}
+
 
 @Composable
 fun MainApp(
@@ -66,9 +60,7 @@ fun MainApp(
     navController: NavHostController = rememberNavController()
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route ?: AppScreen.Home.name
-
-
+    val currentRoute = backStackEntry?.destination?.route ?: RootNavGraph.Home.route
 
     Scaffold(
         bottomBar = {
@@ -76,6 +68,18 @@ fun MainApp(
                 currentRoute = currentRoute,
                 onItemSelected = { route ->
                     navController.navigate(route) {
+                        // Pop up to the start destination of the graph to
+                        // avoid building up a large stack of destinations
+                        // on the back stack as users select items
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        // Avoid multiple copies of the same destination when
+                        // re-selecting the same item
+                        launchSingleTop = true
+                        // Restore state when re-selecting a previously selected item
+                        restoreState = true
+
                     }
                 }
             )
@@ -85,14 +89,14 @@ fun MainApp(
 
         NavHost(
             navController = navController,
-            startDestination = AppScreen.Home.name,
+            startDestination = RootNavGraph.Home.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(route = AppScreen.Home.name) {
+            composable(route = RootNavGraph.Home.route) {
                 val context = LocalContext.current
-                HomeScreen()
+                HomeScreen(navController)
             }
-            composable(route = AppScreen.Forum.name) {
+            composable(route = RootNavGraph.Forum.route) {
                 val context = LocalContext.current
                 val postViewModel: PostsViewModel = viewModel()
                 ForumScreen(
@@ -100,10 +104,31 @@ fun MainApp(
                     retryAction = { postViewModel.getAllPosts() },
                 )
             }
-            composable(route = AppScreen.Login.name) {
+            composable(route = RootNavGraph.Calendar.route) {
                 val context = LocalContext.current
-                LoginScreen { navController.navigate(AppScreen.Login.name) }
+                CalendarScreen(navController = navController)
             }
+//            composable(route = AppScreen.Login.route) {
+//                val context = LocalContext.current
+//                LoginScreen { navController.navigate(AppScreen.Login.route) }
+//            }
+            authNavGraph(navController)
+        }
+    }
+}
+
+fun NavGraphBuilder.authNavGraph(navController: NavController) {
+    navigation(
+        startDestination = RootNavGraph.Auth.route,
+        route = "auth_graph"
+    ) {
+        composable(route = AuthNavGraph.Login.route) {
+            val context = LocalContext.current
+            LoginScreen(onNavigateToRegister = { navController.navigate(AuthNavGraph.Registration.route) })
+        }
+        composable(route = AuthNavGraph.Registration.route) {
+            val context = LocalContext.current
+            RegistrationScreen(onNavigateToLogin = { navController.navigate(AuthNavGraph.Login.route) })
         }
     }
 }
@@ -115,12 +140,17 @@ fun AppBottomNavigationBar(
     onItemSelected: (String) -> Unit
 ) {
     NavigationBar {
-        bottomNavItems.map { bottomNavItem ->
+        bottomNavList.map { bottomNavItem ->
             NavigationBarItem(
-                selected = currentRoute == bottomNavItem.name,
-                onClick = { onItemSelected(bottomNavItem.name) },
-                icon = { Icon(imageVector = bottomNavItem.icon, contentDescription = null) },
-                label = { bottomNavItem.name }
+                selected = currentRoute == bottomNavItem.route,
+                onClick = { onItemSelected(bottomNavItem.route) },
+                icon = {
+                    Icon(
+                        imageVector = bottomNavItem.icon,
+                        contentDescription = bottomNavItem.title.toString()
+                    )
+                },
+                label = { bottomNavItem.title }
             )
         }
     }
