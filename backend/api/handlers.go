@@ -3,12 +3,14 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
+	"orbital-backend/util"
 )
 
-// TODO the err handling is wrong in the entire file http.StatusInternalServerError (err 500)
-/* TODO add in defer rows.Close() to all the functions that use rows,
+// TODO the err handling is wrong in the entire file eg http.StatusInternalServerError (err 500)
+/* TODO add in defer rows.Close() to all the functions
 to figure out what is the correct place to rows.Close(),
 or else just combine the Handle and the function together
 */
@@ -41,6 +43,7 @@ func (h *Handler) getAllPosts() ([]Post, error) {
 		return nil, err
 	}
 
+	// you only need to defer func rows.Close() when using Query statement which returns multiple results
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
@@ -70,10 +73,10 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := h.loginRequest(request.Username, request.Password)
+	err = h.loginRequest(request.Username, request.Password)
 
-	if result {
-		response := LoginResponse{
+	if err == nil {
+		response := HttpResponse{
 			Message: "Login successful",
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -88,72 +91,80 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 }
 
-func (h *Handler) loginRequest(username string, password string) (bool, error) {
+func (h *Handler) loginRequest(username string, password string) error {
 	log.Println("loginRequest")
 
 	// to re-look https://go.dev/doc/database/querying
 
-	sqlStatement := `SELECT username, password FROM users WHERE username=$1 AND password=$2;`
-	row := h.DB.QueryRow(sqlStatement, username, password)
-
-	// TODO defer func row
-
-	//log.Println("row: ", &row)
-	switch err := row.Scan(&username, &password); err {
+	var storedHashPassword string
+	sqlStatement := `SELECT password FROM users WHERE username=$1;`
+	row := h.DB.QueryRow(sqlStatement, username)
+	switch err := row.Scan(&storedHashPassword); err {
 	case sql.ErrNoRows:
-		log.Println("Wrong username or password")
-		return false, err
+		log.Println("Username not found")
+		return err
 	case nil:
-		log.Println("Login successful")
-		return true, nil
+		log.Println("Username found")
 	default:
 		log.Println("Unknown err", err)
-		return false, err
+		return err
 	}
+
+	err := util.CheckPassword(password, storedHashPassword)
+
+	if err != nil {
+		log.Println("Wrong password")
+		return err
+	}
+	log.Println("Correct password")
+	return nil
 
 }
 
-func (h *Handler) registerRequest(username string, password string) (bool, error) {
-	log.Println("loginRequest")
+func (h *Handler) registerRequest(username string, password string, email string) error {
+	log.Println("registerRequest")
 
 	sqlStatement := `SELECT username FROM users WHERE username=$1;`
 	row := h.DB.QueryRow(sqlStatement, username)
 
 	// TODO defer func row
 
-	switch err := row.Scan(&username); err {
-	case sql.ErrNoRows:
-		log.Println("User not found")
-	case nil:
-		log.Println("Username already taken")
-		return false, err
+	var storedUsername string
+	switch err := row.Scan(&storedUsername); err {
+	case sql.ErrNoRows: // TODO definitely wrong to use ErrNoRows as a good sign
+		log.Println("User not found, registration can proceed")
 	default:
-		log.Println("Unknown err", err)
-		return false, err
+		log.Println("Unknown exception", err)
+		return errors.New("unknown exception")
 	}
+	log.Println(storedUsername)
+
+	hashedPassword, err := util.HashPassword(password)
+	log.Println(hashedPassword)
 	sqlUpdate := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3);`
-	_, err := h.DB.Exec(sqlUpdate, username, password, "test3@test.com")
-	log.Println("Successfully registered")
+	_, err = h.DB.Exec(sqlUpdate, username, hashedPassword, email)
 	if err != nil {
-		return true, err
+		log.Println(err)
+		return err
 	}
-	return false, err
+	log.Println("Successfully registered")
+	return nil
 
 }
 
 func (h *Handler) HandleRegister(w http.ResponseWriter, r *http.Request) {
-	var request LoginRequest
+	var request RegisterRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	result, err := h.registerRequest(request.Username, request.Password)
+	err = h.registerRequest(request.Username, request.Password, request.Email)
 
-	if result {
-		response := LoginResponse{
-			Message: "Login successful",
+	if err == nil {
+		response := HttpResponse{
+			Message: "Registration successful",
 		}
 		w.Header().Set("Content-Type", "application/json")
 		err := json.NewEncoder(w).Encode(response)
@@ -164,5 +175,39 @@ func (h *Handler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+	http.Error(w, "Unable to register user", http.StatusUnauthorized)
+}
+
+// TODO add in the rest of the handlers
+
+func (h *Handler) HandleGetCategories(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *Handler) HandleGetCategory(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *Handler) HandleGetCategoryPosts(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *Handler) HandleGetPost(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *Handler) HandleModifyPost(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *Handler) HandleDeletePost(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *Handler) HandleDeleteCategory(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *Handler) HandleModifyCategory(w http.ResponseWriter, r *http.Request) {
+
 }

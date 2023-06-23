@@ -78,6 +78,7 @@ fun ResultScreen(posts: List<Post>, modifier: Modifier = Modifier) {
 }
 
 
+// TODO: figure out how to do @PreviewComposable with List<>
 @Composable
 fun PostsList(
     posts: List<Post>,
