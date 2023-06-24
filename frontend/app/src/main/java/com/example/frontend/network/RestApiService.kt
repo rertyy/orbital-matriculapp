@@ -1,6 +1,7 @@
 package com.example.frontend.network
 
 
+import com.example.frontend.ui.screens.Event
 import com.example.frontend.ui.screens.LoginRequest
 import com.example.frontend.ui.screens.LoginResponse
 import com.example.frontend.ui.screens.Post
@@ -11,6 +12,7 @@ import retrofit2.Response
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Path
 
 
 private const val BASE_URL =
@@ -28,8 +30,19 @@ interface ApiService {
         @Body request: RegisterRequest
     ): Response<RegisterRequest>
 
+    // TODO this might be a Flow<> instead of a List
     @GET("/posts")
-    suspend fun getAllPosts(): List<Post>
+    suspend fun getAllPosts(): Response<List<Post>>
+
+    @GET("/events")
+    suspend fun getAllEvents(): Response<List<Event>>
+
+    @POST("/{categoryId}/addPost")
+    suspend fun addPost(
+        @Path("categoryId") categoryId: String,
+        @Body request: Post
+    ): Response<Post>
+
 
 }
 

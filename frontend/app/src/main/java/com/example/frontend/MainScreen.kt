@@ -53,6 +53,11 @@ sealed class AuthNavGraph(val route: String, val icon: ImageVector, @StringRes v
     object Registration : AuthNavGraph("registration", Icons.Rounded.Lock, R.string.registration)
 }
 
+sealed class ForumNavGraph(val route: String, val icon: ImageVector, @StringRes val title: Int) {
+    object Posts : ForumNavGraph("posts", Icons.Rounded.Person, R.string.forum)
+    object CreatePost : ForumNavGraph("create_post", Icons.Rounded.Person, R.string.addNewPost)
+}
+
 
 @Composable
 fun MainApp(
@@ -96,24 +101,44 @@ fun MainApp(
                 val context = LocalContext.current
                 HomeScreen(navController)
             }
-            composable(route = RootNavGraph.Forum.route) {
-                val context = LocalContext.current
-                val postViewModel: PostsViewModel = viewModel()
-                ForumScreen(
-                    postsUiState = postViewModel.postsUiState,
-                    retryAction = { postViewModel.getAllPosts() },
-                )
-            }
+
             composable(route = RootNavGraph.Calendar.route) {
                 val context = LocalContext.current
                 CalendarScreen(navController = navController)
             }
+            forumNavGraph(navController)
 
             authNavGraph(navController) // right now, this is the fourth button at the bottom
         }
     }
 }
 
+fun NavGraphBuilder.forumNavGraph(navController: NavController) {
+    navigation(
+        startDestination = ForumNavGraph.Posts.route, // this is the first screen you go to when you open auth_graph
+        route = RootNavGraph.Forum.route // this is the URL to get to this navGraph
+    ) {
+        composable(route = ForumNavGraph.Posts.route) {
+            val context = LocalContext.current
+            val postViewModel: PostsViewModel = viewModel()
+            ForumScreen(
+                postsUiState = postViewModel.postsUiState,
+                retryAction = { postViewModel.getAllPosts() },
+            )
+        }
+//        composable(route = ForumNavGraph.CreatePost.route) {
+//            val context = LocalContext.current
+//            val postViewModel: PostsViewModel = viewModel()
+//            ForumScreen(
+//                postsUiState = postViewModel.postsUiState,
+//                retryAction = { postViewModel.getAllPosts() },
+//            )
+//        }
+    }
+}
+
+
+// TODO shared viewmodel
 fun NavGraphBuilder.authNavGraph(navController: NavController) {
     navigation(
         startDestination = AuthNavGraph.Login.route, // this is the first screen you go to when you open auth_graph

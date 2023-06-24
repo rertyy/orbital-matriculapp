@@ -2,14 +2,11 @@ package com.example.frontend.ui.screens
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import com.example.frontend.network.RestApiService
 import kotlinx.coroutines.launch
-import java.text.DateFormat
 
 class HomeScreenViewModel : ViewModel() {
     var currentTime by mutableStateOf("")
@@ -30,4 +27,33 @@ class HomeScreenViewModel : ViewModel() {
 //    }
 
 
+    fun getAllEvents(): List<Event> {
+        // TODO error screen
+        var listEvents: List<Event> = listOf(Event("1", "Event 1", "", ""))
+        viewModelScope.launch {
+            try {
+                val events = RestApiService.retrofitService.getAllEvents().body()
+                if (events != null) {
+                    listEvents = events
+                } else {
+                    throw Exception("Events is null")
+                }
+            } catch (e: Exception) {
+                // TODO change pokemon
+
+            }
+        }
+
+        return listEvents
+    }
+
+
 }
+
+// TODO add @SerializedName to use json format
+data class Event(
+    val eventId: String,
+    val eventName: String,
+    val eventStartDate: String?,
+    val eventEndDate: String?,
+)

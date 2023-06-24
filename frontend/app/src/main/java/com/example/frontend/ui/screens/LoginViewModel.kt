@@ -35,11 +35,22 @@ class LoginViewModel : UserInterfaceViewModel() {
         this.loginError = true
     }
 
+    private fun isValidLogin(): Boolean {
+        val valid = username.isNotEmpty() && password.isNotEmpty()
+        Log.d("Login", valid.toString())
+        return valid
+    }
+
 
     fun performLogin() {
         Log.d("Login", "Performing login")
         Log.d("LoginUsername", username)
-        Log.d("LoginPassword", password)
+        Log.d("LoginPassword", password) //TODO remove this
+
+        if (!isValidLogin()) {
+            triggerLoginError()
+            return
+        }
 
         viewModelScope.launch {
             try {

@@ -9,15 +9,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DateFormat.getDateTimeInstance
+
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
@@ -95,24 +98,10 @@ fun CurrentTime(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
                 .padding(bottom = 16.dp)
                 .align(alignment = Alignment.CenterHorizontally)
         )
-        
+
         // TODO separate to different function and hoist state
         Spacer(modifier = Modifier.height(20.dp))
-        Box(
-            modifier = Modifier
-                .background(
-                    color = Color.Red,
-                    shape = RoundedCornerShape(16.dp)
-                )
-        ) {
-            Text(
-                text = stringResource(id = R.string.deadlines),
-                fontSize = 30.sp,
-                modifier = Modifier
-                    .padding(top = 5.dp, bottom = 5.dp)
-                    .fillMaxWidth()
-            )
-        }
+        Deadlines()
         Spacer(modifier = Modifier.height(20.dp))
         Box(
             modifier = Modifier
@@ -154,4 +143,43 @@ fun CurrentTime(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
 @Composable
 fun CurrentTimePreview() {
     CurrentTime()
+}
+
+
+@Composable
+fun Deadlines(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
+    val eventList = homeScreenViewModel.getAllEvents()
+    Box(
+        modifier = Modifier
+            .background(
+                color = Color.Red,
+                shape = RoundedCornerShape(16.dp)
+            )
+    ) {
+        Text(
+            text = stringResource(id = R.string.deadlines),
+            fontSize = 30.sp,
+            modifier = Modifier
+                .padding(top = 5.dp, bottom = 5.dp)
+                .fillMaxWidth()
+        )
+        LazyColumn(
+            modifier = Modifier
+        ) {
+            items(eventList) { event ->
+                Text(event.eventName)
+            }
+
+        }
+    }
+}
+
+@Composable
+fun Reminders() {
+
+}
+
+@Composable
+fun UpcomingEvents() {
+
 }
