@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -119,9 +120,12 @@ fun AppBottomNavigationBar(
             NavigationBarItem(
                 selected = currentRoute == bottomNavItem.name,
                 onClick = { onItemSelected(bottomNavItem.name) },
-                icon = { Icon(imageVector = bottomNavItem.icon, contentDescription = null) },
-                label = { bottomNavItem.name }
+                icon = { Icon(imageVector = bottomNavItem.icon, contentDescription = bottomNavItem.name
+                ) },
+                label = { bottomNavItem.name },
+                modifier = Modifier.testTag(bottomNavItem.name)   //added testtag for UI testing
             )
+
         }
     }
 }
