@@ -1,0 +1,5 @@
+name: orbital-backend
+env:
+  - key: RENDER_EXPOSE_PORT
+    value: "8080"
+startCommand: ["/app/main", "-p", "8080"]
