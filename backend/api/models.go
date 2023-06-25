@@ -27,6 +27,7 @@ type AddPostRequest struct {
 // Post TODO add id to the structs so that we can use it to delete and modify
 // intentionally is a string because json.decode cannot handle time.Time without time.Parse
 type Post struct {
+	PostId        int       `json:"post_id"`
 	Title         string    `json:"title"`
 	Body          string    `json:"body"`
 	CategoryId    int       `json:"category_id"`
@@ -39,6 +40,7 @@ type Post struct {
 
 // Event TODO add id to the struct
 type Event struct {
+	EventId   int    `json:"event_id"`
 	Name      string `json:"name"`
 	Body      string `json:"body"`
 	StartDate string `json:"start_date"`

@@ -26,4 +26,5 @@
     <string name="registration">Registration</string>
     <string name="loginInstead">Back to login page</string>
     <string name="addNewPost">+New Post</string>
+    <string name="modifyPost">Click to edit post</string>
 </resources>

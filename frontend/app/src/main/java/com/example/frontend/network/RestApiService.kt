@@ -12,6 +12,7 @@ import retrofit2.Response
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 
@@ -37,9 +38,16 @@ interface ApiService {
     @GET("/events")
     suspend fun getAllEvents(): Response<List<Event>>
 
+    @PUT("/{categoryId}/{postId}/edit")
+    suspend fun editPost(
+        @Path("categoryId") categoryId: Int,
+        @Path("postId") postId: Int,
+        @Body request: Post
+    ): Response<Post>
+
     @POST("/{categoryId}/addPost")
     suspend fun addPost(
-        @Path("categoryId") categoryId: String,
+        @Path("categoryId") categoryId: Int,
         @Body request: Post
     ): Response<Post>
 

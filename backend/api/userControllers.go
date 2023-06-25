@@ -34,6 +34,7 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			return
 		}
+		w.WriteHeader(http.StatusOK)
 		return
 
 	}
@@ -131,6 +132,7 @@ func (h *Handler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			return
 		}
+		w.WriteHeader(http.StatusCreated)
 		return
 
 	}

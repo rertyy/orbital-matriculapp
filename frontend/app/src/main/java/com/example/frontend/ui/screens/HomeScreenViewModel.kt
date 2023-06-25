@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.network.RestApiService
+import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.launch
 
 class HomeScreenViewModel : ViewModel() {
@@ -27,20 +28,15 @@ class HomeScreenViewModel : ViewModel() {
 //    }
 
 
-    fun getAllEvents(): List<Event> {
+    fun getAllEvents(): List<Event>? {
         // TODO error screen
-        var listEvents: List<Event> = listOf(Event("1", "Event 1", "", ""))
+        var listEvents: List<Event>? = null
         viewModelScope.launch {
-            try {
-                val events = RestApiService.retrofitService.getAllEvents().body()
-                if (events != null) {
-                    listEvents = events
-                } else {
-                    throw Exception("Events is null")
-                }
+            listEvents = try {
+                RestApiService.retrofitService.getAllEvents().body()
+                    ?: throw Exception("Events is null")
             } catch (e: Exception) {
-                // TODO change pokemon
-
+                null
             }
         }
 
@@ -52,8 +48,9 @@ class HomeScreenViewModel : ViewModel() {
 
 // TODO add @SerializedName to use json format
 data class Event(
-    val eventId: String,
-    val eventName: String,
-    val eventStartDate: String?,
-    val eventEndDate: String?,
+    @SerializedName("event_id") val eventId: String,
+    @SerializedName("name") val eventName: String,
+    @SerializedName("body") val body: String,
+//    val eventStartDate: String?,
+//    val eventEndDate: String?,
 )

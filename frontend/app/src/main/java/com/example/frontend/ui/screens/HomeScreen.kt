@@ -149,6 +149,10 @@ fun CurrentTimePreview() {
 @Composable
 fun Deadlines(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
     val eventList = homeScreenViewModel.getAllEvents()
+    if (eventList == null) {
+        Text("No events")
+        return
+    }
     Box(
         modifier = Modifier
             .background(

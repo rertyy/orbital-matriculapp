@@ -126,7 +126,7 @@ fun RegistrationScreen(
             onClick = {
                 onNavigateToLogin()
             },
-            modifier = Modifier
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(stringResource(id = R.string.loginInstead))
         }

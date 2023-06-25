@@ -14,6 +14,7 @@ import java.io.IOException
 
 // TODO add postId and categoryId to Post
 data class Post(
+    @SerializedName("post_id") val postId: Int,
     val title: String,
     val body: String,
     @SerializedName("category_id") val categoryId: Int,
@@ -25,15 +26,15 @@ data class Post(
 )
 
 
-sealed interface PostsUiState {
-    data class Success(val posts: List<Post>) : PostsUiState
-    object Error : PostsUiState
-    object Loading : PostsUiState
+sealed interface ForumUiState {
+    data class Success(val posts: List<Post>) : ForumUiState
+    object Error : ForumUiState
+    object Loading : ForumUiState
 }
 
 
-class PostsViewModel : ViewModel() {
-    var postsUiState: PostsUiState by mutableStateOf(PostsUiState.Loading)
+class ForumViewModel : ViewModel() {
+    var forumUiState: ForumUiState by mutableStateOf(ForumUiState.Loading)
         private set
 
     init {
@@ -44,8 +45,8 @@ class PostsViewModel : ViewModel() {
         Log.d("FORUM", "adding post")
         viewModelScope.launch {
             try {
-                // TODO dont hardcode the id
-                RestApiService.retrofitService.addPost("1", post)
+                // TODO don't hardcode the id
+                RestApiService.retrofitService.addPost(1, post)
             } catch (e: Exception) {
                 // TODO change pokemon
                 Log.d("FORUM", "Error: ${e.message}")
@@ -54,28 +55,42 @@ class PostsViewModel : ViewModel() {
         getAllPosts()
     }
 
+    fun modifyPost(oldPost: Post, newPost: Post) {
+        Log.d("FORUM", "modifying post")
+        viewModelScope.launch {
+            try {
+                RestApiService.retrofitService.editPost(
+                    oldPost.categoryId,
+                    oldPost.postId,
+                    newPost
+                )
+            } catch (e: Exception) {
+                // TODO change pokemon
+                Log.d("FORUM", "Error editing post: ${e.message}")
+            }
+        }
+        getAllPosts()
+    }
 
     fun getAllPosts() {
         Log.d("FORUM", "Retrieving posts")
 
         // TODO change exception handling
         viewModelScope.launch {
-            postsUiState = PostsUiState.Loading
-            postsUiState = try {
-                Log.d("FORUM", "Retrieving posts2")
+            forumUiState = ForumUiState.Loading
+            forumUiState = try {
                 val response = RestApiService.retrofitService.getAllPosts()
-                Log.d("FORUM", "Retrieving posts3")
                 val listPosts = response.body()
-                Log.d("FORUM", "success $listPosts")
+                Log.d("FORUM", "success getAllPosts $listPosts")
                 if (listPosts == null) {
-                    PostsUiState.Error
-                } else PostsUiState.Success(listPosts)
+                    ForumUiState.Error
+                } else ForumUiState.Success(listPosts)
             } catch (e: IOException) {
-                Log.d("FORUM", "Error: ${e.message}")
-                PostsUiState.Error
+                Log.d("FORUM", "Error getAllPosts: ${e.message}")
+                ForumUiState.Error
             } catch (e: HttpException) {
-                Log.d("FORUM", "Error: ${e.message}")
-                PostsUiState.Error
+                Log.d("FORUM", "Error getAllPosts: ${e.message}")
+                ForumUiState.Error
             }
         }
     }

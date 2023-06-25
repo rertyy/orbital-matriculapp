@@ -28,7 +28,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.frontend.ui.screens.CalendarScreen
 import com.example.frontend.ui.screens.ForumScreen
-import com.example.frontend.ui.screens.PostsViewModel
+import com.example.frontend.ui.screens.ForumViewModel
 import com.example.frontend.ui.screens.HomeScreen
 import com.example.frontend.ui.screens.LoginScreen
 import com.example.frontend.ui.screens.RegistrationScreen
@@ -120,9 +120,9 @@ fun NavGraphBuilder.forumNavGraph(navController: NavController) {
     ) {
         composable(route = ForumNavGraph.Posts.route) {
             val context = LocalContext.current
-            val postViewModel: PostsViewModel = viewModel()
+            val postViewModel: ForumViewModel = viewModel()
             ForumScreen(
-                postsUiState = postViewModel.postsUiState,
+                forumUiState = postViewModel.forumUiState,
                 retryAction = { postViewModel.getAllPosts() },
             )
         }
