@@ -34,9 +34,12 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			return
 		}
-		//w.WriteHeader(http.StatusOK)
-		return
-
+		//w.WriteHeader(http.StatusOK )
+		// TODO modularise this
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
 	}
 
 	http.Error(w, "Invalid username or password", http.StatusUnauthorized)
