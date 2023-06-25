@@ -61,7 +61,7 @@ class RegisterViewModel : UserInterfaceViewModel() {
 
     private fun checkValidRegistration(): Boolean {
         val result =
-            username.isNotEmpty() && password.isNotEmpty() && password.length > 8 && email.isNotEmpty() && "@" in email && "." in email
+            username.isNotEmpty() && password.isNotEmpty() //&& password.length > 8 && email.isNotEmpty() && "@" in email && "." in email
         Log.d("Register", "Valid registration: $result")
         return result
     }
