@@ -25,24 +25,23 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	err = h.loginRequest(request.Username, request.Password)
 
-	if err == nil {
-		response := HttpResponse{
-			Message: "Login successful",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		err := json.NewEncoder(w).Encode(response)
-		if err != nil {
-			return
-		}
-		//w.WriteHeader(http.StatusOK )
-		// TODO modularise this
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
 	}
 
-	http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+	response := HttpResponse{
+		Message: "Login successful",
+	}
+
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		return
+	}
+	// TODO modularise this
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "application/json")
 }
 
 // when testing, for security, check that failing username check is not faster than failing password check.
