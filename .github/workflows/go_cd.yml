@@ -3,7 +3,8 @@ name: CD Pipeline
 
 on:
   workflow_run:
-    workflows: ["Backend_Build_Pipeline"]
+    workflows: 
+      - Backend_Build_Pipeline
     types:
       - completed
 jobs:
