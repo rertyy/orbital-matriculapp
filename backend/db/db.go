@@ -2,25 +2,27 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	_ "github.com/lib/pq"
 	"log"
 	"os"
 )
 
 func Connect() (*sql.DB, error) {
-	psqlHost := os.Getenv("PSQL_HOST")
-	psqlPort := os.Getenv("PSQL_PORT")
-	psqlUser := os.Getenv("PSQL_USER")
-	psqlPass := os.Getenv("PSQL_PASS")
-	psqlDbname := os.Getenv("PSQL_DBNAME")
+	//psqlHost := os.Getenv("PSQL_HOST")
+	//psqlPort := os.Getenv("PSQL_PORT")
+	//psqlUser := os.Getenv("PSQL_USER")
+	//psqlPass := os.Getenv("PSQL_PASS")
+	//psqlDbname := os.Getenv("PSQL_DBNAME")
+	psqlConn := os.Getenv("PSQL_CONN")
 
-	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		psqlHost, psqlPort, psqlUser, psqlPass, psqlDbname)
+	//psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
+	//	"password=%s dbname=%s sslmode=disable",
+	//	psqlHost, psqlPort, psqlUser, psqlPass, psqlDbname)
 
-	db, err := sql.Open("postgres", psqlInfo)
+	//db, err := sql.Open("postgres", psqlInfo)
+	db, err := sql.Open("postgres", psqlConn)
 	if err != nil {
+		log.Println(err)
 		panic(err)
 	}
 
@@ -32,8 +34,8 @@ func Connect() (*sql.DB, error) {
 	//	}
 	//}(db)
 
-	errPing := db.Ping()
-	if errPing != nil {
+	if err := db.Ping(); err != nil {
+		log.Println(err)
 		panic(err)
 	}
 	log.Println("Successfully connected!")

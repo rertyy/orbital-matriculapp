@@ -19,6 +19,7 @@ func main() {
 
 	db, err := db2.Connect()
 	if db == nil || err != nil {
+		log.Println("test2", err)
 		panic(err)
 	}
 

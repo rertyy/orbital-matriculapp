@@ -1,0 +1,7 @@
+version: '3'
+services:
+  app:
+    image: orbital-backend
+    ports:
+      - "80:8080"
+    restart: always

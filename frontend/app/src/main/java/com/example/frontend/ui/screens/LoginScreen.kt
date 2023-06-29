@@ -44,7 +44,7 @@ import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun LoginScreen(onNavigate: () -> Unit) {
+fun LoginScreen(onNavigateToRegister: () -> Unit) {
 //    Button(onClick = onNavigate) {
 //        Column {
 //            Text(
@@ -54,12 +54,12 @@ fun LoginScreen(onNavigate: () -> Unit) {
 //        }
 //    }
 
-    Login()
+    Login(onNavigateToRegister = onNavigateToRegister)
 }
 
 // TODO: login navigation, jwt, context, lock functions if user not logged in
 @Composable
-fun Login(loginViewModel: LoginViewModel = viewModel()) {
+fun Login(loginViewModel: LoginViewModel = viewModel(), onNavigateToRegister: () -> Unit) {
     var passwordVisible by remember { mutableStateOf(false) }
 
     TestLogin(
@@ -131,6 +131,15 @@ fun Login(loginViewModel: LoginViewModel = viewModel()) {
             Text(stringResource(id = R.string.login))
         }
 
+        Button(
+            onClick = {
+                onNavigateToRegister()
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(stringResource(id = R.string.register))
+        }
+
         // TODO change loginResponse
         if (loginViewModel.loginSuccessful) {
             Text("Login successful", color = Color.Green)
@@ -152,7 +161,7 @@ fun Login(loginViewModel: LoginViewModel = viewModel()) {
 @Composable
 fun LoginScreenPreview() {
     FrontendTheme {
-        Login()
+        Login(onNavigateToRegister = { })
     }
 
 }

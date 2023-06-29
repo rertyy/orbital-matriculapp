@@ -1,6 +1,7 @@
 package com.example.frontend.network
 
 
+import com.example.frontend.ui.screens.Event
 import com.example.frontend.ui.screens.LoginRequest
 import com.example.frontend.ui.screens.LoginResponse
 import com.example.frontend.ui.screens.Post
@@ -11,11 +12,17 @@ import retrofit2.Response
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PUT
+import retrofit2.http.Path
 
+
+//private const val BASE_URL =
+//    "http://10.0.2.2:8080/"
+//// NB https://stackoverflow.com/questions/5495534/java-net-connectexception-localhost-127-0-0-18080-connection-refused
 
 private const val BASE_URL =
-    "http://10.0.2.2:8080/" // TODO backend URL to host.
-// NB https://stackoverflow.com/questions/5495534/java-net-connectexception-localhost-127-0-0-18080-connection-refused
+    "https://orbital-backend-6z61.onrender.com"
+
 
 interface ApiService {
     @POST("/login")
@@ -28,8 +35,26 @@ interface ApiService {
         @Body request: RegisterRequest
     ): Response<RegisterRequest>
 
+    // TODO this might be a Flow<> instead of a List
     @GET("/posts")
-    suspend fun getAllPosts(): List<Post>
+    suspend fun getAllPosts(): Response<List<Post>>
+
+    @GET("/events")
+    suspend fun getAllEvents(): Response<List<Event>>
+
+    @PUT("/{categoryId}/{postId}/edit")
+    suspend fun editPost(
+        @Path("categoryId") categoryId: Int,
+        @Path("postId") postId: Int,
+        @Body request: Post
+    ): Response<Post>
+
+    @POST("/{categoryId}/addPost")
+    suspend fun addPost(
+        @Path("categoryId") categoryId: Int,
+        @Body request: Post
+    ): Response<Post>
+
 
 }
 

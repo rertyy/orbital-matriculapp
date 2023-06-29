@@ -29,16 +29,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.R
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
-@Preview
 @Composable
-fun Register(registerViewModel: RegisterViewModel = viewModel()) {
+fun RegistrationScreen(
+    onNavigateToLogin: () -> Unit,
+    registerViewModel: RegisterViewModel = viewModel()
+) {
     var passwordVisible by remember { mutableStateOf(false) }
 
     Column(
@@ -120,19 +121,20 @@ fun Register(registerViewModel: RegisterViewModel = viewModel()) {
         ) {
             Text(stringResource(id = R.string.register))
         }
+
         Button(
             onClick = {
-                registerViewModel.registerUser()
+                onNavigateToLogin()
             },
-            modifier = Modifier
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(id = R.string.register))
+            Text(stringResource(id = R.string.loginInstead))
         }
 
 
         // TODO change registerResponse
         if (registerViewModel.registerSuccessful) {
-            Text("Register successful", color = Color.Green)
+            Text("Register successful. Go back to login page", color = Color.Green)
             // TODO navigate back to register screen after 3 seconds
         }
         if (registerViewModel.registerError && !registerViewModel.registerSuccessful) {

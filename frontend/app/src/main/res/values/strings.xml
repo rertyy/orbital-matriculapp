@@ -22,4 +22,9 @@
     <string name="retry">Click to retry</string>
     <string name="loading_failed">Failed to load</string>
     <string name="loading">Loading posts\n</string>
+    <string name="calendar">Calendar</string>
+    <string name="registration">Registration</string>
+    <string name="loginInstead">Back to login page</string>
+    <string name="addNewPost">+New Post</string>
+    <string name="modifyPost">Click to edit post</string>
 </resources>

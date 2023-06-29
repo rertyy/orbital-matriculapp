@@ -4,34 +4,43 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.R
 
 @Composable
 fun ForumScreen(
-    postsUiState: PostsUiState,
+    forumUiState: ForumUiState,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    when (postsUiState) {
-        is PostsUiState.Loading -> LoadingScreen(modifier)
-        is PostsUiState.Success -> ResultScreen(postsUiState.posts, modifier)
-        is PostsUiState.Error -> ErrorScreen(retryAction, modifier)
+    when (forumUiState) {
+        is ForumUiState.Loading -> LoadingScreen(modifier)
+        is ForumUiState.Success -> ResultScreen(forumUiState.posts, modifier)
+        is ForumUiState.Error -> ErrorScreen(retryAction, modifier)
     }
 }
 
@@ -72,30 +81,104 @@ fun ResultScreen(posts: List<Post>, modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize()
     ) {
         Log.d("GET posts", posts.toString())
-        // TODO serialise this to read the structs
         PostsList(posts = posts)
     }
 }
 
 
+// TODO: figure out how to do @PreviewComposable with List<>
+//@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
 fun PostsList(
-    posts: List<Post>,
-    modifier: Modifier = Modifier
+    @PreviewParameter(MultiPostProvider::class) posts: List<Post>,
+    modifier: Modifier = Modifier,
+    forumViewModel: ForumViewModel = viewModel(),
 ) {
-    LazyColumn(modifier = modifier) {
-        items(posts) { post ->
-            Text(
-                post.title,
-                modifier = Modifier.padding(8.dp)
-            )
-            Spacer(modifier = modifier.height(25.dp))
+    Log.d("posts", posts.toString())
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Button(
+            // TODO change to add post
+            onClick = { forumViewModel.addPost(post1) },
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Text(stringResource(R.string.addNewPost))
+        }
+
+        LazyColumn(modifier = modifier) {
+            items(posts) { post ->
+                PostCard(post = post)
+            }
         }
     }
 }
 
 
-val b = listOf(
-    Post("title1", "body1", "cat-name", "name", "date", "time"),
-    Post("title2", "body2", "cat-name2", "name2", "date", "time")
+@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
+@Composable
+fun PostCard(
+    @PreviewParameter(SinglePostProvider::class) post: Post,
+    forumViewModel: ForumViewModel = viewModel(),
+) {
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
+    ) {
+        Row(modifier = Modifier.align(Alignment.End)) {
+            IconButton(
+                onClick = { forumViewModel.modifyPost(post, post2) },
+                modifier = Modifier
+            ) {
+                Icon(imageVector = Icons.Rounded.Edit, contentDescription = null)
+            }
+        }
+        Column(modifier = Modifier.padding(8.dp)) {
+            Text(
+                text = post.title,
+                style = LocalTextStyle.current.copy(fontSize = 15.sp, fontWeight = Bold)
+            )
+            Text(text = post.body, style = LocalTextStyle.current.copy(fontSize = 12.sp))
+            Text(text = post.body, style = LocalTextStyle.current.copy(fontSize = 5.sp))
+        }
+    }
+}
+
+
+val post1 = Post(
+    1123,
+    "Hello World!",
+    "consectetur.",
+    1,
+    "cat-name2",
+    1,
+    "User2",
+//    OffsetDateTime.now().toOffsetTime()
+//    OffsetDateTime.now(),
 )
+
+val post2 = Post(
+    123123,
+    "Hello!",
+    "consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    1,
+    "cat-name2",
+    1,
+    "User1",
+//    OffsetDateTime.now(),
+//    OffsetDateTime.now(),
+)
+
+private class MultiPostProvider : PreviewParameterProvider<Post> {
+    override val values: Sequence<Post>
+        get() = sequenceOf(
+            post1,
+            post2
+        )
+}
+
+private class SinglePostProvider : PreviewParameterProvider<Post> {
+    override val values: Sequence<Post>
+        get() = sequenceOf(
+            post1
+        )
+}

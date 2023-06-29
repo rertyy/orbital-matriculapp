@@ -28,41 +28,19 @@ class RegisterViewModel : UserInterfaceViewModel() {
         this.registerError = true
     }
 
-    fun registerUser() {
-        Log.d("Register", "Performing registration")
-        Log.d("RegisterUsername", username)
-        Log.d("RegisterPassword", password)
-        Log.d("RegisterEmail", email)
-
-        viewModelScope.launch {
-            try {
-                val request = RegisterRequest(username, password, email)
-                val registerResponse = RestApiService.retrofitService.registerUser(request)
-                val body = registerResponse.body()
-                if (registerResponse.isSuccessful) {
-                    Log.d("Register", body.toString())
-                    triggerRegisterSuccessful()
-                } else {
-                    Log.e("Register", body.toString())
-                    triggerRegisterError()
-                }
-            } catch (e: Exception) {
-                // Handle other exceptions
-                Log.d("Register", "Error: ${e.message}")
-                triggerRegisterError()
-            }
-
-        }
-    }
-
     fun performRegistration() {
         Log.d("Register", "Performing registration")
         Log.d("RegisterUsername", username)
         Log.d("RegisterPassword", password)
 
+        if (!checkValidRegistration()) {
+            triggerRegisterError()
+            return
+        }
+
         viewModelScope.launch {
             try {
-                val request = RegisterRequest(email, username, password)
+                val request = RegisterRequest(username, password, email)
                 val registerResponse = RestApiService.retrofitService.registerUser(request)
                 val authenticationResponse = registerResponse.body()
                 if (registerResponse.isSuccessful) {
@@ -79,6 +57,13 @@ class RegisterViewModel : UserInterfaceViewModel() {
 
             }
         }
+    }
+
+    private fun checkValidRegistration(): Boolean {
+        val result =
+            username.isNotEmpty() && password.isNotEmpty() //&& password.length > 8 && email.isNotEmpty() && "@" in email && "." in email
+        Log.d("Register", "Valid registration: $result")
+        return result
     }
 
     fun resetRegisterError() {
