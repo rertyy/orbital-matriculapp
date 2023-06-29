@@ -18,7 +18,7 @@ class LoginViewModel : UserInterfaceViewModel() {
     var loginError by mutableStateOf(false)
         private set
 
-    private fun loginSuccessful() {
+    internal fun loginSuccessful() {
         this.loginSuccessful = true
     }
 
@@ -31,7 +31,7 @@ class LoginViewModel : UserInterfaceViewModel() {
         this.loginError = false
     }
 
-    private fun triggerLoginError() {
+    internal fun triggerLoginError() {
         this.loginError = true
     }
 

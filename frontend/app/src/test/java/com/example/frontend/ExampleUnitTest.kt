@@ -1,5 +1,6 @@
 package com.example.frontend
 
+import com.example.frontend.ui.screens.LoginViewModel
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -11,7 +12,31 @@ import org.junit.Assert.*
  */
 class ExampleUnitTest {
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun `loginSuccessful works`() {
+        val test = LoginViewModel()
+        test.loginSuccessful()
+        assertEquals(true, test.loginSuccessful)
+    }
+
+    @Test
+    fun `toggleLogin works`() {
+        val test = LoginViewModel()
+        test.toggleLogin()
+        assertEquals(true, test.loginSuccessful)
+    }
+
+    @Test
+    fun `triggerLoginError works`() {
+        val test = LoginViewModel()
+        test.triggerLoginError()
+        assertEquals(true, test.loginError)
+    }
+
+    @Test
+    fun `resetLoginError works`() {
+        val test = LoginViewModel()
+        test.triggerLoginError()
+        test.resetLoginError()
+        assertEquals(false, test.loginError)
     }
 }
