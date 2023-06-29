@@ -48,6 +48,8 @@ jobs:
           file: ./backend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/orbitalbackend:latest
+          secrets: |
+            "PSQL_CONN=${{ secrets.PSQL_CONN }}"
 
   #### this wont work because of VPC issue
   # Deploy:

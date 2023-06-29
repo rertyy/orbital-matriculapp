@@ -1,4 +1,6 @@
 FROM golang:1.20-alpine
+RUN --mount=type=secret,id=PSQL_CONN \
+  export PSQL_CONN=$(cat /run/secrets/PSQL_CONN)
 
 # Set destination for COPY
 WORKDIR /app
