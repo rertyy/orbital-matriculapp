@@ -13,7 +13,7 @@ type RegisterRequest struct {
 	Email    string `json:"email"`
 }
 
-// TODO put http codes into HttpResponse
+// TODO put http codes into HttpResponse or find how to write it in response
 
 type HttpResponse struct {
 	Message string `json:"message"`
@@ -24,8 +24,6 @@ type AddPostRequest struct {
 	Post       Post   `json:"post"`
 }
 
-// Post TODO add id to the structs so that we can use it to delete and modify
-// intentionally is a string because json.decode cannot handle time.Time without time.Parse
 type Post struct {
 	PostId        int       `json:"post_id"`
 	Title         string    `json:"title"`
@@ -38,7 +36,6 @@ type Post struct {
 	LastUpdated   time.Time `json:"last_updated"`
 }
 
-// Event TODO add id to the struct
 type Event struct {
 	EventId   int    `json:"event_id"`
 	Name      string `json:"name"`

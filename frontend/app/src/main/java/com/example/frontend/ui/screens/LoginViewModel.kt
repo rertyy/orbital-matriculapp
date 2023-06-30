@@ -58,10 +58,10 @@ class LoginViewModel : UserInterfaceViewModel() {
                 val loginResponse = RestApiService.retrofitService.authenticateLogin(request)
                 val authenticationResponse = loginResponse.body()
                 if (loginResponse.isSuccessful) {
-                    Log.d("Login", authenticationResponse.toString())
+                    Log.d("Login", "success" + authenticationResponse.toString())
                     loginSuccessful()
                 } else {
-                    Log.e("Login", authenticationResponse.toString())
+                    Log.e("Login", "error" + authenticationResponse.toString())
                     triggerLoginError()
                 }
 //        } catch (e: SocketTimeoutException) {
