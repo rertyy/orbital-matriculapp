@@ -3,7 +3,7 @@ name: Backend_Build_Pipeline
 on:
   # on: [push] works too
   push:
-    branches: [main, forum]
+    branches: master
 
 jobs:
   # this is the name
