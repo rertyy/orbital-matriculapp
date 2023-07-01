@@ -1,0 +1,29 @@
+version: "2"
+sql:
+  # Event Queries
+  - schema: "db/schema.sql"
+    queries: "api/sql/eventQueries.sql"
+    engine: "postgresql"
+    gen:
+      go:
+        package: "api/sql/generated"
+        out: "eventQueries"
+        emit_json_tags: true
+  # Forum Queries
+  - schema: "db/schema.sql"
+    queries: "api/sql/forumQueries.sql.sql"
+    engine: "postgresql"
+    gen:
+      go:
+        package: "api/sql/generated"
+        out: "forumQueries.sql"
+        emit_json_tags: true
+  # User Queries
+  - schema: "db/schema.sql"
+    queries: "api/sql/userQueries.sql"
+    engine: "postgresql"
+    gen:
+      go:
+        package: "api/sql/generated"
+        out: "userQueries"
+        emit_json_tags: true
