@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 	"orbital-backend/api"
-	db2 "orbital-backend/db"
+	"orbital-backend/database"
 	"os"
 )
 
@@ -17,17 +17,13 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	db, err := db2.Connect()
-	if db == nil || err != nil {
-		log.Println("test2", err)
-		panic(err)
-	}
+	db, err := database.Connect()
 
 	r := api.SetupRouter(&api.Handler{DB: db})
 	http.Handle("/", r)
 
 	serverPort := os.Getenv("SERVER_PORT")
 
-	log.Println("Server started on http://localhost" + serverPort)
+	log.Println("Server started")
 	log.Fatal(http.ListenAndServe(serverPort, r))
 }
