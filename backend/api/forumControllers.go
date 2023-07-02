@@ -1,5 +1,12 @@
 package api
 
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+	"orbital-backend/api/sql/sqlc"
+)
+
 //
 //// TODO clean the logic
 //
@@ -17,44 +24,49 @@ package api
 //
 //}
 //
-//func (h *Handler) HandleAddPost(w http.ResponseWriter, r *http.Request) {
-//	log.Println("HandleAddPost")
-//	vars := mux.Vars(r)
-//	categoryId := vars["categoryId"]
-//	log.Println("categoryId is: ", categoryId)
-//
-//	var post Post
-//	err := json.NewDecoder(r.Body).Decode(&post)
-//	if err != nil {
-//		log.Println("unable to decode post")
-//		http.Error(w, err.Error(), http.StatusBadRequest)
-//		return
-//	}
-//
-//	log.Println("post is: ", post)
-//	// NB as of rn the frontend is not sending post.CreatedAt intentionally.
-//	//log.Println("post createdAT is: ", post.CreatedAt)
-//	//log.Println("post LastUpdated is: ", post.LastUpdated)
-//	sqlStatement := `INSERT INTO posts (title, body, category_id, created_by)
-//    					VALUES ($1, $2, $3, $4);`
-//
-//	_, err = h.DB.Exec(sqlStatement, post.Title, post.Body, categoryId, post.CreatedBy)
-//	if err != nil {
-//		log.Println("unable to insert post", err)
-//		http.Error(w, err.Error(), http.StatusInternalServerError)
-//	} else {
-//		log.Println("post added")
-//		response := HttpResponse{
-//			Message: "post added",
-//		}
-//		w.Header().Set("Content-Type", "application/json")
-//		err = json.NewEncoder(w).Encode(response)
-//		if err != nil {
-//			log.Println("unable to encode response", err)
-//		}
-//	}
-//	w.WriteHeader(http.StatusCreated)
-//}
+
+func (h *Handler) HandleAddPost(w http.ResponseWriter, r *http.Request) {
+	log.Println("HandleAddPost")
+	//vars := mux.Vars(r)
+	//categoryId := vars["categoryId"]
+	//log.Println("categoryId is: ", categoryId)
+
+	var post sqlc.AddPostParams
+	err := json.NewDecoder(r.Body).Decode(&post)
+	if err != nil {
+		log.Println("HandleAddPost: unable to decode post")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	log.Println("post is: ", post)
+	// NB as of rn the frontend is not sending post.CreatedAt intentionally.
+	//log.Println("post createdAT is: ", post.CreatedAt)
+	//log.Println("post LastUpdated is: ", post.LastUpdated)
+
+	sqlc.Add
+
+	sqlStatement := `INSERT INTO posts (title, body, category_id, created_by)
+   					VALUES ($1, $2, $3, $4);`
+
+	_, err = h.DB.Exec(sqlStatement, post.Title, post.Body, categoryId, post.CreatedBy)
+	if err != nil {
+		log.Println("unable to insert post", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	} else {
+		log.Println("post added")
+		response := HttpResponse{
+			Message: "post added",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(response)
+		if err != nil {
+			log.Println("unable to encode response", err)
+		}
+	}
+	w.WriteHeader(http.StatusCreated)
+}
+
 //
 //func (h *Handler) HandleAddCategory(w http.ResponseWriter, r *http.Request) {
 //
