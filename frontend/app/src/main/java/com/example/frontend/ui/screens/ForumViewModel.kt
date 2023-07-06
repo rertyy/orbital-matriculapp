@@ -21,6 +21,7 @@ data class Post(
     @SerializedName("category_name") val categoryName: String,
     @SerializedName("created_by") val createdBy: Int,
     @SerializedName("created_by_name") val createdByName: String,
+
 //    @SerializedName("created_at") val createdAt: OffsetDateTime,
 //    @SerializedName("last_updated") val lastUpdated: OffsetDateTime
 )
@@ -30,6 +31,7 @@ sealed interface ForumUiState {
     data class Success(val posts: List<Post>) : ForumUiState
     object Error : ForumUiState
     object Loading : ForumUiState
+
 }
 
 

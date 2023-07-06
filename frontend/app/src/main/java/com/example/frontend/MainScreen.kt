@@ -33,6 +33,7 @@ import com.example.frontend.ui.screens.ForumViewModel
 import com.example.frontend.ui.screens.HomeScreen
 import com.example.frontend.ui.screens.LoginScreen
 import com.example.frontend.ui.screens.RegistrationScreen
+import com.example.frontend.ui.screens.postCreation
 
 
 sealed class RootNavGraph(val route: String, val icon: ImageVector, @StringRes val title: Int) {
@@ -125,19 +126,30 @@ fun NavGraphBuilder.forumNavGraph(navController: NavController) {
             ForumScreen(
                 forumUiState = postViewModel.forumUiState,
                 retryAction = { postViewModel.getAllPosts() },
+                onCreatePost = {navController.navigate(ForumNavGraph.CreatePost.route)}
             )
         }
-//        composable(route = ForumNavGraph.CreatePost.route) {
-//            val context = LocalContext.current
-//            val postViewModel: PostsViewModel = viewModel()
-//            ForumScreen(
-//                postsUiState = postViewModel.postsUiState,
-//                retryAction = { postViewModel.getAllPosts() },
-//            )
-//        }
+        composable(route = ForumNavGraph.CreatePost.route) {
+            val context = LocalContext.current
+
+            postCreation(
+                onCreatePost = { navController.navigate(ForumNavGraph.Posts.route) }
+            )
+        }
     }
 }
 
+//fun NavGraphBuilder.createPostNavGraph(navController: NavController) {
+//    navigation(
+//        startDestination = ForumNavGraph.CreatePost.route,
+//        route = ForumNavGraph.Posts.route
+//    ) {
+//        composable(route = ForumNavGraph.CreatePost.route) {
+//            val context = LocalContext.current
+//            ForumNavGraph.CreatePost
+//        }
+//    }
+//}
 
 // TODO shared viewmodel
 fun NavGraphBuilder.authNavGraph(navController: NavController) {
@@ -166,12 +178,12 @@ fun AppBottomNavigationBar(
         bottomNavList.map { bottomNavItem ->
             NavigationBarItem(
 
-                selected = currentRoute == bottomNavItem.name,
-                onClick = { onItemSelected(bottomNavItem.name) },
-                icon = { Icon(imageVector = bottomNavItem.icon, contentDescription = bottomNavItem.name
+                selected = currentRoute == bottomNavItem.route,
+                onClick = { onItemSelected(bottomNavItem.route) },
+                icon = { Icon(imageVector = bottomNavItem.icon, contentDescription = bottomNavItem.route
                 ) },
-                label = { bottomNavItem.name },
-                modifier = Modifier.testTag(bottomNavItem.name)   //added testtag for UI testing
+                label = { bottomNavItem.route },
+                modifier = Modifier.testTag(bottomNavItem.route)   //added testtag for UI testing
             )
 
         }

@@ -29,23 +29,25 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.frontend.R
 
 @Composable
 fun ForumScreen(
     forumUiState: ForumUiState,
     retryAction: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCreatePost:  () -> Unit
 ) {
     when (forumUiState) {
-        is ForumUiState.Loading -> LoadingScreen(modifier)
-        is ForumUiState.Success -> ResultScreen(forumUiState.posts, modifier)
-        is ForumUiState.Error -> ErrorScreen(retryAction, modifier)
+        is ForumUiState.Loading -> LoadingScreen(modifier, onCreatePost)
+        is ForumUiState.Success -> ResultScreen(forumUiState.posts, modifier, onCreatePost)
+        is ForumUiState.Error -> ErrorScreen(retryAction, modifier, onCreatePost)  //careful
     }
 }
 
 @Composable
-fun LoadingScreen(modifier: Modifier = Modifier) {
+fun LoadingScreen(modifier: Modifier = Modifier, onCreatePost: () -> Unit) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize()
@@ -61,7 +63,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier) {
+fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier, onCreatePost: () -> Unit) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -75,13 +77,13 @@ fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ResultScreen(posts: List<Post>, modifier: Modifier = Modifier) {
+fun ResultScreen(posts: List<Post>, modifier: Modifier = Modifier, onCreatePost: () -> Unit) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize()
     ) {
         Log.d("GET posts", posts.toString())
-        PostsList(posts = posts)
+        PostsList(posts = posts, onCreatePost = onCreatePost)
     }
 }
 
@@ -93,12 +95,13 @@ fun PostsList(
     @PreviewParameter(MultiPostProvider::class) posts: List<Post>,
     modifier: Modifier = Modifier,
     forumViewModel: ForumViewModel = viewModel(),
+    onCreatePost: () -> Unit
 ) {
     Log.d("posts", posts.toString())
     Column(modifier = Modifier.fillMaxWidth()) {
         Button(
             // TODO change to add post
-            onClick = { forumViewModel.addPost(post1) },
+            onClick = {onCreatePost()},
             modifier = Modifier.align(Alignment.End)
         ) {
             Text(stringResource(R.string.addNewPost))
