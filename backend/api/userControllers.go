@@ -94,5 +94,36 @@ func (h *Handler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 // HandleDeleteUser user must have correct username and password
 func (h *Handler) HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	// check username exists
+	ctx := context.Background()
 
+	var request sqlc.GetUserByUsernameRow
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	userExists, err := h.DB.CheckUserExists(ctx, request.Username)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if !userExists {
+		log.Println("HandleDeleteUser: user exists")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// check password is correct
+	userReq, err := h.DB.GetUserByUsername(ctx, request.Username)
+	if err := util.CheckPassword(request.Password, userReq.Password); err != nil {
+		log.Println("HandleLogin: CheckPassword", err)
+		http.Error(w, "Wrong password", http.StatusUnauthorized)
+		return
+	}
+
+	if err := h.DB.DeleteUser(ctx, request.Username); err != nil {
+		http.Error(w, "Cannot delete user", http.StatusInternalServerError)
+		return
+	}
+	NewJSONResponse(w, http.StatusOK, HttpResponse{Message: "User deleted"})
 }
