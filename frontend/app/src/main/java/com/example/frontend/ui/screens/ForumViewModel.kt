@@ -14,13 +14,13 @@ import java.io.IOException
 
 // TODO add postId and categoryId to Post
 data class Post(
-    @SerializedName("post_id") val postId: Int,
+    @SerializedName("post_id") val postId: Int = -1,
     val title: String,
     val body: String,
-    @SerializedName("category_id") val categoryId: Int,
-    @SerializedName("category_name") val categoryName: String,
-    @SerializedName("created_by") val createdBy: Int,
-    @SerializedName("created_by_name") val createdByName: String,
+    @SerializedName("category_id") val categoryId: Int = -1,
+    //@SerializedName("category_name") val categoryName: String,
+    //@SerializedName("created_by") val createdBy: Int,
+    //@SerializedName("created_by_name") val createdByName: String,
 
 //    @SerializedName("created_at") val createdAt: OffsetDateTime,
 //    @SerializedName("last_updated") val lastUpdated: OffsetDateTime

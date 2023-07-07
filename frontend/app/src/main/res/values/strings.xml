@@ -30,5 +30,6 @@
     <string name="createPost">Post</string>
     <string name="title">Title</string>
     <string name="body">Body</string>
+    <string name="back">Back</string>
 
 </resources>

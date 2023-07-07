@@ -152,9 +152,9 @@ val post1 = Post(
     "Hello World!",
     "consectetur.",
     1,
-    "cat-name2",
-    1,
-    "User2",
+    //"cat-name2",
+    //1,
+    //"User2",
 //    OffsetDateTime.now().toOffsetTime()
 //    OffsetDateTime.now(),
 )
@@ -164,9 +164,9 @@ val post2 = Post(
     "Hello!",
     "consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     1,
-    "cat-name2",
-    1,
-    "User1",
+    //"cat-name2",
+    //1,
+    //"User1",
 //    OffsetDateTime.now(),
 //    OffsetDateTime.now(),
 )

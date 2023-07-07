@@ -28,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.frontend.R
+import com.example.frontend.RootNavGraph
 import com.example.frontend.ui.theme.FrontendTheme
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
@@ -57,10 +59,10 @@ import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun postCreation(onCreatePost: () -> Unit) {
+fun postCreation(onBack: () -> Unit, forumViewModel: ForumViewModel = viewModel()) {
 
     var isExpanded: Boolean by remember {mutableStateOf(false)}
-    var category: String by remember {mutableStateOf("Select Category")}
+    var category: String by remember {mutableStateOf("")}
     var title: String by remember{ mutableStateOf("") }
     var body: String by remember{ mutableStateOf("") }
 
@@ -73,16 +75,43 @@ fun postCreation(onCreatePost: () -> Unit) {
 
     ) {
         Spacer(modifier = Modifier.height(10.dp))
-
-        Card(modifier = Modifier.align(Alignment.End)) {
-            Column {
+        
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            TextButton(
+                onClick = {
+                    onBack()
+                },
+                //modifier = Modifier.align(Alignment.Start)
+            ) {
                 Text(
-                    text = stringResource(id = R.string.createPost),
-                    modifier = Modifier.padding(5.dp),
-                    style = MaterialTheme.typography.bodyMedium
+                    text = stringResource(id = R.string.back),
+                    color = Color.Blue
                 )
             }
+
+            Button(
+                onClick  = {
+                    val newPost = Post(title = title, body = body)
+                    forumViewModel.addPost(newPost)
+                    onBack()
+                },
+                //modifier = Modifier.align(Alignment.End)
+            ) {
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.createPost),
+                        modifier = Modifier.padding(5.dp),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+
+
         }
+
 
         Spacer(Modifier.height(25.dp))
 
@@ -91,26 +120,26 @@ fun postCreation(onCreatePost: () -> Unit) {
             onExpandedChange = {isExpanded = it},
             modifier = Modifier
                 .align(Alignment.Start)
-                .size(width = 200.dp, height = 25.dp)
                 .clip(RoundedCornerShape(10.dp))
 
         ) {
             TextField(
                 value = category,
-                onValueChange = {},
+                onValueChange = {category = it},
                 readOnly = true,
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
                 },
                 colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                modifier = Modifier.menuAnchor()
-
+                modifier = Modifier.menuAnchor(),
+                placeholder = { Text("Select Category") }
             )
 
             ExposedDropdownMenu(
                 expanded = isExpanded,
-                onDismissRequest = { isExpanded = false}
+                onDismissRequest = { isExpanded = false},
             ) {
+
                 DropdownMenuItem(
                     text = {
                         Text("Academics")

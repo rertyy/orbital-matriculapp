@@ -133,7 +133,7 @@ fun NavGraphBuilder.forumNavGraph(navController: NavController) {
             val context = LocalContext.current
 
             postCreation(
-                onCreatePost = { navController.navigate(ForumNavGraph.Posts.route) }
+                onBack = { navController.navigate(ForumNavGraph.Posts.route) }
             )
         }
     }
