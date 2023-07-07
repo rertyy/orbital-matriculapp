@@ -11,6 +11,8 @@ import retrofit2.http.POST
 import retrofit2.Response
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.Field
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -55,6 +57,11 @@ interface ApiService {
         @Body request: Post
     ): Response<Post>
 
+    @DELETE("/{categoryId}/{postID}/deletePost")
+    suspend fun deletePost(
+        @Path("categoryId") categoryId: Int,
+        @Field("postID") request: Int
+    ): Response<Int>
 
 }
 

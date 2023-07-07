@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.network.RestApiService
 import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.launch
@@ -25,6 +26,8 @@ data class Post(
 //    @SerializedName("created_at") val createdAt: OffsetDateTime,
 //    @SerializedName("last_updated") val lastUpdated: OffsetDateTime
 )
+
+
 
 
 sealed interface ForumUiState {
@@ -95,6 +98,23 @@ class ForumViewModel : ViewModel() {
                 ForumUiState.Error
             }
         }
+    }
+
+    fun deletePost(categoryId: Int, postId: Int) {
+        Log.d("FORUM", "Delete posts")
+
+        viewModelScope.launch {
+            try {
+                RestApiService.retrofitService.deletePost(
+                    categoryId,
+                    postId
+                )
+            } catch (e: Exception) {
+                Log.d("FORUM", "Error deleting post: ${e.message}")
+            }
+        }
+
+        getAllPosts()
     }
 
 }
