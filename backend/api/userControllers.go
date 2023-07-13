@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"orbital-backend/api/sql/sqlc"
+	"orbital-backend/middleware"
 	"orbital-backend/util"
 )
 
@@ -35,11 +36,15 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := HttpResponse{
-		Message: "Login successful",
+	token, err := middleware.GenerateJwt(userReq.Username)
+
+	if err != nil {
+		log.Println("HandleLogin: GenerateJwt", err)
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
 	}
 
-	NewJSONResponse(w, http.StatusOK, response)
+	NewJSONResponse(w, http.StatusOK, token)
 }
 
 // when testing, for security, check that failing username check is not faster than failing password check.

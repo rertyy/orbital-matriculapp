@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"orbital-backend/api"
 	"orbital-backend/database"
+	"orbital-backend/util"
 	"os"
 )
 
@@ -13,6 +14,8 @@ import (
 
 func main() {
 	err := godotenv.Load()
+	util.CheckConfig()
+
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
