@@ -121,7 +121,7 @@ func (h *Handler) HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.DB.DeleteUser(ctx, request.Username); err != nil {
+	if err := h.DB.DeleteUser(ctx, request.UserID); err != nil {
 		http.Error(w, "Cannot delete user", http.StatusInternalServerError)
 		return
 	}

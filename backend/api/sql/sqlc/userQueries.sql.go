@@ -28,16 +28,16 @@ func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) error {
 const changePassword = `-- name: ChangePassword :exec
 UPDATE users
 SET password = $2
-WHERE username = $1
+WHERE user_id = $1
 `
 
 type ChangePasswordParams struct {
-	Username string `json:"username"`
+	UserID   int32  `json:"user_id"`
 	Password string `json:"password"`
 }
 
 func (q *Queries) ChangePassword(ctx context.Context, arg ChangePasswordParams) error {
-	_, err := q.db.ExecContext(ctx, changePassword, arg.Username, arg.Password)
+	_, err := q.db.ExecContext(ctx, changePassword, arg.UserID, arg.Password)
 	return err
 }
 
@@ -55,21 +55,22 @@ func (q *Queries) CheckUserExists(ctx context.Context, username string) (bool, e
 const deleteUser = `-- name: DeleteUser :exec
 DELETE
 FROM users
-WHERE username = $1
+WHERE user_id = $1
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, username string) error {
-	_, err := q.db.ExecContext(ctx, deleteUser, username)
+func (q *Queries) DeleteUser(ctx context.Context, userID int32) error {
+	_, err := q.db.ExecContext(ctx, deleteUser, userID)
 	return err
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one
-SELECT username, password
+SELECT user_id, username, password
 FROM users
 WHERE username = $1
 `
 
 type GetUserByUsernameRow struct {
+	UserID   int32  `json:"user_id"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
@@ -77,6 +78,6 @@ type GetUserByUsernameRow struct {
 func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error) {
 	row := q.db.QueryRowContext(ctx, getUserByUsername, username)
 	var i GetUserByUsernameRow
-	err := row.Scan(&i.Username, &i.Password)
+	err := row.Scan(&i.UserID, &i.Username, &i.Password)
 	return i, err
 }
