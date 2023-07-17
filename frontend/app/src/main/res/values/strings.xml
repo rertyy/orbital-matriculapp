@@ -31,5 +31,6 @@
     <string name="title">Title</string>
     <string name="body">Body</string>
     <string name="back">Back</string>
-
+    <string name="comment">Comment Here</string>
+    <string name="viewThread">View Thread</string>
 </resources>
