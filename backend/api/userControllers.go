@@ -71,7 +71,7 @@ func (h *Handler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 	if userExists {
 		log.Println("HandleRegister: Username already exists in DB")
-		http.Error(w, err.Error(), http.StatusConflict)
+		NewJSONResponse(w, http.StatusConflict, "Username already exists")
 		return
 	}
 
@@ -114,7 +114,7 @@ func (h *Handler) HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 	if !userExists {
 		log.Println("HandleDeleteUser: user exists")
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		NewJSONResponse(w, http.StatusConflict, "User does not exist")
 		return
 	}
 

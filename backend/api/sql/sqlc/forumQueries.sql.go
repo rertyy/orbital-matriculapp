@@ -10,96 +10,34 @@ import (
 	"time"
 )
 
-const addPost = `-- name: AddPost :one
-INSERT INTO posts (title, body, category_id, created_by)
-VALUES ($1, $2, $3, $4)
-RETURNING post_id, title, body, category_id, created_at, created_by, last_updated
+const addReply = `-- name: AddReply :many
+INSERT INTO replies (reply_body, thread_id, reply_created_by)
+VALUES ($1, $2, $3)
+RETURNING reply_id, reply_body, thread_id, reply_created_by, reply_created_at, reply_last_updated
 `
 
-type AddPostParams struct {
-	Title      string `json:"title"`
-	Body       string `json:"body"`
-	CategoryID int32  `json:"category_id"`
-	CreatedBy  int32  `json:"created_by"`
+type AddReplyParams struct {
+	ReplyBody      string `json:"reply_body"`
+	ThreadID       int32  `json:"thread_id"`
+	ReplyCreatedBy int32  `json:"reply_created_by"`
 }
 
-func (q *Queries) AddPost(ctx context.Context, arg AddPostParams) (Post, error) {
-	row := q.db.QueryRowContext(ctx, addPost,
-		arg.Title,
-		arg.Body,
-		arg.CategoryID,
-		arg.CreatedBy,
-	)
-	var i Post
-	err := row.Scan(
-		&i.PostID,
-		&i.Title,
-		&i.Body,
-		&i.CategoryID,
-		&i.CreatedAt,
-		&i.CreatedBy,
-		&i.LastUpdated,
-	)
-	return i, err
-}
-
-const deletePost = `-- name: DeletePost :exec
-DELETE
-FROM posts
-WHERE post_id = $1
-`
-
-func (q *Queries) DeletePost(ctx context.Context, postID int32) error {
-	_, err := q.db.ExecContext(ctx, deletePost, postID)
-	return err
-}
-
-const getAllPosts = `-- name: GetAllPosts :many
-SELECT p.post_id,
-       p.title,
-       p.body,
-       p.category_id,
-       c.cat_name,
-       p.created_by,
-       u.username,
-       p.created_at,
-       p.last_updated
-FROM posts p
-         JOIN categories c ON p.category_id = c.cat_id
-         JOIN users u ON p.created_by = u.user_id
-`
-
-type GetAllPostsRow struct {
-	PostID      int32     `json:"post_id"`
-	Title       string    `json:"title"`
-	Body        string    `json:"body"`
-	CategoryID  int32     `json:"category_id"`
-	CatName     string    `json:"cat_name"`
-	CreatedBy   int32     `json:"created_by"`
-	Username    string    `json:"username"`
-	CreatedAt   time.Time `json:"created_at"`
-	LastUpdated time.Time `json:"last_updated"`
-}
-
-func (q *Queries) GetAllPosts(ctx context.Context) ([]GetAllPostsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getAllPosts)
+func (q *Queries) AddReply(ctx context.Context, arg AddReplyParams) ([]Reply, error) {
+	rows, err := q.db.QueryContext(ctx, addReply, arg.ReplyBody, arg.ThreadID, arg.ReplyCreatedBy)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetAllPostsRow
+	var items []Reply
 	for rows.Next() {
-		var i GetAllPostsRow
+		var i Reply
 		if err := rows.Scan(
-			&i.PostID,
-			&i.Title,
-			&i.Body,
-			&i.CategoryID,
-			&i.CatName,
-			&i.CreatedBy,
-			&i.Username,
-			&i.CreatedAt,
-			&i.LastUpdated,
+			&i.ReplyID,
+			&i.ReplyBody,
+			&i.ThreadID,
+			&i.ReplyCreatedBy,
+			&i.ReplyCreatedAt,
+			&i.ReplyLastUpdated,
 		); err != nil {
 			return nil, err
 		}
@@ -114,84 +52,259 @@ func (q *Queries) GetAllPosts(ctx context.Context) ([]GetAllPostsRow, error) {
 	return items, nil
 }
 
-const getPostById = `-- name: GetPostById :one
-SELECT p.post_id,
-       p.title,
-       p.body,
-       p.category_id,
-       c.cat_name,
-       p.created_by,
-       u.username,
-       p.created_at,
-       p.last_updated
-FROM posts p
-         JOIN categories c ON p.category_id = c.cat_id
-         JOIN users u ON p.created_by = u.user_id
-WHERE p.post_id = $1
+const addThread = `-- name: AddThread :one
+INSERT INTO threads (thread_name, thread_body, thread_created_by)
+VALUES ($1, $2, $3)
+RETURNING thread_id, thread_name, thread_body, thread_created_by, thread_created_at
 `
 
-type GetPostByIdRow struct {
-	PostID      int32     `json:"post_id"`
-	Title       string    `json:"title"`
-	Body        string    `json:"body"`
-	CategoryID  int32     `json:"category_id"`
-	CatName     string    `json:"cat_name"`
-	CreatedBy   int32     `json:"created_by"`
-	Username    string    `json:"username"`
-	CreatedAt   time.Time `json:"created_at"`
-	LastUpdated time.Time `json:"last_updated"`
+type AddThreadParams struct {
+	ThreadName      string `json:"thread_name"`
+	ThreadBody      string `json:"thread_body"`
+	ThreadCreatedBy int32  `json:"thread_created_by"`
 }
 
-func (q *Queries) GetPostById(ctx context.Context, postID int32) (GetPostByIdRow, error) {
-	row := q.db.QueryRowContext(ctx, getPostById, postID)
-	var i GetPostByIdRow
+func (q *Queries) AddThread(ctx context.Context, arg AddThreadParams) (Thread, error) {
+	row := q.db.QueryRowContext(ctx, addThread, arg.ThreadName, arg.ThreadBody, arg.ThreadCreatedBy)
+	var i Thread
 	err := row.Scan(
-		&i.PostID,
-		&i.Title,
-		&i.Body,
-		&i.CategoryID,
-		&i.CatName,
-		&i.CreatedBy,
-		&i.Username,
-		&i.CreatedAt,
-		&i.LastUpdated,
+		&i.ThreadID,
+		&i.ThreadName,
+		&i.ThreadBody,
+		&i.ThreadCreatedBy,
+		&i.ThreadCreatedAt,
 	)
 	return i, err
 }
 
-const updatePost = `-- name: UpdatePost :one
-UPDATE posts
-SET title        = $1,
-    body         = $2,
-    category_id  = $3,
-    last_updated = now()
-WHERE post_id = $4
-RETURNING post_id, title, body, category_id, created_at, created_by, last_updated
+const deleteThread = `-- name: DeleteThread :exec
+DELETE
+FROM threads
+WHERE thread_created_by = $1
 `
 
-type UpdatePostParams struct {
-	Title      string `json:"title"`
-	Body       string `json:"body"`
-	CategoryID int32  `json:"category_id"`
-	PostID     int32  `json:"post_id"`
+func (q *Queries) DeleteThread(ctx context.Context, threadCreatedBy int32) error {
+	_, err := q.db.ExecContext(ctx, deleteThread, threadCreatedBy)
+	return err
 }
 
-func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error) {
-	row := q.db.QueryRowContext(ctx, updatePost,
-		arg.Title,
-		arg.Body,
-		arg.CategoryID,
-		arg.PostID,
-	)
-	var i Post
+const editThread = `-- name: EditThread :one
+UPDATE threads
+SET thread_name = $1,
+    thread_body = $2
+WHERE thread_id = $3
+RETURNING thread_id, thread_name, thread_body, thread_created_by, thread_created_at
+`
+
+type EditThreadParams struct {
+	ThreadName string `json:"thread_name"`
+	ThreadBody string `json:"thread_body"`
+	ThreadID   int32  `json:"thread_id"`
+}
+
+func (q *Queries) EditThread(ctx context.Context, arg EditThreadParams) (Thread, error) {
+	row := q.db.QueryRowContext(ctx, editThread, arg.ThreadName, arg.ThreadBody, arg.ThreadID)
+	var i Thread
 	err := row.Scan(
-		&i.PostID,
-		&i.Title,
-		&i.Body,
-		&i.CategoryID,
-		&i.CreatedAt,
-		&i.CreatedBy,
-		&i.LastUpdated,
+		&i.ThreadID,
+		&i.ThreadName,
+		&i.ThreadBody,
+		&i.ThreadCreatedBy,
+		&i.ThreadCreatedAt,
+	)
+	return i, err
+}
+
+const getAllReplies = `-- name: GetAllReplies :many
+SELECT r.reply_id,
+       r.reply_body,
+       r.reply_created_at,
+       r.reply_last_updated,
+       u.user_id,
+       u.username
+FROM replies r
+         JOIN threads t on r.thread_id = t.thread_id
+         JOIN users u on r.reply_created_by = u.user_id
+`
+
+type GetAllRepliesRow struct {
+	ReplyID          int32     `json:"reply_id"`
+	ReplyBody        string    `json:"reply_body"`
+	ReplyCreatedAt   time.Time `json:"reply_created_at"`
+	ReplyLastUpdated time.Time `json:"reply_last_updated"`
+	UserID           int32     `json:"user_id"`
+	Username         string    `json:"username"`
+}
+
+func (q *Queries) GetAllReplies(ctx context.Context) ([]GetAllRepliesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllReplies)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAllRepliesRow
+	for rows.Next() {
+		var i GetAllRepliesRow
+		if err := rows.Scan(
+			&i.ReplyID,
+			&i.ReplyBody,
+			&i.ReplyCreatedAt,
+			&i.ReplyLastUpdated,
+			&i.UserID,
+			&i.Username,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllThreads = `-- name: GetAllThreads :many
+SELECT t.thread_id,
+       t.thread_name,
+       t.thread_body,
+       t.thread_created_by,
+       t.thread_created_at,
+       u.user_id,
+       u.username
+FROM threads t
+         JOIN users u on t.thread_created_by = u.user_id
+`
+
+type GetAllThreadsRow struct {
+	ThreadID        int32     `json:"thread_id"`
+	ThreadName      string    `json:"thread_name"`
+	ThreadBody      string    `json:"thread_body"`
+	ThreadCreatedBy int32     `json:"thread_created_by"`
+	ThreadCreatedAt time.Time `json:"thread_created_at"`
+	UserID          int32     `json:"user_id"`
+	Username        string    `json:"username"`
+}
+
+func (q *Queries) GetAllThreads(ctx context.Context) ([]GetAllThreadsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllThreads)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAllThreadsRow
+	for rows.Next() {
+		var i GetAllThreadsRow
+		if err := rows.Scan(
+			&i.ThreadID,
+			&i.ThreadName,
+			&i.ThreadBody,
+			&i.ThreadCreatedBy,
+			&i.ThreadCreatedAt,
+			&i.UserID,
+			&i.Username,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRepliesByThread = `-- name: GetRepliesByThread :many
+SELECT r.reply_id,
+       r.reply_body,
+       r.reply_created_at,
+       r.reply_last_updated,
+       u.user_id,
+       u.username
+FROM replies r
+         JOIN threads t on r.thread_id = t.thread_id
+         JOIN users u on r.reply_created_by = u.user_id
+WHERE t.thread_id = $1
+`
+
+type GetRepliesByThreadRow struct {
+	ReplyID          int32     `json:"reply_id"`
+	ReplyBody        string    `json:"reply_body"`
+	ReplyCreatedAt   time.Time `json:"reply_created_at"`
+	ReplyLastUpdated time.Time `json:"reply_last_updated"`
+	UserID           int32     `json:"user_id"`
+	Username         string    `json:"username"`
+}
+
+func (q *Queries) GetRepliesByThread(ctx context.Context, threadID int32) ([]GetRepliesByThreadRow, error) {
+	rows, err := q.db.QueryContext(ctx, getRepliesByThread, threadID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetRepliesByThreadRow
+	for rows.Next() {
+		var i GetRepliesByThreadRow
+		if err := rows.Scan(
+			&i.ReplyID,
+			&i.ReplyBody,
+			&i.ReplyCreatedAt,
+			&i.ReplyLastUpdated,
+			&i.UserID,
+			&i.Username,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getThreadById = `-- name: GetThreadById :one
+SELECT t.thread_id,
+       t.thread_name,
+       t.thread_body,
+       t.thread_created_by,
+       t.thread_created_at,
+       u.user_id,
+       u.username
+FROM threads t
+         JOIN users u on t.thread_created_by = u.user_id
+WHERE thread_id = $1
+`
+
+type GetThreadByIdRow struct {
+	ThreadID        int32     `json:"thread_id"`
+	ThreadName      string    `json:"thread_name"`
+	ThreadBody      string    `json:"thread_body"`
+	ThreadCreatedBy int32     `json:"thread_created_by"`
+	ThreadCreatedAt time.Time `json:"thread_created_at"`
+	UserID          int32     `json:"user_id"`
+	Username        string    `json:"username"`
+}
+
+func (q *Queries) GetThreadById(ctx context.Context, threadID int32) (GetThreadByIdRow, error) {
+	row := q.db.QueryRowContext(ctx, getThreadById, threadID)
+	var i GetThreadByIdRow
+	err := row.Scan(
+		&i.ThreadID,
+		&i.ThreadName,
+		&i.ThreadBody,
+		&i.ThreadCreatedBy,
+		&i.ThreadCreatedAt,
+		&i.UserID,
+		&i.Username,
 	)
 	return i, err
 }

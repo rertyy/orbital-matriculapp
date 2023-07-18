@@ -1,7 +1,7 @@
 version: "2"
 sql:
   # Event Queries
-  - schema: "database/schema.sql"
+  - schema: "database/migration"
     queries: "api/sql/eventQueries.sql"
     engine: "postgresql"
     gen:
@@ -9,7 +9,7 @@ sql:
         out: "api/sql/sqlc"
         emit_json_tags: true
   # Forum Queries
-  - schema: "database/schema.sql"
+  - schema: "database/migration"
     queries: "api/sql/forumQueries.sql"
     engine: "postgresql"
     gen:
@@ -17,7 +17,7 @@ sql:
         out: "api/sql/sqlc"
         emit_json_tags: true
   # User Queries
-  - schema: "database/schema.sql"
+  - schema: "database/migration"
     queries: "api/sql/userQueries.sql"
     engine: "postgresql"
     gen:

@@ -1,50 +1,72 @@
--- name: GetAllPosts :many
-SELECT p.post_id,
-       p.title,
-       p.body,
-       p.category_id,
-       c.cat_name,
-       p.created_by,
-       u.username,
-       p.created_at,
-       p.last_updated
-FROM posts p
-         JOIN categories c ON p.category_id = c.cat_id
-         JOIN users u ON p.created_by = u.user_id;
-
--- name: GetPostById :one
-SELECT p.post_id,
-       p.title,
-       p.body,
-       p.category_id,
-       c.cat_name,
-       p.created_by,
-       u.username,
-       p.created_at,
-       p.last_updated
-FROM posts p
-         JOIN categories c ON p.category_id = c.cat_id
-         JOIN users u ON p.created_by = u.user_id
-WHERE p.post_id = $1;
+-- name: GetAllThreads :many
+SELECT t.thread_id,
+       t.thread_name,
+       t.thread_body,
+       t.thread_created_by,
+       t.thread_created_at,
+       u.user_id,
+       u.username
+FROM threads t
+         JOIN users u on t.thread_created_by = u.user_id;
 
 
--- name: UpdatePost :one
-UPDATE posts
-SET title        = $1,
-    body         = $2,
-    category_id  = $3,
-    last_updated = now()
-WHERE post_id = $4
+-- name: AddThread :one
+INSERT INTO threads (thread_name, thread_body, thread_created_by)
+VALUES ($1, $2, $3)
 RETURNING *;
 
+-- name: GetThreadById :one
+SELECT t.thread_id,
+       t.thread_name,
+       t.thread_body,
+       t.thread_created_by,
+       t.thread_created_at,
+       u.user_id,
+       u.username
+FROM threads t
+         JOIN users u on t.thread_created_by = u.user_id
+WHERE thread_id = $1;
 
--- name: DeletePost :exec
+
+-- name: EditThread :one
+UPDATE threads
+SET thread_name = $1,
+    thread_body = $2
+WHERE thread_id = $3
+RETURNING *;
+
+-- name: DeleteThread :exec
 DELETE
-FROM posts
-WHERE post_id = $1;
+FROM threads
+WHERE thread_created_by = $1;
+
+-- name: GetAllReplies :many
+SELECT r.reply_id,
+       r.reply_body,
+       r.reply_created_at,
+       r.reply_last_updated,
+       u.user_id,
+       u.username
+FROM replies r
+         JOIN threads t on r.thread_id = t.thread_id
+         JOIN users u on r.reply_created_by = u.user_id;
 
 
--- name: AddPost :one
-INSERT INTO posts (title, body, category_id, created_by)
-VALUES ($1, $2, $3, $4)
+-- name: GetRepliesByThread :many
+SELECT r.reply_id,
+       r.reply_body,
+       r.reply_created_at,
+       r.reply_last_updated,
+       u.user_id,
+       u.username
+FROM replies r
+         JOIN threads t on r.thread_id = t.thread_id
+         JOIN users u on r.reply_created_by = u.user_id
+WHERE t.thread_id = $1;
+
+
+-- name: AddReply :many
+INSERT INTO replies (reply_body, thread_id, reply_created_by)
+VALUES ($1, $2, $3)
 RETURNING *;
+

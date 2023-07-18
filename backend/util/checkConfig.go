@@ -17,4 +17,5 @@ func CheckConfig() {
 			log.Fatal(key + " not found in env")
 		}
 	}
+	log.Println(".env config checked")
 }

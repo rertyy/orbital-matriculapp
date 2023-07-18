@@ -9,14 +9,6 @@ import (
 	"time"
 )
 
-// forum categories
-type Category struct {
-	CatID     int32        `json:"cat_id"`
-	CatName   string       `json:"cat_name"`
-	CreatedBy int32        `json:"created_by"`
-	CreatedAt sql.NullTime `json:"created_at"`
-}
-
 type Event struct {
 	EventID        int32          `json:"event_id"`
 	EventName      string         `json:"event_name"`
@@ -25,21 +17,26 @@ type Event struct {
 	EventEndDate   sql.NullTime   `json:"event_end_date"`
 }
 
-type Hyperlink struct {
-	LinkID   int32          `json:"link_id"`
-	LinkName string         `json:"link_name"`
-	LinkBody sql.NullString `json:"link_body"`
+type Reply struct {
+	ReplyID          int32     `json:"reply_id"`
+	ReplyBody        string    `json:"reply_body"`
+	ThreadID         int32     `json:"thread_id"`
+	ReplyCreatedBy   int32     `json:"reply_created_by"`
+	ReplyCreatedAt   time.Time `json:"reply_created_at"`
+	ReplyLastUpdated time.Time `json:"reply_last_updated"`
 }
 
-// forum posts
-type Post struct {
-	PostID      int32     `json:"post_id"`
-	Title       string    `json:"title"`
-	Body        string    `json:"body"`
-	CategoryID  int32     `json:"category_id"`
-	CreatedAt   time.Time `json:"created_at"`
-	CreatedBy   int32     `json:"created_by"`
-	LastUpdated time.Time `json:"last_updated"`
+type SchemaMigration struct {
+	Version int64 `json:"version"`
+	Dirty   bool  `json:"dirty"`
+}
+
+type Thread struct {
+	ThreadID        int32     `json:"thread_id"`
+	ThreadName      string    `json:"thread_name"`
+	ThreadBody      string    `json:"thread_body"`
+	ThreadCreatedBy int32     `json:"thread_created_by"`
+	ThreadCreatedAt time.Time `json:"thread_created_at"`
 }
 
 type User struct {
@@ -48,10 +45,4 @@ type User struct {
 	Password    string    `json:"password"`
 	Email       string    `json:"email"`
 	TimeCreated time.Time `json:"time_created"`
-}
-
-type UserKeepTrack struct {
-	ID      int32         `json:"id"`
-	UserID  sql.NullInt64 `json:"user_id"`
-	EventID sql.NullInt64 `json:"event_id"`
 }
