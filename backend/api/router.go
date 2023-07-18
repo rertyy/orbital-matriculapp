@@ -1,48 +1,51 @@
 package api
 
 import (
-	"database/sql"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+	"net/http"
+	"orbital-backend/api/sql/sqlc"
 )
 
 type Handler struct {
-	DB *sql.DB
+	DB *sqlc.Queries
 }
-
-// TODO maybe its easier to not need path parameters since
-// Post and Event class already have id which can be referred to
 
 func SetupRouter(h *Handler) *mux.Router {
 	r := mux.NewRouter()
 
-	// TODO check whether a sub-router is better
+	r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		NewJSONResponse(w, http.StatusOK, struct{ success bool }{success: true})
+	}).Methods("GET")
 
 	// User endpoints
-	r.HandleFunc("/login", h.HandleLogin).Methods("POST")
-	r.HandleFunc("/register", h.HandleRegister).Methods("POST")
-	//r.HandleFunc("/{user}/delete", h.HandleDeleteUser).Methods("POST")
+	userRoute := r.PathPrefix("/user").Subrouter()
+	userRoute.HandleFunc("/login", h.HandleLogin).Methods("POST")
+	userRoute.HandleFunc("/register", h.HandleRegister).Methods("POST")
+	userRoute.HandleFunc("/delete", h.HandleDeleteUser).Methods("DELETE")
 
-	// Forum endpoints
-	r.HandleFunc("/posts", h.HandleGetAllPosts).Methods("GET") // show all posts
+	//// Forum Thread endpoints
+	forumRoute := r.PathPrefix("/threads").Subrouter()
+	forumRoute.HandleFunc("/", h.HandleGetAllThreads).Methods("GET")
 
-	//r.HandleFunc("/addCategory", h.HandleAddCategory).Methods("POST")
-	//r.HandleFunc("/categories", h.HandleGetCategories).Methods("GET") // show all categories
-	//r.HandleFunc("/{categoryId}", h.HandleGetCategory).Methods("GET") // show a specific category
-	r.HandleFunc("/{categoryId}/addPost", h.HandleAddPost).Methods("POST")
-	//r.HandleFunc("/{categoryId}/posts", h.HandleGetCategoryPosts).Methods("GET") // show all posts in a category
-	//r.HandleFunc("/{categoryId}/{postId}", h.HandleGetPost).Methods("GET")       // show a specific post in a category
+	forumRoute.HandleFunc("/newThread", h.HandleAddThread).Methods("POST")
+	forumRoute.HandleFunc("/{threadId}", h.HandleGetThread).Methods("GET")
+	forumRoute.HandleFunc("/{threadId}/replies", h.HandleGetThreadReplies).Methods("GET")
+	forumRoute.HandleFunc("/{threadId}/edit", h.HandleEditThread).Methods("PUT")
+	forumRoute.HandleFunc("/{threadId}/delete", h.HandleDeleteThread).Methods("DELETE")
 
-	r.HandleFunc("/{categoryId}/{postId}/edit", h.HandleEditPost).Methods("PUT")
-	//r.HandleFunc("/{categoryId}/", h.HandleEditCategory).Methods("PUT")
-	r.HandleFunc("/{postID}", h.HandleDeletePost).Methods("DELETE")
-	//r.HandleFunc("/{categoryId}", h.HandleDeleteCategory).Methods("DELETE")
+	forumRoute.HandleFunc("/{threadId}/addReply", h.HandleAddThreadReply).Methods("POST")
+
+	//test
+	//forumRoute.HandleFunc("/{threadId}/{replyId}", h.HandleGetReply).Methods("GET")
+	//forumRoute.HandleFunc("/{threadId}/{replyId}/edit", h.HandleAddThreadReply).Methods("PUT")
+	//forumRoute.HandleFunc("/{threadId}/delete", h.HandleDeleteReply).Methods("DELETE")
 
 	// Event endpoints
-	r.HandleFunc("/events", h.HandleGetAllEvents).Methods("GET")
-	//r.HandleFunc("/{eventsId}", h.HandleGetEvent).Methods("GET")
-	//r.HandleFunc("/{eventId}/follow", h.HandleFollowEvent).Methods("POST")
-	//r.HandleFunc("/{eventId}/unfollow", h.HandleFollowEvent).Methods("POST")
+	eventRoute := r.PathPrefix("/events").Subrouter()
+	eventRoute.HandleFunc("/all", h.HandleGetAllEvents).Methods("GET")
 
+	//forumRoute.Use(middleware.JwtAuthMiddleWare)
+	r.Use(mux.CORSMethodMiddleware(r))
 	return r
 }

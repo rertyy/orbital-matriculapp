@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -18,9 +19,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,23 +32,40 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.frontend.R
+
 
 @Composable
 fun ForumScreen(
     forumUiState: ForumUiState,
     retryAction: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCreateThread: () -> Unit,
+    navController: NavController
 ) {
     when (forumUiState) {
-        is ForumUiState.Loading -> LoadingScreen(modifier)
-        is ForumUiState.Success -> ResultScreen(forumUiState.posts, modifier)
-        is ForumUiState.Error -> ErrorScreen(retryAction, modifier)
+        is ForumUiState.Loading -> LoadingScreen(modifier, onCreateThread)
+        is ForumUiState.Success -> ResultScreen(
+            forumUiState.threadList,
+            modifier,
+            onCreateThread,
+            navController
+        )
+
+        is ForumUiState.Error -> ErrorScreen(retryAction, modifier, onCreateThread)
+        is ForumUiState.Success2 -> navController.navigate(
+            "viewThread/{threadId}".replace(
+                oldValue = "{threadId}",
+                newValue = forumUiState.thread.threadId.toString()
+            )
+        )
     }
 }
 
 @Composable
-fun LoadingScreen(modifier: Modifier = Modifier) {
+fun LoadingScreen(modifier: Modifier = Modifier, onCreatePost: () -> Unit) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize()
@@ -61,7 +81,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier) {
+fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier, onCreatePost: () -> Unit) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -75,13 +95,18 @@ fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ResultScreen(posts: List<Post>, modifier: Modifier = Modifier) {
+fun ResultScreen(
+    threads: List<Thread>,
+    modifier: Modifier = Modifier,
+    onCreatePost: () -> Unit,
+    navController: NavController
+) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize()
     ) {
-        Log.d("GET posts", posts.toString())
-        PostsList(posts = posts)
+        Log.d("GET posts", threads.toString())
+        ThreadsList(threads = threads, onCreateThread = onCreatePost, navController = navController)
     }
 }
 
@@ -89,96 +114,128 @@ fun ResultScreen(posts: List<Post>, modifier: Modifier = Modifier) {
 // TODO: figure out how to do @PreviewComposable with List<>
 //@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-fun PostsList(
-    @PreviewParameter(MultiPostProvider::class) posts: List<Post>,
+fun ThreadsList(
+    @PreviewParameter(MultiPostProvider::class) threads: List<Thread>,
     modifier: Modifier = Modifier,
     forumViewModel: ForumViewModel = viewModel(),
+    onCreateThread: () -> Unit,
+    navController: NavController
 ) {
-    Log.d("posts", posts.toString())
+    Log.d("posts", threads.toString())
     Column(modifier = Modifier.fillMaxWidth()) {
         Button(
             // TODO change to add post
-            onClick = { forumViewModel.addPost(post1) },
+            onClick = { onCreateThread() },
             modifier = Modifier.align(Alignment.End)
         ) {
             Text(stringResource(R.string.addNewPost))
         }
 
         LazyColumn(modifier = modifier) {
-            items(posts) { post ->
-                PostCard(post = post)
+            items(threads) { post ->
+                ThreadCard(thread = post, navController = navController)
             }
         }
     }
 }
 
 
-@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
+//@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-fun PostCard(
-    @PreviewParameter(SinglePostProvider::class) post: Post,
+fun ThreadCard(
+    @PreviewParameter(SinglePostProvider::class) thread: Thread,
     forumViewModel: ForumViewModel = viewModel(),
+    navController: NavController
 ) {
     Card(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth(),
     ) {
-        Row(modifier = Modifier.align(Alignment.End)) {
-            IconButton(
-                onClick = { forumViewModel.modifyPost(post, post2) },
-                modifier = Modifier
-            ) {
-                Icon(imageVector = Icons.Rounded.Edit, contentDescription = null)
-            }
-        }
-        Column(modifier = Modifier.padding(8.dp)) {
+        Row(
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(8.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
-                text = post.title,
-                style = LocalTextStyle.current.copy(fontSize = 15.sp, fontWeight = Bold)
+                text = thread.title,
+                style = LocalTextStyle.current.copy(fontSize = 15.sp, fontWeight = Bold),
             )
-            Text(text = post.body, style = LocalTextStyle.current.copy(fontSize = 12.sp))
-            Text(text = post.body, style = LocalTextStyle.current.copy(fontSize = 5.sp))
+
+
+            Row() {
+                IconButton(
+                    onClick = { forumViewModel.modifyThread(thread, thread2) },
+                    modifier = Modifier
+                ) {
+                    Icon(imageVector = Icons.Rounded.Edit, contentDescription = "edit post")
+                }
+
+                IconButton(
+                    onClick = { forumViewModel.deleteThread(thread.threadId) }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "delete post",
+                        tint = Color.Red
+                    )
+                }
+
+
+            }
+
         }
+//            Text(
+//                text = post.title,
+//                style = LocalTextStyle.current.copy(fontSize = 15.sp, fontWeight = Bold),
+//            )
+        Text(text = thread.body, style = LocalTextStyle.current.copy(fontSize = 12.sp))
+
+        Button(
+            onClick = {
+                forumViewModel.getReplies(thread.threadId)
+            },
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Text(stringResource(id = R.string.comment))
+        }
+
     }
 }
 
 
-val post1 = Post(
-    1123,
-    "Hello World!",
-    "consectetur.",
-    1,
-    "cat-name2",
-    1,
-    "User2",
+val thread1 = Thread("hi", "test", 1)
+
+//"cat-name2",
+//1,
+//"User2",
 //    OffsetDateTime.now().toOffsetTime()
 //    OffsetDateTime.now(),
-)
 
-val post2 = Post(
-    123123,
-    "Hello!",
-    "consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    1,
-    "cat-name2",
-    1,
-    "User1",
+
+val thread2 = Thread("hi", "body", 2)
+
+//"cat-name2",
+//1,
+//"User1",
 //    OffsetDateTime.now(),
 //    OffsetDateTime.now(),
-)
 
-private class MultiPostProvider : PreviewParameterProvider<Post> {
-    override val values: Sequence<Post>
+
+private class MultiPostProvider : PreviewParameterProvider<Thread> {
+    override val values: Sequence<Thread>
         get() = sequenceOf(
-            post1,
-            post2
+            thread1,
+            thread2
         )
 }
 
-private class SinglePostProvider : PreviewParameterProvider<Post> {
-    override val values: Sequence<Post>
+private class SinglePostProvider : PreviewParameterProvider<Thread> {
+    override val values: Sequence<Thread>
         get() = sequenceOf(
-            post1
+            thread1
         )
 }

@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="orbitaldb@localhost" uuid="a6951405-b817-444b-9966-401adcbc0582">
+    <data-source source="LOCAL" name="@database-1.cyzfvzng78hl.ap-southeast-1.rds.amazonaws.com" uuid="ae9ccff3-9c03-462b-bf16-8a5041bff005">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5432/orbitaldb</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
-    <data-source source="LOCAL" name="postgres@database-1.cyzfvzng78hl.ap-southeast-1.rds.amazonaws.com" uuid="d1bc8f16-9580-4ce3-8ccc-dd4ffe290049">
-      <driver-ref>postgresql</driver-ref>
-      <synchronize>true</synchronize>
-      <configured-by-url>true</configured-by-url>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://database-1.cyzfvzng78hl.ap-southeast-1.rds.amazonaws.com/postgres</jdbc-url>
+      <jdbc-url>jdbc:postgresql://database-1.cyzfvzng78hl.ap-southeast-1.rds.amazonaws.com/</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

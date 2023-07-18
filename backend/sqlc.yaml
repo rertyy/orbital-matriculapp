@@ -1,29 +1,27 @@
 version: "2"
 sql:
   # Event Queries
-  - schema: "db/schema.sql"
+  - schema: "database/migration"
     queries: "api/sql/eventQueries.sql"
     engine: "postgresql"
     gen:
       go:
-        package: "api/sql/generated"
-        out: "eventQueries"
+        out: "api/sql/sqlc"
         emit_json_tags: true
   # Forum Queries
-  - schema: "db/schema.sql"
-    queries: "api/sql/forumQueries.sql.sql"
+  - schema: "database/migration"
+    queries: "api/sql/forumQueries.sql"
     engine: "postgresql"
     gen:
       go:
-        package: "api/sql/generated"
-        out: "forumQueries.sql"
+        out: "api/sql/sqlc"
         emit_json_tags: true
   # User Queries
-  - schema: "db/schema.sql"
+  - schema: "database/migration"
     queries: "api/sql/userQueries.sql"
     engine: "postgresql"
     gen:
       go:
-        package: "api/sql/generated"
-        out: "userQueries"
+        out: "api/sql/sqlc"
         emit_json_tags: true
+

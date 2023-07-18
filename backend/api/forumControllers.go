@@ -1,181 +1,183 @@
 package api
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"orbital-backend/api/sql/sqlc"
+	"strconv"
 )
 
-// TODO clean the logic
-
-// TODO add in the rest of the handlers
-
-func (h *Handler) HandleGetCategories(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func (h *Handler) HandleGetCategory(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func (h *Handler) HandleGetCategoryPosts(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func (h *Handler) HandleAddPost(w http.ResponseWriter, r *http.Request) {
-	log.Println("HandleAddPost")
-	vars := mux.Vars(r)
-	categoryId := vars["categoryId"]
-	log.Println("categoryId is: ", categoryId)
-
-	var post Post
-	err := json.NewDecoder(r.Body).Decode(&post)
+func (h *Handler) HandleGetAllThreads(w http.ResponseWriter, _ *http.Request) {
+	ctx := context.Background()
+	threads, err := h.DB.GetAllThreads(ctx)
 	if err != nil {
-		log.Println("unable to decode post")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// TODO recheck with the frontend the best way to handle this
+	if len(threads) == 0 {
+		NewJSONResponse(w, http.StatusOK, HttpResponse{Message: "No threads found"})
+		return
+	}
+
+	NewJSONResponse(w, http.StatusOK, threads)
+}
+
+func (h *Handler) HandleAddThread(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	log.Println("HandleAddThread")
+
+	//vars := mux.Vars(r)
+	//threadId := vars["threadId"]
+	//log.Println("threadId is", threadId)
+	//threadIdInt, err := strconv.Atoi(threadId)
+
+	var thread sqlc.AddThreadParams
+	err := json.NewDecoder(r.Body).Decode(&thread)
+	if err != nil {
+		log.Println("HandleAddThread: unable to decode")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	log.Println("post is: ", post)
-	// NB as of rn the frontend is not sending post.CreatedAt intentionally.
-	//log.Println("post createdAT is: ", post.CreatedAt)
-	//log.Println("post LastUpdated is: ", post.LastUpdated)
-	sqlStatement := `INSERT INTO posts (title, body, category_id, created_by) 
-    					VALUES ($1, $2, $3, $4);`
+	log.Println("thread is: ", thread)
 
-	_, err = h.DB.Exec(sqlStatement, post.Title, post.Body, categoryId, post.CreatedBy)
+	addThread, err := h.DB.AddThread(ctx, thread)
 	if err != nil {
-		log.Println("unable to insert post", err)
+		log.Println("unable to insert thread", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-	} else {
-		log.Println("post added")
-		response := HttpResponse{
-			Message: "post added",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(response)
-		if err != nil {
-			log.Println("unable to encode response", err)
-		}
 	}
-	w.WriteHeader(http.StatusCreated)
+
+	log.Println("thread added")
+	NewJSONResponse(w, http.StatusCreated, addThread)
 }
 
-func (h *Handler) HandleAddCategory(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func (h *Handler) HandleGetPost(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func (h *Handler) HandleEditPost(w http.ResponseWriter, r *http.Request) {
-	log.Println("HandleEditPost")
+func (h *Handler) HandleGetThread(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
 	vars := mux.Vars(r)
-	categoryId := vars["categoryId"]
-	postId := vars["postId"]
-	log.Println("categoryId is", categoryId)
-	log.Println("postId is: ", postId)
+	threadId := vars["threadId"]
+	log.Println("threadId is", threadId)
+	threadIdInt, err := strconv.Atoi(threadId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-	var newPost Post
+	thread, err := h.DB.GetThreadById(ctx, int32(threadIdInt))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	NewJSONResponse(w, http.StatusOK, thread)
+}
+
+func (h *Handler) HandleGetThreadReplies(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	threadId := vars["threadId"]
+	log.Println("threadId is", threadId)
+	threadIdInt, err := strconv.Atoi(threadId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	ctx := context.Background()
+	replies, err := h.DB.GetRepliesByThread(ctx, int32(threadIdInt))
+	if len(replies) == 0 {
+		NewJSONResponse(w, http.StatusOK, HttpResponse{Message: "No threads found"})
+		return
+	}
+
+	NewJSONResponse(w, http.StatusOK, replies)
+}
+
+func (h *Handler) HandleEditThread(w http.ResponseWriter, r *http.Request) {
+	log.Println("HandleEditPost")
+	ctx := context.Background()
+	//vars := mux.Vars(r)
+	//threadId := vars["threadId"]
+	//log.Println("threadId is", threadId)
+	//threadIdInt, err := strconv.Atoi(threadId)
+
+	var newPost sqlc.EditThreadParams
 	err := json.NewDecoder(r.Body).Decode(&newPost)
 	if err != nil {
 		log.Println("unable to decode post")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	log.Println("post is: ", newPost)
 
-	// TODO handle cases where updating values which dont exist
-	sqlStatement := `UPDATE posts SET title=$1, body=$2 WHERE post_id=$4;`
-	_, err = h.DB.Exec(sqlStatement, postId)
-	if err != nil {
-		log.Println("unable to delete post")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-	err = json.NewEncoder(w).Encode(HttpResponse{Message: "post updated"})
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-}
-
-func (h *Handler) HandleDeletePost(w http.ResponseWriter, r *http.Request) {
-	log.Println("HandleDeletePost")
-	vars := mux.Vars(r)
-	postId := vars["postId"]
-	log.Println("postId is: ", postId)
-
-	sqlStatement := `DELETE FROM posts WHERE post_id=$1;`
-	_, err := h.DB.Exec(sqlStatement, postId)
-	if err != nil {
-		log.Println("unable to delete post")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-
-	w.WriteHeader(http.StatusNoContent)
-
-}
-
-func (h *Handler) HandleDeleteCategory(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func (h *Handler) HandleEditCategory(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func (h *Handler) HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
-	posts, err := h.getAllPosts()
+	post, err := h.DB.EditThread(ctx, newPost)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	NewJSONResponse(w, http.StatusOK, post)
+}
 
-	err = json.NewEncoder(w).Encode(posts)
+func (h *Handler) HandleDeleteThread(w http.ResponseWriter, r *http.Request) {
+	log.Println("HandleDeleteThread")
+	//vars := mux.Vars(r)
+	//threadId := vars["threadId"]
+	//log.Println("threadId is", threadId)
+	//threadIdInt, err := strconv.Atoi(threadId)
+
+	ctx := context.Background()
+	var threadId int
+	if err := json.NewDecoder(r.Body).Decode(&threadId); err != nil {
+		log.Println("unable to delete post")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	_, err := h.DB.GetThreadById(ctx, int32(threadId))
+	switch err {
+	case sql.ErrNoRows:
+		http.Error(w, "post not found", http.StatusNotFound)
+		return
+	case nil:
+		// do nothing
+	default:
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = h.DB.DeleteThread(ctx, int32(threadId))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	//w.WriteHeader(http.StatusOK)
+	NewJSONResponse(w, http.StatusOK, HttpResponse{Message: "Post Deleted"})
+
 }
 
-// TODO handle no rows returned
-func (h *Handler) getAllPosts() ([]Post, error) {
-	log.Println("getAllPosts")
-	// TODO rn its hardcoded to WHERE cat_id == 1
-	sqlStatement := `SELECT p.post_id, p.title, p.body, p.category_id, c.cat_name, p.created_by, u.username, p.created_at, p.last_updated
-					FROM posts p
-					JOIN categories c ON p.category_id = c.cat_id
-					JOIN users u ON p.created_by = u.user_id
-					--WHERE p.category_id = 1;`
-	rows, err := h.DB.Query(sqlStatement)
+func (h *Handler) HandleAddThreadReply(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	//vars := mux.Vars(r)
+	//threadId := vars["threadId"]
+	//log.Println("threadId is", threadId)
+	//threadIdInt, err := strconv.Atoi(threadId)
+
+	var reply sqlc.AddReplyParams
+	err := json.NewDecoder(r.Body).Decode(&reply)
 	if err != nil {
-		return nil, err
+		log.Println("HandleAddThreadReply: unable to decode")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	// you only need to defer func rows.Close() when using Query statement which returns multiple results
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(rows)
+	log.Println("reply is: ", reply)
 
-	var posts []Post
-	for rows.Next() {
-		var post Post
-		if err := rows.Scan(&post.PostId, &post.Title, &post.Body,
-			&post.CategoryId, &post.CategoryName, &post.CreatedBy,
-			&post.CreatedByName, &post.CreatedAt, &post.LastUpdated); err != nil {
-			return posts, err
-		}
-		posts = append(posts, post)
+	addPost, err := h.DB.AddReply(ctx, reply)
+	if err != nil {
+		log.Println("unable to insert reply", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	if err = rows.Err(); err != nil {
-		return posts, err
-	}
-	return posts, nil
+
+	log.Println("reply added")
+	NewJSONResponse(w, http.StatusCreated, addPost)
 }

@@ -27,4 +27,10 @@
     <string name="loginInstead">Back to login page</string>
     <string name="addNewPost">+New Post</string>
     <string name="modifyPost">Click to edit post</string>
+    <string name="createPost">Post</string>
+    <string name="title">Title</string>
+    <string name="body">Body</string>
+    <string name="back">Back</string>
+    <string name="comment">Comment Here</string>
+    <string name="viewThread">View Thread</string>
 </resources>
