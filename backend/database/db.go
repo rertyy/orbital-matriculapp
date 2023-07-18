@@ -1,51 +1,45 @@
-package db
+package database
 
 import (
 	"database/sql"
 	_ "github.com/lib/pq"
 	"log"
+	"orbital-backend/api/sql/sqlc"
 	"os"
 )
 
-func Connect() (*sql.DB, error) {
+func Connect() (*sqlc.Queries, error) {
 	//psqlHost := os.Getenv("PSQL_HOST")
 	//psqlPort := os.Getenv("PSQL_PORT")
 	//psqlUser := os.Getenv("PSQL_USER")
 	//psqlPass := os.Getenv("PSQL_PASS")
 	//psqlDbname := os.Getenv("PSQL_DBNAME")
-	psqlConn := os.Getenv("PSQL_CONN")
-
 	//psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 	//	"password=%s dbname=%s sslmode=disable",
 	//	psqlHost, psqlPort, psqlUser, psqlPass, psqlDbname)
-
 	//db, err := sql.Open("postgres", psqlInfo)
+
+	psqlConn := os.Getenv("PSQL_CONN")
 	db, err := sql.Open("postgres", psqlConn)
 	if err != nil {
 		log.Println(err)
 		panic(err)
 	}
 
-	// Note that this closes the db when Connect() returns so don't use it
-	//defer func(db *sql.DB) {
-	//	err := db.Close()
+	// Note that this closes the database when Connect() returns so don't use it
+	//defer func(database *sql.DB) {
+	//	err := database.Close()
 	//	if err != nil {
 	//		panic(err)
 	//	}
-	//}(db)
+	//}(database)
 
 	if err := db.Ping(); err != nil {
 		log.Println(err)
 		panic(err)
 	}
-	log.Println("Successfully connected!")
+	log.Println("Successfully connected to db!")
+	queries := sqlc.New(db)
 
-	//sqlStatement := `SELECT username, password FROM users WHERE username=$1 AND password=$2;`
-	//var username string
-	//var password string
-	//err2 := db.QueryRow(sqlStatement, "user1", "password").Scan(&username, &password)
-	//fmt.Println(err2)
-	//fmt.Println(username, password)
-
-	return db, err
+	return queries, err
 }

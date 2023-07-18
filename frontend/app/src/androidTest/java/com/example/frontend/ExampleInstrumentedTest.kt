@@ -69,7 +69,7 @@ class ExampleInstrumentedTest {
 
     @Test
     fun `mainUiScreenTest`() {
-        rule.setContent{ HomeScreen() }
+        rule.setContent{ HomeScreen() }   //Note: HomeScreen declaration altered
         rule.onNodeWithText("MatriculApp")
             .assertExists()
         rule.onNodeWithText("Deadlines")
