@@ -1,5 +1,6 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.forum
 
+import Reply
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,32 +8,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.network.RestApiService
-import com.google.gson.annotations.SerializedName
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
-
-// TODO add postId and categoryId to Post
-data class Thread(
-    val title: String = "",
-    val body: String = "",
-    @SerializedName("thread_id") val threadId: Int = -1,
-    //@SerializedName("category_name") val categoryName: String,
-    //@SerializedName("created_by") val createdBy: Int,
-    //@SerializedName("created_by_name") val createdByName: String,
-
-//    @SerializedName("created_at") val createdAt: OffsetDateTime,
-//    @SerializedName("last_updated") val lastUpdated: OffsetDateTime
-)
-
-val defaultThread: Thread = Thread()
-val defaultReply: Reply = Reply()
-
-data class Reply(
-    @SerializedName("reply_id") val replyId: Int = -1,
-    val body: String = "",
-    @SerializedName("thread_id") val threadId: Int = -1
-)
+import javax.inject.Inject
+import Thread
 
 
 sealed interface ForumUiState {

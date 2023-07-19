@@ -1,4 +1,4 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.auth
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -52,10 +52,15 @@ class LoginViewModel : UserInterfaceViewModel() {
             return
         }
 
+
         viewModelScope.launch {
             try {
                 val request = LoginRequest(username, password)
                 val loginResponse = RestApiService.retrofitService.authenticateLogin(request)
+
+                val accessToken = loginResponse.headers()["Authorization"]
+
+
                 val authenticationResponse = loginResponse.body()
                 if (loginResponse.isSuccessful) {
                     Log.d("Login", "success" + authenticationResponse.toString())

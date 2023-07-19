@@ -15,7 +15,10 @@ func SetupRouter(h *Handler) *mux.Router {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		NewJSONResponse(w, http.StatusOK, struct{ success bool }{success: true})
+		NewJSONResponse(w, http.StatusOK, struct {
+			Success bool   `json:"success"`
+			Message string `json:"message"`
+		}{Success: true, Message: "Server is running"})
 	}).Methods("GET")
 
 	// User endpoints

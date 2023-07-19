@@ -1,5 +1,6 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.forum
 
+import Reply
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
@@ -29,9 +30,16 @@ import com.example.frontend.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
+import com.google.gson.annotations.SerializedName
+import Thread
+
+
+val defaultThread: Thread = Thread()
+val defaultReply: Reply = Reply()
+
 
 @Composable
-fun viewThread(
+fun ViewThread(
     threadId: Int,
     forumViewModel: ForumViewModel,
     onBack: () -> Unit,

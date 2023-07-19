@@ -12,6 +12,9 @@ import (
 
 // https://www.golinuxcloud.com/golang-jwt/
 
+// TODO refresh token and shift this to separate folder
+// https://medium.com/monstar-lab-bangladesh-engineering/jwt-auth-in-go-dde432440924
+
 type Claims struct {
 	Username string `json:"username"`
 	jwt.RegisteredClaims

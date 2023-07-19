@@ -1,4 +1,4 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -93,7 +93,8 @@ fun Login(loginViewModel: LoginViewModel = viewModel(), onNavigateToRegister: ()
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 8.dp).testTag("Username_button")
+                .padding(bottom = 8.dp)
+                .testTag("Username_button")
         )
 
         TextField( // TODO add keyboard listener
@@ -112,14 +113,18 @@ fun Login(loginViewModel: LoginViewModel = viewModel(), onNavigateToRegister: ()
                     if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                 val description = if (passwordVisible) stringResource(R.string.hide_password)
                 else stringResource(R.string.show_password)
-                IconButton(onClick = { passwordVisible = !passwordVisible }
-                , modifier = Modifier.testTag("Show password")) {
-                    Icon(imageVector = image, description)                //added testTag for UI testing
+                IconButton(onClick = { passwordVisible = !passwordVisible },
+                    modifier = Modifier.testTag("Show password")) {
+                    Icon(
+                        imageVector = image,
+                        description
+                    )                //added testTag for UI testing
                 }
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp).testTag("Password_button")  //added testTag for UI test
+                .padding(bottom = 16.dp)
+                .testTag("Password_button")  //added testTag for UI test
         )
 
         Button(

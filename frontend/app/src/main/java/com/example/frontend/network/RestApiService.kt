@@ -1,19 +1,18 @@
 package com.example.frontend.network
 
 
-import com.example.frontend.ui.screens.Event
-import com.example.frontend.ui.screens.LoginRequest
-import com.example.frontend.ui.screens.LoginResponse
-import com.example.frontend.ui.screens.Thread
-import com.example.frontend.ui.screens.RegisterRequest
-import com.example.frontend.ui.screens.Reply
+import Reply
+import com.example.frontend.ui.screens.home.Event
+import com.example.frontend.ui.screens.auth.LoginRequest
+import com.example.frontend.ui.screens.auth.LoginResponse
+import Thread
+import com.example.frontend.ui.screens.auth.RegisterRequest
 import retrofit2.Retrofit
 import retrofit2.http.POST
 import retrofit2.Response
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.DELETE
-import retrofit2.http.Field
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -28,41 +27,28 @@ private const val BASE_URL =
 
 
 interface ApiService {
-    @POST("/login")
+    @POST("/user/login")
     suspend fun authenticateLogin(
         @Body request: LoginRequest
     ): Response<LoginResponse>
 
-    @POST("/register")
+    @POST("/user/register")
     suspend fun registerUser(
         @Body request: RegisterRequest
     ): Response<RegisterRequest>
 
-    // TODO this might be a Flow<> instead of a List
-    @GET("/threads")
+
+    @GET("/threads/")
     suspend fun getAllThreads(): Response<List<Thread>>
 
-    @GET("/events")
-    suspend fun getAllEvents(): Response<List<Event>>
-
-    @PUT("/{categoryId}/edit")
-    suspend fun editThread(
-        @Path("threadId") threadId: Int,
-        @Body request: Thread
-    ): Response<Thread>
-
-    @POST("/{categoryId}/addThread")
+    @POST("/threads/{threadId}/newThread")
     suspend fun addThread(
-        @Path("categoryId") categoryId: Int,
+        @Path("thread_id") threadId: Int,
         @Body request: Thread
     ): Response<Thread>
 
-    @DELETE("/{threadId}/deleteThread")
-    suspend fun deleteThread(
-        @Path("threadId") threadId: Int,
-    ): Response<Int>
 
-    @GET("/{threadId}/getThread")
+    @GET("/threads/{threadId}")
     suspend fun getThread(
         @Path("threadId") threadId: Int
     ): Response<Thread>
@@ -72,12 +58,28 @@ interface ApiService {
         @Path("threadId") threadId: Int
     ): Response<List<Reply>>
 
-    @POST("/threads/{threadId}/replies/newreply")
+    @PUT("/threads/{threadId}/edit")
+    suspend fun editThread(
+        @Path("threadId") threadId: Int,
+        @Body request: Thread
+    ): Response<Thread>
+
+    @DELETE("/threads/{threadId}/delete")
+    suspend fun deleteThread(
+        @Path("threadId") threadId: Int,
+    ): Response<Int>
+
+
+    @POST("/threads/{threadId}/replies/addReply")
     suspend fun newReply(
         @Path("threadId") threadId: Int,
         @Body request: Reply
     ): Response<Reply>
+
+    @GET("/events/all")
+    suspend fun getAllEvents(): Response<List<Event>>
 }
+
 
 // TODO: comment the below out and replace w DI
 // to keep as comment for posterity
