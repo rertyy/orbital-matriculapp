@@ -39,7 +39,7 @@ import java.text.DateFormat.getDateTimeInstance
 
 
 @Composable
-fun HomeScreen(navController: NavHostController = rememberNavController()) {
+fun EventsScreen(navController: NavHostController = rememberNavController()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -55,10 +55,12 @@ fun HomeScreen(navController: NavHostController = rememberNavController()) {
 
 // TODO: shift logic to viewmodel
 @Composable
-fun CurrentTime(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
+fun CurrentTime(eventsViewModel: EventsViewModel = viewModel()) {
     var currentTime by rememberSaveable { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    val eventsList: List<Event> = eventsViewModel.events
 
     LaunchedEffect(true) {
         while (true) {
@@ -102,23 +104,9 @@ fun CurrentTime(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
 
         // TODO separate to different function and hoist state
         Spacer(modifier = Modifier.height(20.dp))
-        Deadlines()
-        Spacer(modifier = Modifier.height(20.dp))
-        Box(
-            modifier = Modifier
-                .background(
-                    color = Color.Cyan,
-                    shape = RoundedCornerShape(16.dp)
-                )
-        ) {
-            Text(
-                text = stringResource(id = R.string.reminders),
-                fontSize = 30.sp,
-                modifier = Modifier
-                    .padding(top = 5.dp, bottom = 5.dp)
-                    .fillMaxWidth()
-            )
-        }
+
+        Deadlines(eventsViewModel)
+
         Spacer(modifier = Modifier.height(20.dp))
         Box(
             modifier = Modifier
@@ -148,8 +136,8 @@ fun CurrentTimePreview() {
 
 
 @Composable
-fun Deadlines(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
-    val eventList = homeScreenViewModel.getAllEvents()
+fun Deadlines(eventsViewModel: EventsViewModel) {
+    val eventList = eventsViewModel.events
     if (eventList == null) {
         Text("No events")
         return
@@ -162,7 +150,7 @@ fun Deadlines(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
             )
     ) {
         Text(
-            text = stringResource(id = R.string.deadlines),
+            text = stringResource(id = R.string.urgent),
             fontSize = 30.sp,
             modifier = Modifier
                 .padding(top = 5.dp, bottom = 5.dp)

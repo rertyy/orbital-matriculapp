@@ -9,7 +9,7 @@
     <string name="login">login</string>
     <string name="loginPage">Click here to login</string>
     <string name="welcome">MatriculApp</string>
-    <string name="deadlines">Deadlines</string>
+    <string name="urgent">Urgent</string>
     <string name="loginFailed">Wrong username or password</string>
     <string name="loginSuccessful">Login successful!</string>
     <string name="password">Password</string>
