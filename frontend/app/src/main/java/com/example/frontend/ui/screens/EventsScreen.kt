@@ -104,7 +104,7 @@ fun EventsSuccessScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        CurrentTime()
+        CurrentTime(eventsViewModel)
     }
 
 }
@@ -112,7 +112,7 @@ fun EventsSuccessScreen(
 
 // TODO: shift logic to viewmodel
 @Composable
-fun CurrentTime(eventsViewModel: EventsViewModel = viewModel()) {
+fun CurrentTime(eventsViewModel: EventsViewModel) {
     var currentTime by rememberSaveable { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -185,20 +185,11 @@ fun CurrentTime(eventsViewModel: EventsViewModel = viewModel()) {
 }
 //TODO unit test on this
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
-@Composable
-fun CurrentTimePreview() {
-    CurrentTime()
-}
-
 
 @Composable
 fun Deadlines(eventsViewModel: EventsViewModel) {
     val eventList = eventsViewModel.events
-    if (eventList == null) {
-        Text("No events")
-        return
-    }
+
     Box(
         modifier = Modifier
             .background(
