@@ -77,6 +77,8 @@ func JwtAuthMiddleWare(next http.Handler) http.Handler {
 		err := validateToken(w, r)
 		if err != nil {
 			log.Println("JWT Auth Middleware Error: ", err)
+			err := fmt.Errorf("JWT Auth Middleware Error: %v", err)
+			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
 		next.ServeHTTP(w, r)
