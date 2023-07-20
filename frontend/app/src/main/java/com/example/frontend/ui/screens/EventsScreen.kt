@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,9 +38,65 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DateFormat.getDateTimeInstance
 
+@Composable
+fun EventsScreen(
+    navController: NavHostController,
+    eventsViewModel: EventsViewModel,
+    retryAction: () -> Unit
+) {
+    when (eventsViewModel.eventsUiState) {
+        is EventsUiState.Loading -> EventsLoadingScreen()
+
+        is EventsUiState.Error -> EventsErrorScreen(retryAction = retryAction)
+
+        is EventsUiState.Success -> EventsSuccessScreen(
+            navController = navController,
+            eventsViewModel = eventsViewModel,
+            retryAction = retryAction
+        )
+    }
+
+}
 
 @Composable
-fun EventsScreen(navController: NavHostController = rememberNavController()) {
+fun EventsLoadingScreen() {
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Text("Loading...")
+    }
+
+}
+
+@Composable
+fun EventsErrorScreen(
+    retryAction: () -> Unit
+) {
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(stringResource(R.string.loading_failed))
+        Button(
+            onClick = { retryAction() }
+        ) {
+            Text(stringResource(R.string.retry))
+        }
+    }
+
+}
+
+@Composable
+fun EventsSuccessScreen(
+    navController: NavHostController = rememberNavController(),
+    eventsViewModel: EventsViewModel,
+    retryAction: () -> Unit,
+
+    ) {
     Column(
         modifier = Modifier
             .fillMaxSize()

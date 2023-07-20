@@ -13,7 +13,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.frontend.ui.screens.EventsScreen
+import com.example.frontend.ui.screens.EventsSuccessScreen
 import com.example.frontend.ui.screens.LoginScreen
 
 import org.junit.Test
@@ -60,7 +60,7 @@ class ExampleInstrumentedTest {
 
     @Test
     fun `mainUiScreenTest`() {
-        rule.setContent { EventsScreen() }   //Note: HomeScreen declaration altered
+        rule.setContent { EventsSuccessScreen() }   //Note: HomeScreen declaration altered
         rule.onNodeWithText("MatriculApp")
             .assertExists()
         rule.onNodeWithText("Deadlines")

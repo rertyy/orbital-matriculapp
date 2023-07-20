@@ -33,7 +33,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.frontend.ui.screens.CalendarScreen
 import com.example.frontend.ui.screens.ForumScreen
 import com.example.frontend.ui.screens.ForumViewModel
-import com.example.frontend.ui.screens.EventsScreen
+import com.example.frontend.ui.screens.EventsSuccessScreen
 import com.example.frontend.ui.screens.LoginScreen
 import com.example.frontend.ui.screens.RegistrationScreen
 import com.example.frontend.ui.screens.postCreation
@@ -108,7 +108,7 @@ fun MainApp(
         ) {
             composable(route = RootNavGraph.Home.route) {
                 val context = LocalContext.current
-                EventsScreen(navController)
+                EventsSuccessScreen(navController)
             }
 
             composable(route = RootNavGraph.Calendar.route) {
