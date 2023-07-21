@@ -5,8 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"orbital-backend/api/sql/sqlc"
-	"orbital-backend/middleware"
+	"orbital-backend/database/sql/sqlc"
 	"orbital-backend/util"
 )
 
@@ -36,7 +35,7 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := middleware.GenerateJwt(userReq.Username)
+	token, err := util.GenerateJwt(userReq.Username)
 
 	if err != nil {
 		log.Println("HandleLogin: GenerateJwt", err)

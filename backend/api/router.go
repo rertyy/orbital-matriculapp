@@ -4,7 +4,8 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"net/http"
-	"orbital-backend/api/sql/sqlc"
+	"orbital-backend/database/sql/sqlc"
+	"orbital-backend/middleware"
 )
 
 type Handler struct {
@@ -49,6 +50,7 @@ func SetupRouter(h *Handler) *mux.Router {
 	eventRoute.HandleFunc("/all", h.HandleGetAllEvents).Methods("GET")
 
 	//forumRoute.Use(middleware.JwtAuthMiddleWare)
+	r.Use(middleware.LoggerMiddleware)
 	r.Use(mux.CORSMethodMiddleware(r))
 	return r
 }
