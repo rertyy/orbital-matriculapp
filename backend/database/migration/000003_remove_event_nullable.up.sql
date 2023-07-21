@@ -8,7 +8,7 @@ UPDATE events
 SET event_body = ''
 WHERE event_body IS NULL;
 
--- remove nullable from events
+-- remove nullable from events so values are not mapped to sql.NullString
 ALTER TABLE events
     ALTER COLUMN event_body SET NOT NULL,
     ALTER COLUMN event_start_date SET NOT NULL,
