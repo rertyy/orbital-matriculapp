@@ -1,11 +1,9 @@
 package com.example.frontend.ui.screens
 
-import android.provider.CalendarContract.Events
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.network.RestApiService
@@ -26,7 +24,7 @@ sealed interface EventsUiState {
 data class Event(
     @SerializedName("event_id") val eventId: Int = -1,
     @SerializedName("name") val eventName: String = "",
-    @SerializedName("body") val body: String = "",
+    @SerializedName("body") val eventBody: String = "",
     val eventStartDate: OffsetDateTime = OffsetDateTime.MIN,
     val eventEndDate: OffsetDateTime = OffsetDateTime.MIN
 )
@@ -78,6 +76,10 @@ class EventsViewModel : ViewModel() {
                 EventsUiState.Error
             }
         }
+    }
+
+    fun setReminder(event: Event) {
+
     }
 
 

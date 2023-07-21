@@ -1,34 +1,59 @@
 package com.example.frontend.ui.screens
 
+import android.graphics.Paint.Align
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Doorbell
+import androidx.compose.material.icons.rounded.Doorbell
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -37,6 +62,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DateFormat.getDateTimeInstance
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 @Composable
 fun EventsScreen(
@@ -117,7 +145,6 @@ fun CurrentTime(eventsViewModel: EventsViewModel) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val eventsList: List<Event> = eventsViewModel.events
 
     LaunchedEffect(true) {
         while (true) {
@@ -165,21 +192,8 @@ fun CurrentTime(eventsViewModel: EventsViewModel) {
         Deadlines(eventsViewModel)
 
         Spacer(modifier = Modifier.height(20.dp))
-        Box(
-            modifier = Modifier
-                .background(
-                    color = Color.Green,
-                    shape = RoundedCornerShape(16.dp)
-                )
-        ) {
-            Text(
-                text = stringResource(id = R.string.events),
-                fontSize = 30.sp,
-                modifier = Modifier
-                    .padding(top = 5.dp, bottom = 5.dp)
-                    .fillMaxWidth()
-            )
-        }
+
+        UpcomingEvents(eventsViewModel = eventsViewModel)
 
     }
 }
@@ -190,25 +204,31 @@ fun CurrentTime(eventsViewModel: EventsViewModel) {
 fun Deadlines(eventsViewModel: EventsViewModel) {
     val eventList = eventsViewModel.events
 
-    Box(
-        modifier = Modifier
-            .background(
-                color = Color.Red,
-                shape = RoundedCornerShape(16.dp)
-            )
-    ) {
-        Text(
-            text = stringResource(id = R.string.urgent),
-            fontSize = 30.sp,
+    Box(modifier = Modifier.fillMaxWidth()) {
+
+        Row(
             modifier = Modifier
-                .padding(top = 5.dp, bottom = 5.dp)
+                .background(Color.Red)
                 .fillMaxWidth()
-        )
+        ) {
+            Text(
+                text = stringResource(id = R.string.urgent),
+                color = Color.White, fontFamily = FontFamily.Serif,
+                modifier = Modifier
+                    .padding(top = 5.dp, bottom = 5.dp)
+                    .fillMaxWidth()
+                    .align(Alignment.CenterVertically)
+            )
+        }
+
         LazyColumn(
             modifier = Modifier
         ) {
             items(eventList) { event ->
-                Text(event.eventName)
+                if (isUrgentEvent(now = OffsetDateTime.now(), event = event.eventStartDate)) {
+                    EventDisplayBox(event = event, eventsViewModel = eventsViewModel)
+                } else {
+                }
             }
 
         }
@@ -216,11 +236,165 @@ fun Deadlines(eventsViewModel: EventsViewModel) {
 }
 
 @Composable
-fun Reminders() {
+fun EventDisplayBox(event: Event, eventsViewModel: EventsViewModel) {
 
+    var showEvent by remember { mutableStateOf(false) }
+
+    if (showEvent) {
+        ViewEvent(event, { showEvent = false })
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+    ) {
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(8.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = event.eventName,
+                style = LocalTextStyle.current.copy(fontSize = 15.sp, fontWeight = FontWeight.Bold),
+            )
+
+            IconButton(
+                onClick = { eventsViewModel.setReminder(event) },
+            ) {
+                Icon(imageVector = Icons.Rounded.Doorbell, contentDescription = "set reminder")
+            }
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        IconButton(
+            onClick = { showEvent = showEvent.not() }
+        ) {
+            Icon(imageVector = Icons.Rounded.Visibility, contentDescription = "show event")
+        }
+    }
 }
 
 @Composable
-fun UpcomingEvents() {
+fun ViewEvent(
+    event: Event,
+    onDismissAction: () -> Unit,
+    backgroundColor: Color = Color(0xFFCCCCCC)
+) {
+    Dialog(onDismissRequest = onDismissAction) {
+        Box(
+            Modifier
+                .clip(RectangleShape)
+                .fillMaxWidth()
+                .background(backgroundColor)
+        ) {
+            Column() {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.Blue)
+                        .padding(start = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(event.eventName, color = Color.White, fontFamily = FontFamily.Monospace)
+
+                    Surface(
+                        onClick = onDismissAction,
+                        modifier = Modifier.padding(2.dp),
+                        color = backgroundColor
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = "close")
+                    }
+                }
+
+
+
+                Text("Event Description: ${event.eventBody}", fontFamily = FontFamily.Monospace)
+
+                Text(
+                    "Event Start Date: ${timeToString(time = event.eventStartDate)}",
+                    fontFamily = FontFamily.Monospace
+                )
+
+                Text(
+                    "Event End Date: ${timeToString(time = event.eventEndDate)}",
+                    fontFamily = FontFamily.Monospace
+                )
+
+
+            }
+
+            Surface(
+                modifier = Modifier.align(Alignment.Center),
+                onClick = onDismissAction,
+                shape = RectangleShape,
+                color = backgroundColor,
+                border = BorderStroke(Dp.Hairline, Color.Black)
+            ) {
+                Text(
+                    "Close",
+                    fontFamily = FontFamily.Monospace,
+                    modifier = Modifier
+                        .widthIn(120.dp)
+                        .padding(vertical = 8.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+    }
+}
+
+@Composable
+fun timeToString(time: OffsetDateTime): String {
+    val localdatetime = time.toLocalDateTime()
+
+    val datetimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    return localdatetime.format(datetimeFormatter)
+}
+
+@Composable
+fun isUrgentEvent(now: OffsetDateTime, event: OffsetDateTime): Boolean {
+    return now.until(event, ChronoUnit.DAYS) < 7
+}
+
+@Composable
+fun UpcomingEvents(eventsViewModel: EventsViewModel) {
+
+    val eventList = eventsViewModel.events
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .background(Color.Green)
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(id = R.string.events),
+                color = Color.White, fontFamily = FontFamily.Serif,
+                modifier = Modifier
+                    .padding(top = 5.dp, bottom = 5.dp)
+                    .fillMaxWidth()
+                    .align(Alignment.CenterVertically)
+            )
+        }
+
+        LazyColumn(
+            modifier = Modifier
+        ) {
+            items(eventList) { event ->
+                if (!isUrgentEvent(now = OffsetDateTime.now(), event = event.eventStartDate)) {
+                    EventDisplayBox(event = event, eventsViewModel = eventsViewModel)
+                } else {
+                }
+            }
+
+        }
+    }
 
 }
