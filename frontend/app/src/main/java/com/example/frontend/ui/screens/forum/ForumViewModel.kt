@@ -1,24 +1,20 @@
 package com.example.frontend.ui.screens.forum
 
 import Reply
+import Thread
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.network.RestApiService
+import com.example.frontend.repository.ForumRepository
+import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
-import Thread
-import android.content.SharedPreferences
-import com.example.frontend.data.TokenStore
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.currentCoroutineContext
 
 
 sealed interface ForumUiState {
@@ -35,13 +31,14 @@ sealed interface ForumUiState {
 }
 
 @HiltViewModel
-class ForumViewModel @Inject constructor(
-) : ViewModel() {
+class ForumViewModel @Inject constructor(private val forumRepository: Lazy<ForumRepository>) :
+    ViewModel() {
 
     var forumUiState: ForumUiState by mutableStateOf(ForumUiState.Loading)
         private set
 
     init {
+        forumRepository.get()
         getAllThreads()
     }
 
@@ -50,7 +47,7 @@ class ForumViewModel @Inject constructor(
         Log.d("FORUM", "adding post")
         viewModelScope.launch {
             try {
-                RestApiService.retrofitService.addThread(thread.threadId, thread)
+                forumRepository.get().addThread(thread.threadId, thread)
             } catch (e: Exception) {
                 // TODO change pokemon
                 Log.d("FORUM", "Error: ${e.message}")
@@ -63,10 +60,7 @@ class ForumViewModel @Inject constructor(
         Log.d("FORUM", "modifying post")
         viewModelScope.launch {
             try {
-                RestApiService.retrofitService.editThread(
-                    oldThread.threadId,
-                    newThread
-                )
+                forumRepository.get().editThread(oldThread.threadId, newThread)
             } catch (e: Exception) {
                 // TODO change pokemon
                 Log.d("FORUM", "Error editing post: ${e.message}")
@@ -89,7 +83,7 @@ class ForumViewModel @Inject constructor(
         viewModelScope.launch {
             forumUiState = ForumUiState.Loading
             forumUiState = try {
-                val response = RestApiService.retrofitService.getAllThreads()
+                val response = forumRepository.get().getAllThreads()
                 val listPosts = response.body()
                 Log.d("FORUM", "success getAllPosts $listPosts")
                 if (listPosts == null) {
@@ -111,9 +105,7 @@ class ForumViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                RestApiService.retrofitService.deleteThread(
-                    threadId
-                )
+                forumRepository.get().deleteThread(threadId)
             } catch (e: Exception) {
                 Log.d("FORUM", "Error deleting post: ${e.message}")
             }
@@ -130,8 +122,8 @@ class ForumViewModel @Inject constructor(
         viewModelScope.launch {
             forumUiState = ForumUiState.Loading
             forumUiState = try {
-                val response1 = RestApiService.retrofitService.getThread(threadId)
-                val response2 = RestApiService.retrofitService.getThreadReplies(threadId)
+                val response1 = forumRepository.get().getThread(threadId)
+                val response2 = forumRepository.get().getThreadReplies(threadId)
 
                 val thread = response1.body()
                 val replies = response2.body()
@@ -156,7 +148,7 @@ class ForumViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                RestApiService.retrofitService.newReply(reply.threadId, reply)
+                forumRepository.get().newReply(reply.threadId, reply)
             } catch (e: Exception) {
                 Log.d("FORUM", "Error getting thread: ${e.message}")
             }

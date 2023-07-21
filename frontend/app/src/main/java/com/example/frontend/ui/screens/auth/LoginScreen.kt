@@ -37,16 +37,16 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
 import com.example.frontend.ui.theme.FrontendTheme
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 
 @Composable
 fun LoginScreen(onNavigateToRegister: () -> Unit) {
+    val viewModel = hiltViewModel<LoginViewModel>()
 //    Button(onClick = onNavigate) {
 //        Column {
 //            Text(
@@ -61,7 +61,8 @@ fun LoginScreen(onNavigateToRegister: () -> Unit) {
 
 // TODO: login navigation, jwt, context, lock functions if user not logged in
 @Composable
-fun Login(loginViewModel: LoginViewModel = viewModel(), onNavigateToRegister: () -> Unit) {
+fun Login(loginViewModel: LoginViewModel = hiltViewModel(), onNavigateToRegister: () -> Unit) {
+
     var passwordVisible by remember { mutableStateOf(false) }
 
     TestLogin(

@@ -1,17 +1,22 @@
 package com.example.frontend.ui.screens.home
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.network.RestApiService
+import com.example.frontend.repository.EventRepository
 import com.google.gson.annotations.SerializedName
+import dagger.Lazy
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeScreenViewModel : ViewModel() {
-    var currentTime by mutableStateOf("")
-        private set
+@HiltViewModel
+class HomeScreenViewModel @Inject constructor(private val eventRepository: Lazy<EventRepository>) :
+    ViewModel() {
+    init {
+        eventRepository.get()
+    }
+//    var currentTime by mutableStateOf("")
+//        private set
 
 //    fun getCurrentTime() {
 //        viewModelScope.launch {
@@ -28,12 +33,12 @@ class HomeScreenViewModel : ViewModel() {
 //    }
 
 
-    fun getAllEvents(): List<Event>? {
+    fun getEvents(): List<Event>? {
         // TODO error screen
         var listEvents: List<Event>? = null
         viewModelScope.launch {
             listEvents = try {
-                RestApiService.retrofitService.getAllEvents().body()
+                eventRepository.get().getEvents().body()
                     ?: throw Exception("Events is null")
             } catch (e: Exception) {
                 null

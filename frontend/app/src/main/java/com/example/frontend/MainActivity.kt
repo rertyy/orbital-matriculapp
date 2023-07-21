@@ -1,9 +1,6 @@
 package com.example.frontend
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,15 +21,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+
                     MainApp()
                 }
             }
         }
     }
 
-    // test
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-        Log.d(TAG, "onCreate Called")
-    }
+//    // test
+//    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+//        super.onCreate(savedInstanceState, persistentState)
+//        Log.d(TAG, "onCreate Called")
+//    }
 }

@@ -2,18 +2,16 @@ package com.example.frontend.network
 
 
 import Reply
-import com.example.frontend.ui.screens.home.Event
+import Thread
 import com.example.frontend.ui.screens.auth.LoginRequest
 import com.example.frontend.ui.screens.auth.LoginResponse
-import Thread
 import com.example.frontend.ui.screens.auth.RegisterRequest
-import retrofit2.http.POST
+import com.example.frontend.ui.screens.home.Event
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
@@ -21,9 +19,6 @@ import retrofit2.http.Path
 //private const val BASE_URL =
 //    "http://10.0.2.2:8080/"
 //// NB https://stackoverflow.com/questions/5495534/java-net-connectexception-localhost-127-0-0-18080-connection-refused
-
-private const val BASE_URL =
-    "https://orbital-backend-6z61.onrender.com"
 
 
 interface ApiService {
@@ -77,20 +72,20 @@ interface ApiService {
     ): Response<Reply>
 
     @GET("/events/all")
-    suspend fun getAllEvents(): Response<List<Event>>
+    suspend fun getEvents(): Response<List<Event>>
 }
 
 
-// TODO: comment the below out and replace w DI
-// to keep as comment for posterity
-val retrofit: Retrofit = Retrofit.Builder()
-    .baseUrl(BASE_URL)
-    .addConverterFactory(GsonConverterFactory.create())
-    .build()
-
-
-object RestApiService {
-    val retrofitService: ApiService by lazy {
-        retrofit.create(ApiService::class.java)
-    }
-}
+//// TODO: comment the below out and replace w DI
+//// to keep as comment for posterity
+//val retrofit: Retrofit = Retrofit.Builder()
+//    .baseUrl(BASE_URL)
+//    .addConverterFactory(GsonConverterFactory.create())
+//    .build()
+//
+//
+//object RestApiService {
+//    val retrofitService: ApiService by lazy {
+//        retrofit.create(ApiService::class.java)
+//    }
+//}

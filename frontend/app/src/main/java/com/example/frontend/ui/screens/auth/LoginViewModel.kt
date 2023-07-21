@@ -1,18 +1,14 @@
 package com.example.frontend.ui.screens.auth
 
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.data.TokenStore
-import com.example.frontend.network.RestApiService
+import com.example.frontend.repository.UserRepository
+import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,8 +16,24 @@ import javax.inject.Inject
 // by separating the API service call from the view model
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val prefs: SharedPreferences) :
-    UserInterfaceViewModel() {
+class LoginViewModel @Inject constructor(private val userRepository: Lazy<UserRepository>) :
+    ViewModel() {
+    init {
+        userRepository.get()
+    }
+
+    var username: String by mutableStateOf("")
+        private set
+    var password: String by mutableStateOf("")
+        private set
+
+    fun changeUsername(username: String) {
+        this.username = username
+    }
+
+    fun changePassword(password: String) {
+        this.password = password
+    }
 
 
     var loginSuccessful by mutableStateOf(false)
@@ -52,13 +64,6 @@ class LoginViewModel @Inject constructor(private val prefs: SharedPreferences) :
         return valid
     }
 
-    private suspend fun saveToken(jwtToken: String) {
-        prefs.edit()
-            .putString("jwt", jwtToken)
-            .apply()
-        Log.d("MyViewModel", "Hello from saveToken: $jwtToken")
-    }
-
 
     fun performLogin() {
         Log.d("Login", "Performing login")
@@ -74,10 +79,14 @@ class LoginViewModel @Inject constructor(private val prefs: SharedPreferences) :
         viewModelScope.launch {
             try {
                 val request = LoginRequest(username, password)
-                val loginResponse = RestApiService.retrofitService.authenticateLogin(request)
+                val loginResponse = userRepository.get().authenticateLogin(request)
 
+//                val loginResponse = userRepository.authenticateLogin(request)
+//                val loginResponse = RestApiService.retrofitService.authenticateLogin(request)
+
+                // TODO sync up the header with the response
                 val accessToken = loginResponse.headers()["Authorization"]
-                saveToken(accessToken.toString())
+                userRepository.get().storeToken(accessToken.toString())
 
                 val authenticationResponse = loginResponse.body()
                 if (loginResponse.isSuccessful) {

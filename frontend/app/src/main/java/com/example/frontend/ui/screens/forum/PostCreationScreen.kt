@@ -31,13 +31,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostCreation(onBack: () -> Unit, forumViewModel: ForumViewModel = viewModel()) {
+fun PostCreation(onBack: () -> Unit) {
+    val forumViewModel = hiltViewModel<ForumViewModel>()
+
 
     var isExpanded: Boolean by remember { mutableStateOf(false) }
     var category: String by remember { mutableStateOf("") }

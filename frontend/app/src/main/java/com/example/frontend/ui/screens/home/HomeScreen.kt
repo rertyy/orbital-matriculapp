@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -40,6 +41,7 @@ import java.text.DateFormat.getDateTimeInstance
 
 @Composable
 fun HomeScreen(navController: NavHostController = rememberNavController()) {
+    val viewModel = hiltViewModel<HomeScreenViewModel>()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -149,7 +151,7 @@ fun CurrentTimePreview() {
 
 @Composable
 fun Deadlines(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
-    val eventList = homeScreenViewModel.getAllEvents()
+    val eventList = homeScreenViewModel.getEvents()
     if (eventList == null) {
         Text("No events")
         return

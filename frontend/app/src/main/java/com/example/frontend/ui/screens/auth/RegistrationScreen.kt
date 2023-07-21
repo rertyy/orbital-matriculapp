@@ -30,7 +30,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
@@ -38,8 +38,8 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun RegistrationScreen(
     onNavigateToLogin: () -> Unit,
-    registerViewModel: RegisterViewModel = viewModel()
 ) {
+    val registerViewModel = hiltViewModel<RegisterViewModel>()
     var passwordVisible by remember { mutableStateOf(false) }
 
     Column(

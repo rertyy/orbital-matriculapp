@@ -4,14 +4,37 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.network.RestApiService
+import com.example.frontend.repository.UserRepository
+import dagger.Lazy
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 // TODO dependency injection to allow for API testing
 // by separating the API service call from the view model
 
-class RegisterViewModel : UserInterfaceViewModel() {
+@HiltViewModel
+class RegisterViewModel @Inject constructor(private val userRepository: Lazy<UserRepository>) :
+    ViewModel() {
+    init {
+        userRepository.get()
+    }
+
+    var username: String by mutableStateOf("")
+        private set
+    var password: String by mutableStateOf("")
+        private set
+
+    fun changeUsername(username: String) {
+        this.username = username
+    }
+
+    fun changePassword(password: String) {
+        this.password = password
+    }
+
     var email: String by mutableStateOf("")
         private set
 
@@ -42,7 +65,7 @@ class RegisterViewModel : UserInterfaceViewModel() {
         viewModelScope.launch {
             try {
                 val request = RegisterRequest(username, password, email)
-                val registerResponse = RestApiService.retrofitService.registerUser(request)
+                val registerResponse = userRepository.get().registerUser(request)
                 val authenticationResponse = registerResponse.body()
                 if (registerResponse.isSuccessful) {
                     Log.d("Register", authenticationResponse.toString())

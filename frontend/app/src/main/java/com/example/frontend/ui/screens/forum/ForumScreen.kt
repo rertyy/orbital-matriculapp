@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screens.forum
 
+import Thread
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,10 +30,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.frontend.R
-import Thread
 
 
 @Composable
@@ -43,6 +43,7 @@ fun ForumScreen(
     onCreateThread: () -> Unit,
     navController: NavController
 ) {
+    val viewModel = hiltViewModel<ForumViewModel>()
     when (forumUiState) {
         is ForumUiState.Loading -> LoadingScreen(modifier, onCreateThread)
         is ForumUiState.Success -> ResultScreen(
@@ -64,6 +65,7 @@ fun ForumScreen(
 
 @Composable
 fun LoadingScreen(modifier: Modifier = Modifier, onCreatePost: () -> Unit) {
+    val viewModel = hiltViewModel<ForumViewModel>()
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize()
@@ -80,6 +82,7 @@ fun LoadingScreen(modifier: Modifier = Modifier, onCreatePost: () -> Unit) {
 
 @Composable
 fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier, onCreatePost: () -> Unit) {
+    val viewModel = hiltViewModel<ForumViewModel>()
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -99,6 +102,7 @@ fun ResultScreen(
     onCreatePost: () -> Unit,
     navController: NavController
 ) {
+    val viewModel = hiltViewModel<ForumViewModel>()
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize()
@@ -115,10 +119,10 @@ fun ResultScreen(
 fun ThreadsList(
     @PreviewParameter(MultiPostProvider::class) threads: List<Thread>,
     modifier: Modifier = Modifier,
-    forumViewModel: ForumViewModel = viewModel(),
     onCreateThread: () -> Unit,
     navController: NavController
 ) {
+    val viewModel = hiltViewModel<ForumViewModel>()
     Log.d("posts", threads.toString())
     Column(modifier = Modifier.fillMaxWidth()) {
         Button(
@@ -142,9 +146,9 @@ fun ThreadsList(
 @Composable
 fun ThreadCard(
     @PreviewParameter(SinglePostProvider::class) thread: Thread,
-    forumViewModel: ForumViewModel = viewModel(),
     navController: NavController
 ) {
+    val forumViewModel = hiltViewModel<ForumViewModel>()
     Card(
         modifier = Modifier
             .padding(8.dp)
