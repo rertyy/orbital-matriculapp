@@ -24,7 +24,7 @@ import retrofit2.http.Path
 //// NB https://stackoverflow.com/questions/5495534/java-net-connectexception-localhost-127-0-0-18080-connection-refused
 
 private const val BASE_URL =
-    "https://orbital-backend-6z61.onrender.com"
+    "https://orbital-backend-6z61.onrender.com/health"
 
 
 interface ApiService {

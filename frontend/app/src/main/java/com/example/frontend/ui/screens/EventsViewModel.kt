@@ -35,8 +35,11 @@ class EventsViewModel : ViewModel() {
 
     var eventsUiState: EventsUiState by mutableStateOf(EventsUiState.Loading)
         private set
-    var currentTime: OffsetDateTime by mutableStateOf(OffsetDateTime.MIN)
-        private set
+
+    init {
+        getAllEvents()
+    }
+
 
     var events: List<Event> by mutableStateOf(listOf(defaultEvent))
 //    fun getCurrentTime() {

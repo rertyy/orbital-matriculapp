@@ -80,7 +80,6 @@ fun EventsScreen(
         is EventsUiState.Success -> EventsSuccessScreen(
             navController = navController,
             eventsViewModel = eventsViewModel,
-            retryAction = retryAction
         )
     }
 
@@ -122,7 +121,6 @@ fun EventsErrorScreen(
 fun EventsSuccessScreen(
     navController: NavHostController = rememberNavController(),
     eventsViewModel: EventsViewModel,
-    retryAction: () -> Unit,
 
     ) {
     Column(
