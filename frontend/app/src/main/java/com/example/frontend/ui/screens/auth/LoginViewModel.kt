@@ -67,8 +67,8 @@ class LoginViewModel @Inject constructor(private val userRepository: Lazy<UserRe
 
     fun performLogin() {
         Log.d("Login", "Performing login")
-        Log.d("LoginUsername", username)
-        Log.d("LoginPassword", password) //TODO remove this
+        Log.d("Login", "login username is $username")
+        Log.d("Login", "Login password is $password") //TODO remove this
 
         if (!isValidLogin()) {
             triggerLoginError()
@@ -86,8 +86,10 @@ class LoginViewModel @Inject constructor(private val userRepository: Lazy<UserRe
 
                 // TODO sync up the header with the response
                 val accessToken = loginResponse.headers()["Authorization"]
+                Log.d("Login", "Access token is: $accessToken")
                 userRepository.get().storeToken(accessToken.toString())
-
+                val token = userRepository.get().getToken()
+                Log.d("Login", "Stored access token is: $token")
                 val authenticationResponse = loginResponse.body()
                 if (loginResponse.isSuccessful) {
                     Log.d("Login", "success" + authenticationResponse.toString())

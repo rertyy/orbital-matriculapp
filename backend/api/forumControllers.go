@@ -21,7 +21,7 @@ func (h *Handler) HandleGetAllThreads(w http.ResponseWriter, _ *http.Request) {
 
 	// TODO recheck with the frontend the best way to handle this
 	if len(threads) == 0 {
-		NewJSONResponse(w, http.StatusOK, HttpResponse{Message: "No threads found"})
+		NewJSONResponse(w, http.StatusOK, HttpResponse{Success: true, Message: "No threads found"})
 		return
 	}
 
@@ -89,7 +89,7 @@ func (h *Handler) HandleGetThreadReplies(w http.ResponseWriter, r *http.Request)
 	ctx := context.Background()
 	replies, err := h.DB.GetRepliesByThread(ctx, int32(threadIdInt))
 	if len(replies) == 0 {
-		NewJSONResponse(w, http.StatusOK, HttpResponse{Message: "No threads found"})
+		NewJSONResponse(w, http.StatusOK, HttpResponse{Success: true, Message: "No threads found"})
 		return
 	}
 
@@ -151,7 +151,7 @@ func (h *Handler) HandleDeleteThread(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	NewJSONResponse(w, http.StatusOK, HttpResponse{Message: "Post Deleted"})
+	NewJSONResponse(w, http.StatusOK, HttpResponse{Success: true, Message: "Post Deleted"})
 
 }
 

@@ -35,7 +35,7 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := util.GenerateJwt(userReq.Username)
+	jwtToken, err := util.GenerateJwt(userReq.Username)
 
 	if err != nil {
 		log.Println("HandleLogin: GenerateJwt", err)
@@ -43,7 +43,10 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	NewJSONResponse(w, http.StatusOK, token)
+	w.Header().Set("Authorization", "Bearer "+jwtToken)
+	response := HttpResponse{Success: true, Message: "Login successful"}
+
+	NewJSONResponse(w, http.StatusOK, response)
 }
 
 // when testing, for security, check that failing username check is not faster than failing password check.
@@ -90,6 +93,7 @@ func (h *Handler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := HttpResponse{
+		Success: true,
 		Message: "Registration successful",
 	}
 	NewJSONResponse(w, http.StatusCreated, response)

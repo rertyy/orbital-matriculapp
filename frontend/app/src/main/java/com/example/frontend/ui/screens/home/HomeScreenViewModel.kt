@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screens.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.repository.EventRepository
@@ -14,7 +15,9 @@ class HomeScreenViewModel @Inject constructor(private val eventRepository: Lazy<
     ViewModel() {
     init {
         eventRepository.get()
+        getEvents()
     }
+
 //    var currentTime by mutableStateOf("")
 //        private set
 
@@ -35,12 +38,14 @@ class HomeScreenViewModel @Inject constructor(private val eventRepository: Lazy<
 
     fun getEvents(): List<Event>? {
         // TODO error screen
+        Log.d("HomeScreenViewModel", "getEvents called")
         var listEvents: List<Event>? = null
         viewModelScope.launch {
             listEvents = try {
                 eventRepository.get().getEvents().body()
                     ?: throw Exception("Events is null")
             } catch (e: Exception) {
+                Log.d("HomeScreenViewModel", "exception thrown $e")
                 null
             }
         }
@@ -51,11 +56,3 @@ class HomeScreenViewModel @Inject constructor(private val eventRepository: Lazy<
 
 }
 
-// TODO add @SerializedName to use json format
-data class Event(
-    @SerializedName("event_id") val eventId: String,
-    @SerializedName("name") val eventName: String,
-    @SerializedName("body") val body: String,
-//    val eventStartDate: String?,
-//    val eventEndDate: String?,
-)
