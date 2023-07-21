@@ -148,12 +148,12 @@ class ForumViewModel @Inject constructor(private val forumRepository: Lazy<Forum
 
         viewModelScope.launch {
             try {
-                forumRepository.get().newReply(reply.threadId, reply)
+                forumRepository.get().newReply(reply.replyId, reply)
             } catch (e: Exception) {
                 Log.d("FORUM", "Error getting thread: ${e.message}")
             }
         }
 
-        getReplies(reply.threadId)
+        getReplies(reply.replyId)
     }
 }

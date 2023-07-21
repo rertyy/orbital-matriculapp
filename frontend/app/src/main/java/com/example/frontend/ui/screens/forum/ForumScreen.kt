@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screens.forum
 
+import Reply
 import Thread
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -163,7 +164,7 @@ fun ThreadCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = thread.title,
+                text = thread.threadName,
                 style = LocalTextStyle.current.copy(fontSize = 15.sp, fontWeight = Bold),
             )
 
@@ -194,7 +195,7 @@ fun ThreadCard(
 //                text = post.title,
 //                style = LocalTextStyle.current.copy(fontSize = 15.sp, fontWeight = Bold),
 //            )
-        Text(text = thread.body, style = LocalTextStyle.current.copy(fontSize = 12.sp))
+        Text(text = thread.threadBody, style = LocalTextStyle.current.copy(fontSize = 12.sp))
 
         Button(
             onClick = {
@@ -209,7 +210,22 @@ fun ThreadCard(
 }
 
 
-val thread1 = Thread("hi", "test", 1)
+val thread1 = Thread(
+    1,
+    "thread1name",
+    "thread1body",
+    "now start",
+    "now end",
+    1, "hello"
+)
+
+val reply1 = Reply(
+    1,
+    "NASDAQ",
+    "reply1body",
+    1,
+    "now end",
+)
 
 //"cat-name2",
 //1,
@@ -218,7 +234,7 @@ val thread1 = Thread("hi", "test", 1)
 //    OffsetDateTime.now(),
 
 
-val thread2 = Thread("hi", "body", 2)
+val thread2 = thread1
 
 //"cat-name2",
 //1,

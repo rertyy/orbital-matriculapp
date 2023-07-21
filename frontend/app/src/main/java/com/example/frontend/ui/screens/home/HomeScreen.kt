@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screens.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -150,8 +151,10 @@ fun CurrentTimePreview() {
 
 
 @Composable
-fun Deadlines(homeScreenViewModel: HomeScreenViewModel = viewModel()) {
+fun Deadlines() {
+    val homeScreenViewModel = hiltViewModel<HomeScreenViewModel>()
     val eventList = homeScreenViewModel.getEvents()
+    Log.d("HomeScreen", "$eventList")
     if (eventList == null) {
         Text("No events")
         return

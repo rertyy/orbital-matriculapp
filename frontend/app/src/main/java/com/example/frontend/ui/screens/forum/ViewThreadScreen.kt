@@ -34,8 +34,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
 
 
-val defaultThread: Thread = Thread()
-val defaultReply: Reply = Reply()
+val defaultThread: Thread = thread1
+val defaultReply: Reply = reply1
 
 
 @Composable
@@ -81,7 +81,7 @@ fun ViewThread(
         Spacer(Modifier.height(25.dp))
 
         TextField(
-            value = thread.title,
+            value = thread.threadName,
             onValueChange = {},
             readOnly = true,
             modifier = Modifier.fillMaxWidth()
@@ -90,7 +90,7 @@ fun ViewThread(
         Spacer(Modifier.height(25.dp))
 
         TextField(
-            value = thread.body,
+            value = thread.threadBody,
             onValueChange = {},
             readOnly = true,
             modifier = Modifier
@@ -114,10 +114,7 @@ fun ViewThread(
 
         Button(
             onClick = {
-                val newComment = Reply(
-                    body = commentBody,
-                    threadId = thread.threadId
-                )
+                val newComment = reply1
 
                 forumViewModel.addReply(newComment)
 
@@ -134,9 +131,9 @@ fun ViewThread(
 @Composable
 fun ReplyList(listReplies: List<Reply>) {
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
-        items(listReplies) { post ->
+        items(listReplies) { reply ->
             TextField(
-                value = post.body,
+                value = reply.replyBody,
                 onValueChange = {},
                 readOnly = true
             )

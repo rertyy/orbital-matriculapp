@@ -1,6 +1,5 @@
 package com.example.frontend.ui.screens.forum
 
-import Thread
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -74,7 +73,7 @@ fun PostCreation(onBack: () -> Unit) {
 
             Button(
                 onClick = {
-                    val newThread = Thread(title = title, body = body)
+                    val newThread = thread1
                     forumViewModel.addThread(newThread)
                     onBack()
                 },
