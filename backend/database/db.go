@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	_ "github.com/lib/pq"
 	"log"
-	"orbital-backend/api/sql/sqlc"
+	"orbital-backend/database/sql/sqlc"
 	"os"
 )
 

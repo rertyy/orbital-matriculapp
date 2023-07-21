@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (h *Handler) HandleGetAllEvents(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) HandleGetAllEvents(w http.ResponseWriter, _ *http.Request) {
 	log.Println("getAllEvents")
 	ctx := context.Background()
 

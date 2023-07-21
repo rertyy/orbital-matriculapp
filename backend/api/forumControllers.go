@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"orbital-backend/api/sql/sqlc"
+	"orbital-backend/database/sql/sqlc"
 	"strconv"
 )
 
