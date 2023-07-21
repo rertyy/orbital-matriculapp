@@ -1,16 +1,27 @@
 package com.example.frontend.ui.screens.auth
 
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import com.example.frontend.data.TokenStore
 import com.example.frontend.network.RestApiService
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 // TODO dependency injection to allow for API testing
 // by separating the API service call from the view model
-class LoginViewModel : UserInterfaceViewModel() {
+
+@HiltViewModel
+class LoginViewModel @Inject constructor(private val prefs: SharedPreferences) :
+    UserInterfaceViewModel() {
 
 
     var loginSuccessful by mutableStateOf(false)
@@ -41,6 +52,13 @@ class LoginViewModel : UserInterfaceViewModel() {
         return valid
     }
 
+    private suspend fun saveToken(jwtToken: String) {
+        prefs.edit()
+            .putString("jwt", jwtToken)
+            .apply()
+        Log.d("MyViewModel", "Hello from saveToken: $jwtToken")
+    }
+
 
     fun performLogin() {
         Log.d("Login", "Performing login")
@@ -59,7 +77,7 @@ class LoginViewModel : UserInterfaceViewModel() {
                 val loginResponse = RestApiService.retrofitService.authenticateLogin(request)
 
                 val accessToken = loginResponse.headers()["Authorization"]
-
+                saveToken(accessToken.toString())
 
                 val authenticationResponse = loginResponse.body()
                 if (loginResponse.isSuccessful) {

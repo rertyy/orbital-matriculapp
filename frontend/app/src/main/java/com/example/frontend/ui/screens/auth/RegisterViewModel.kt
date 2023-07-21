@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 
 // TODO dependency injection to allow for API testing
 // by separating the API service call from the view model
+
 class RegisterViewModel : UserInterfaceViewModel() {
     var email: String by mutableStateOf("")
         private set

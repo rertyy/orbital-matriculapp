@@ -21,6 +21,7 @@ import com.example.frontend.navigation.authNavGraph
 import com.example.frontend.navigation.forumNavGraph
 import com.example.frontend.ui.screens.CalendarScreen
 import com.example.frontend.ui.screens.home.HomeScreen
+import dagger.hilt.android.AndroidEntryPoint
 
 @Composable
 fun MainApp(

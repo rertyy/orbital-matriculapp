@@ -7,9 +7,9 @@ import com.example.frontend.ui.screens.auth.LoginRequest
 import com.example.frontend.ui.screens.auth.LoginResponse
 import Thread
 import com.example.frontend.ui.screens.auth.RegisterRequest
-import retrofit2.Retrofit
 import retrofit2.http.POST
 import retrofit2.Response
+import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.DELETE

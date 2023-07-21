@@ -40,8 +40,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.R
 import com.example.frontend.ui.theme.FrontendTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
+
 
 @Composable
 fun LoginScreen(onNavigateToRegister: () -> Unit) {
@@ -113,8 +115,10 @@ fun Login(loginViewModel: LoginViewModel = viewModel(), onNavigateToRegister: ()
                     if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                 val description = if (passwordVisible) stringResource(R.string.hide_password)
                 else stringResource(R.string.show_password)
-                IconButton(onClick = { passwordVisible = !passwordVisible },
-                    modifier = Modifier.testTag("Show password")) {
+                IconButton(
+                    onClick = { passwordVisible = !passwordVisible },
+                    modifier = Modifier.testTag("Show password")
+                ) {
                     Icon(
                         imageVector = image,
                         description

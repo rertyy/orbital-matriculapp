@@ -14,6 +14,11 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 import Thread
+import android.content.SharedPreferences
+import com.example.frontend.data.TokenStore
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
 
 
 sealed interface ForumUiState {
@@ -29,15 +34,17 @@ sealed interface ForumUiState {
 
 }
 
+@HiltViewModel
+class ForumViewModel @Inject constructor(
+) : ViewModel() {
 
-class ForumViewModel : ViewModel() {
     var forumUiState: ForumUiState by mutableStateOf(ForumUiState.Loading)
         private set
-
 
     init {
         getAllThreads()
     }
+
 
     fun addThread(thread: Thread) {
         Log.d("FORUM", "adding post")
@@ -70,6 +77,13 @@ class ForumViewModel : ViewModel() {
 
     fun getAllThreads() {
         Log.d("FORUM", "Retrieving posts")
+
+        viewModelScope.launch {
+            try {
+            } catch (e: Exception) {
+                Log.d("FORUM", "Error reading token: ${e.message}")
+            }
+        }
 
         // TODO change exception handling
         viewModelScope.launch {

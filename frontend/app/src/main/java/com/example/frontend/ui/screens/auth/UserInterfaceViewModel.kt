@@ -4,8 +4,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-open class UserInterfaceViewModel : ViewModel() {
+@HiltViewModel
+open class UserInterfaceViewModel @Inject constructor() : ViewModel() {
     var username: String by mutableStateOf("")
         private set
     var password: String by mutableStateOf("")

@@ -71,7 +71,6 @@ dependencies {
     // Datastore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
     implementation 'androidx.core:core-ktx:1.10.1'
-    implementation 'androidx.core:core-ktx:+'
 
     //testImplementation 'org.junit.jupiter:junit-jupiter'  junit5
 
@@ -95,7 +94,6 @@ dependencies {
     //// ksp not supported. See https://github.com/google/dagger/issues/2349
     kapt "com.google.dagger:hilt-compiler:2.44.2"
     kapt "com.google.dagger:hilt-android-compiler:2.40.5"
-    implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
     kapt "androidx.hilt:hilt-compiler:1.0.0"
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
 
