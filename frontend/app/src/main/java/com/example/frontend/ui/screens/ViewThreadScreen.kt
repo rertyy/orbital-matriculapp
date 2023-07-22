@@ -32,7 +32,6 @@ import androidx.compose.ui.draw.clip
 
 @Composable
 fun viewThread(
-    threadId: Int,
     forumViewModel: ForumViewModel,
     onBack: () -> Unit,
     forumUiState: ForumUiState

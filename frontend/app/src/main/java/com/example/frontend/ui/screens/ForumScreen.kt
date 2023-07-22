@@ -56,10 +56,7 @@ fun ForumScreen(
 
         is ForumUiState.Error -> ErrorScreen(retryAction, modifier, onCreateThread)
         is ForumUiState.Success2 -> navController.navigate(
-            "viewThread/{threadId}".replace(
-                oldValue = "{threadId}",
-                newValue = forumUiState.thread.threadId.toString()
-            )
+            "viewThread"
         )
     }
 }

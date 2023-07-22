@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screens
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -230,6 +231,8 @@ fun Deadlines(eventsViewModel: EventsViewModel) {
 fun EventDisplayBox(event: Event, eventsViewModel: EventsViewModel) {
 
     var showEvent by remember { mutableStateOf(false) }
+
+    val context: Context = LocalContext.current
 
     if (showEvent) {
         ViewEvent(event, { showEvent = false })

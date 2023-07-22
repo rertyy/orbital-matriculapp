@@ -153,22 +153,19 @@ fun NavGraphBuilder.forumNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(route = "viewThread/{threadId}") { navBackStackEntry ->
+        composable(route = "viewThread") { navBackStackEntry ->
             val context = LocalContext.current
 
             val forumViewModel: ForumViewModel =
                 navBackStackEntry.sharedViewModel<ForumViewModel>(navController = navController)
 
-            val threadId = navBackStackEntry.arguments?.getString("threadId")
 
-            threadId?.let { id ->
-                viewThread(
-                    threadId = id.toInt(),
-                    forumViewModel = forumViewModel,
-                    onBack = { navController.navigate(ForumNavGraph.Posts.route) },
-                    forumUiState = forumViewModel.forumUiState
-                )
-            }
+            viewThread(
+                forumViewModel = forumViewModel,
+                onBack = { navController.navigate(ForumNavGraph.Posts.route) },
+                forumUiState = forumViewModel.forumUiState
+            )
+
         }
     }
 }
