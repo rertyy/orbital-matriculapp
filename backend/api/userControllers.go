@@ -12,9 +12,14 @@ import (
 func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
-	var request sqlc.GetUserByUsernameRow
+	var request struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
 
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+	err := json.NewDecoder(r.Body).Decode(&request)
+	log.Println("HandleLogin: request", request)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

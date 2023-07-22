@@ -15,6 +15,8 @@ type Handler struct {
 func SetupRouter(h *Handler) *mux.Router {
 	r := mux.NewRouter()
 
+	//r.Use(middleware.EnableCorsMiddleware)
+
 	r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		NewJSONResponse(w, http.StatusOK, struct {
 			Success bool   `json:"success"`
@@ -24,7 +26,7 @@ func SetupRouter(h *Handler) *mux.Router {
 
 	// User endpoints
 	userRoute := r.PathPrefix("/user").Subrouter()
-	userRoute.HandleFunc("/login", h.HandleLogin).Methods("POST")
+	userRoute.HandleFunc("/login", h.HandleLogin).Methods("POST", "OPTIONS")
 	userRoute.HandleFunc("/register", h.HandleRegister).Methods("POST")
 	userRoute.HandleFunc("/delete", h.HandleDeleteUser).Methods("DELETE")
 
@@ -50,7 +52,15 @@ func SetupRouter(h *Handler) *mux.Router {
 	eventRoute.HandleFunc("/all", h.HandleGetAllEvents).Methods("GET")
 
 	//forumRoute.Use(middleware.JwtAuthMiddleWare)
-	r.Use(middleware.LoggerMiddleware)
+	//r.Use(middleware.EnableCorsMiddleware)
 	r.Use(mux.CORSMethodMiddleware(r))
+	r.Use(middleware.LoggerMiddleware)
+
+	//headersOk := handlers.AllowedHeaders([]string{"Content-Type", "Authorization"})
+	//originsOk := handlers.AllowedOrigins([]string{"*"})
+	//methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"})
+	//r.Use(handlers.CORS(headersOk, originsOk, methodsOk))
+	//userRoute.Use(handlers.CORS(headersOk, originsOk, methodsOk))
+
 	return r
 }
