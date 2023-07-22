@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screens
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,7 +67,7 @@ class EventsViewModel : ViewModel() {
 
 
             eventsUiState = try {
-                val eventsList = RestApiService.retrofitService.getAllEvents().body()
+                val eventsList = RestApiService.retrofitService.getEvents().body()
 
                 if (eventsList == null) {
                     EventsUiState.Error
@@ -81,8 +82,11 @@ class EventsViewModel : ViewModel() {
         }
     }
 
-    fun setReminder(event: Event) {
+    fun setReminder(event: Event, context: Context) {
 
+        val scheduler = EventScheduler(context)
+
+        scheduler.schedule(event)
     }
 
 

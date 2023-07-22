@@ -13,7 +13,6 @@ import retrofit2.Response
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.DELETE
-import retrofit2.http.Field
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -28,12 +27,12 @@ private const val BASE_URL =
 
 
 interface ApiService {
-    @POST("/login")
+    @POST("/user/login")
     suspend fun authenticateLogin(
         @Body request: LoginRequest
     ): Response<LoginResponse>
 
-    @POST("/register")
+    @POST("/user/register")
     suspend fun registerUser(
         @Body request: RegisterRequest
     ): Response<RegisterRequest>
@@ -42,27 +41,27 @@ interface ApiService {
     @GET("/threads")
     suspend fun getAllThreads(): Response<List<Thread>>
 
-    @GET("/events")
-    suspend fun getAllEvents(): Response<List<Event>>
+    @GET("/events/all")
+    suspend fun getEvents(): Response<List<Event>>
 
-    @PUT("/{categoryId}/edit")
+    @PUT("/threads/{threadId}/edit")
     suspend fun editThread(
         @Path("threadId") threadId: Int,
         @Body request: Thread
     ): Response<Thread>
 
-    @POST("/{categoryId}/addThread")
+    @POST("/threads/{threadId}/newThread")
     suspend fun addThread(
-        @Path("categoryId") categoryId: Int,
+        @Path("thread_id") categoryId: Int,
         @Body request: Thread
     ): Response<Thread>
 
-    @DELETE("/{threadId}/deleteThread")
+    @DELETE("/threads/{threadId}/delete")
     suspend fun deleteThread(
         @Path("threadId") threadId: Int,
     ): Response<Int>
 
-    @GET("/{threadId}/getThread")
+    @GET("/threads/{threadId}")
     suspend fun getThread(
         @Path("threadId") threadId: Int
     ): Response<Thread>
@@ -72,7 +71,7 @@ interface ApiService {
         @Path("threadId") threadId: Int
     ): Response<List<Reply>>
 
-    @POST("/threads/{threadId}/replies/newreply")
+    @POST("/threads/{threadId}/replies/addReply")
     suspend fun newReply(
         @Path("threadId") threadId: Int,
         @Body request: Reply

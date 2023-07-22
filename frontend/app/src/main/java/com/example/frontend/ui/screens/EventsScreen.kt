@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screens
 
+import android.content.Context
 import android.graphics.Paint.Align
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -238,6 +239,8 @@ fun EventDisplayBox(event: Event, eventsViewModel: EventsViewModel) {
 
     var showEvent by remember { mutableStateOf(false) }
 
+    val context: Context = LocalContext.current
+
     if (showEvent) {
         ViewEvent(event, { showEvent = false })
     }
@@ -261,7 +264,7 @@ fun EventDisplayBox(event: Event, eventsViewModel: EventsViewModel) {
             )
 
             IconButton(
-                onClick = { eventsViewModel.setReminder(event) },
+                onClick = { eventsViewModel.setReminder(event, context) },
             ) {
                 Icon(imageVector = Icons.Rounded.Doorbell, contentDescription = "set reminder")
             }
