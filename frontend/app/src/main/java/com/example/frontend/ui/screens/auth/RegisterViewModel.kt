@@ -1,4 +1,4 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.auth
 
 import android.util.Log
 import androidx.compose.runtime.getValue

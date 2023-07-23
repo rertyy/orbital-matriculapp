@@ -30,14 +30,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.example.frontend.ui.screens.CalendarScreen
-import com.example.frontend.ui.screens.ForumScreen
-import com.example.frontend.ui.screens.ForumViewModel
-import com.example.frontend.ui.screens.HomeScreen
-import com.example.frontend.ui.screens.LoginScreen
-import com.example.frontend.ui.screens.RegistrationScreen
-import com.example.frontend.ui.screens.postCreation
-import com.example.frontend.ui.screens.viewThread
+import com.example.frontend.ui.screens.auth.LoginScreen
+import com.example.frontend.ui.screens.auth.RegistrationScreen
+import com.example.frontend.ui.screens.forum.ForumScreen
+import com.example.frontend.ui.screens.forum.ForumViewModel
+import com.example.frontend.ui.screens.forum.PostCreation
+import com.example.frontend.ui.screens.forum.ViewThread
+import com.example.frontend.ui.screens.home.EventsScreen
+import com.example.frontend.ui.screens.home.EventsViewModel
+import com.example.frontend.ui.screens.secondscreen.CalendarScreen
 
 
 sealed class RootNavGraph(val route: String, val icon: ImageVector, @StringRes val title: Int) {
@@ -108,7 +109,10 @@ fun MainApp(
         ) {
             composable(route = RootNavGraph.Home.route) {
                 val context = LocalContext.current
-                HomeScreen(navController)
+
+                val eventsViewModel: EventsViewModel = viewModel()
+
+                EventsScreen(navController, eventsViewModel) { eventsViewModel.getAllEvents() }
             }
 
             composable(route = RootNavGraph.Calendar.route) {
@@ -137,33 +141,30 @@ fun NavGraphBuilder.forumNavGraph(navController: NavHostController) {
                 forumUiState = forumViewModel.forumUiState,
                 retryAction = { forumViewModel.getAllThreads() },
                 onCreateThread = { navController.navigate(ForumNavGraph.CreatePost.route) },
-                navController = navController
+                navController = navController,
+                forumViewModel = forumViewModel
             )
         }
         composable(route = ForumNavGraph.CreatePost.route) {
             val context = LocalContext.current
 
-            postCreation(
+            PostCreation(
                 onBack = { navController.navigate(ForumNavGraph.Posts.route) }
             )
         }
 
-        composable(route = "viewThread/{threadId}") { navBackStackEntry ->
+        composable(route = "viewThread") { navBackStackEntry ->
             val context = LocalContext.current
 
             val forumViewModel: ForumViewModel =
                 navBackStackEntry.sharedViewModel<ForumViewModel>(navController = navController)
 
-            val threadId = navBackStackEntry.arguments?.getString("threadId")
+            ViewThread(
+                forumViewModel = forumViewModel,
+                onBack = { navController.navigate(ForumNavGraph.Posts.route) },
+                forumUiState = forumViewModel.forumUiState
+            )
 
-            threadId?.let { id ->
-                viewThread(
-                    threadId = id.toInt(),
-                    forumViewModel = forumViewModel,
-                    onBack = { navController.navigate(ForumNavGraph.Posts.route) },
-                    forumUiState = forumViewModel.forumUiState
-                )
-            }
         }
     }
 }

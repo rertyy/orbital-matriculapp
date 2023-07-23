@@ -1,4 +1,4 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.forum
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -19,23 +19,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
+import com.example.frontend.ForumNavGraph
 import com.example.frontend.R
-
+import com.example.frontend.RootNavGraph
 
 @Composable
 fun ForumScreen(
@@ -43,7 +41,8 @@ fun ForumScreen(
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
     onCreateThread: () -> Unit,
-    navController: NavController
+    navController: NavController,
+    forumViewModel: ForumViewModel,
 ) {
     when (forumUiState) {
         is ForumUiState.Loading -> LoadingScreen(modifier, onCreateThread)
@@ -51,16 +50,20 @@ fun ForumScreen(
             forumUiState.threadList,
             modifier,
             onCreateThread,
-            navController
+            navController,
+            forumViewModel
         )
 
         is ForumUiState.Error -> ErrorScreen(retryAction, modifier, onCreateThread)
-        is ForumUiState.Success2 -> navController.navigate(
-            "viewThread/{threadId}".replace(
-                oldValue = "{threadId}",
-                newValue = forumUiState.thread.threadId.toString()
+        is ForumUiState.GetReplies -> {
+            Log.d("ForumUiState Changed", "here")
+            ViewThread(
+                forumViewModel = forumViewModel,
+                onBack = { navController.navigate(ForumNavGraph.Posts.route) },
+                forumUiState = forumUiState
             )
-        )
+        }
+
     }
 }
 
@@ -99,14 +102,20 @@ fun ResultScreen(
     threads: List<Thread>,
     modifier: Modifier = Modifier,
     onCreatePost: () -> Unit,
-    navController: NavController
+    navController: NavController,
+    forumViewModel: ForumViewModel
 ) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize()
     ) {
         Log.d("GET posts", threads.toString())
-        ThreadsList(threads = threads, onCreateThread = onCreatePost, navController = navController)
+        ThreadsList(
+            threads = threads,
+            onCreateThread = onCreatePost,
+            navController = navController,
+            forumViewModel = forumViewModel
+        )
     }
 }
 
@@ -117,7 +126,7 @@ fun ResultScreen(
 fun ThreadsList(
     @PreviewParameter(MultiPostProvider::class) threads: List<Thread>,
     modifier: Modifier = Modifier,
-    forumViewModel: ForumViewModel = viewModel(),
+    forumViewModel: ForumViewModel,
     onCreateThread: () -> Unit,
     navController: NavController
 ) {
@@ -133,7 +142,11 @@ fun ThreadsList(
 
         LazyColumn(modifier = modifier) {
             items(threads) { post ->
-                ThreadCard(thread = post, navController = navController)
+                ThreadCard(
+                    thread = post,
+                    navController = navController,
+                    forumViewModel = forumViewModel
+                )
             }
         }
     }
@@ -144,7 +157,7 @@ fun ThreadsList(
 @Composable
 fun ThreadCard(
     @PreviewParameter(SinglePostProvider::class) thread: Thread,
-    forumViewModel: ForumViewModel = viewModel(),
+    forumViewModel: ForumViewModel,
     navController: NavController
 ) {
     Card(
@@ -167,12 +180,12 @@ fun ThreadCard(
 
 
             Row() {
-                IconButton(
-                    onClick = { forumViewModel.modifyThread(thread, thread2) },
-                    modifier = Modifier
-                ) {
-                    Icon(imageVector = Icons.Rounded.Edit, contentDescription = "edit post")
-                }
+//                IconButton(
+//                    onClick = { forumViewModel.modifyThread(thread, thread2) },
+//                    modifier = Modifier
+//                ) {
+//                    Icon(imageVector = Icons.Rounded.Edit, contentDescription = "edit post")
+//                }
 
                 IconButton(
                     onClick = { forumViewModel.deleteThread(thread.threadId) }
@@ -206,8 +219,11 @@ fun ThreadCard(
     }
 }
 
-
-val thread1 = Thread("hi", "test", 1)
+val thread1: Thread = Thread(
+    1,
+    "title",
+    "body"
+)
 
 //"cat-name2",
 //1,
@@ -216,7 +232,7 @@ val thread1 = Thread("hi", "test", 1)
 //    OffsetDateTime.now(),
 
 
-val thread2 = Thread("hi", "body", 2)
+val thread2 = Thread(2, "title2", "body2")
 
 //"cat-name2",
 //1,

@@ -80,7 +80,7 @@ func (q *Queries) AddThread(ctx context.Context, arg AddThreadParams) (Thread, e
 const deleteThread = `-- name: DeleteThread :exec
 DELETE
 FROM threads
-WHERE thread_created_by = $1
+WHERE thread_id = $1
 `
 
 func (q *Queries) DeleteThread(ctx context.Context, threadCreatedBy int32) error {

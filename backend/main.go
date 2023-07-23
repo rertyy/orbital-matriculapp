@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"orbital-backend/api"
@@ -28,5 +29,8 @@ func main() {
 	serverPort := os.Getenv("SERVER_PORT")
 
 	log.Println("Server started")
-	log.Fatal(http.ListenAndServe(serverPort, r))
+	handler := cors.Default().Handler(r)
+	//handler = handlers.LoggingHandler(os.Stdout, handler)
+	log.Fatal(http.ListenAndServe(serverPort, handler))
+
 }

@@ -1,4 +1,4 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.forum
 
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -18,21 +18,20 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.frontend.R
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.draw.clip
 
 @Composable
-fun viewThread(
-    threadId: Int,
+fun ViewThread(
     forumViewModel: ForumViewModel,
     onBack: () -> Unit,
     forumUiState: ForumUiState
@@ -43,7 +42,7 @@ fun viewThread(
     var replies: List<Reply> by remember { mutableStateOf(listOf(defaultReply)) }
 
     when (forumUiState) {
-        is ForumUiState.Success2 -> {
+        is ForumUiState.GetReplies -> {
             thread = forumUiState.thread
             replies = forumUiState.replies
         }
@@ -61,7 +60,7 @@ fun viewThread(
         Spacer(modifier = Modifier.height(10.dp))
 
         TextButton(
-            onClick = { onBack() }
+            onClick = { forumViewModel.getAllThreads() }
         ) {
             Text(
                 text = stringResource(id = R.string.back),
@@ -76,7 +75,8 @@ fun viewThread(
             value = thread.title,
             onValueChange = {},
             readOnly = true,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Original thread title") }
         )
 
         Spacer(Modifier.height(25.dp))
@@ -86,8 +86,8 @@ fun viewThread(
             onValueChange = {},
             readOnly = true,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp)
+                .fillMaxWidth(),
+            label = { Text("Original thread body") }
         )
 
         Spacer(Modifier.height(10.dp))
@@ -114,9 +114,10 @@ fun viewThread(
                 forumViewModel.addReply(newComment)
 
                 commentBody = ""
+
             }
         ) {
-
+            Text("post reply")
         }
 
     }
@@ -125,14 +126,18 @@ fun viewThread(
 
 @Composable
 fun ReplyList(listReplies: List<Reply>) {
-    LazyColumn(modifier = Modifier.fillMaxWidth()) {
-        items(listReplies) { post ->
-            TextField(
-                value = post.body,
-                onValueChange = {},
-                readOnly = true
-            )
+    Column() {
+        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            items(listReplies) { post ->
+                TextField(
+                    value = post.body,
+                    onValueChange = {},
+                    readOnly = true
+                )
+            }
         }
+
+        Spacer(Modifier.height(30.dp))
     }
 }
 

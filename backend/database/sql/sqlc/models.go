@@ -5,16 +5,15 @@
 package sqlc
 
 import (
-	"database/sql"
 	"time"
 )
 
 type Event struct {
-	EventID        int32          `json:"event_id"`
-	EventName      string         `json:"event_name"`
-	EventBody      sql.NullString `json:"event_body"`
-	EventStartDate sql.NullTime   `json:"event_start_date"`
-	EventEndDate   sql.NullTime   `json:"event_end_date"`
+	EventID        int32     `json:"event_id"`
+	EventName      string    `json:"event_name"`
+	EventBody      string    `json:"event_body"`
+	EventStartDate time.Time `json:"event_start_date"`
+	EventEndDate   time.Time `json:"event_end_date"`
 }
 
 type Reply struct {
