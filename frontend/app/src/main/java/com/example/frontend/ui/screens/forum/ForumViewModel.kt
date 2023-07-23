@@ -144,11 +144,14 @@ class ForumViewModel : ViewModel() {
                 val thread = response1.body()
                 val replies = response2.body()
 
-                Log.d("FORUM", "success getAllReplies $thread $replies")
 
                 if (thread == null || replies == null) {
+
+                    Log.d("FORUM", "something is null")
                     ForumUiState.Error
                 } else {
+
+                    Log.d("FORUM", "success getAllReplies $thread $replies")
                     ForumUiState.GetReplies(thread, replies)
                 }
             } catch (e: Exception) {

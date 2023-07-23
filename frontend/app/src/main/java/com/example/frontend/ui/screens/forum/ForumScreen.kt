@@ -33,6 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.frontend.ForumNavGraph
 import com.example.frontend.R
+import com.example.frontend.RootNavGraph
 
 @Composable
 fun ForumScreen(
@@ -40,7 +41,8 @@ fun ForumScreen(
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
     onCreateThread: () -> Unit,
-    navController: NavController
+    navController: NavController,
+    forumViewModel: ForumViewModel,
 ) {
     when (forumUiState) {
         is ForumUiState.Loading -> LoadingScreen(modifier, onCreateThread)
@@ -52,11 +54,14 @@ fun ForumScreen(
         )
 
         is ForumUiState.Error -> ErrorScreen(retryAction, modifier, onCreateThread)
-        is ForumUiState.GetReplies -> ViewThread(
-            forumViewModel = viewModel(),
+        is ForumUiState.GetReplies -> {
+            Log.d("ForumUiState Changed", "here")
+            ViewThread(
+            forumViewModel = forumViewModel,
             onBack = { navController.navigate(ForumNavGraph.Posts.route) },
             forumUiState = forumUiState
-        )
+            )
+        }
 
     }
 }

@@ -141,7 +141,8 @@ fun NavGraphBuilder.forumNavGraph(navController: NavHostController) {
                 forumUiState = forumViewModel.forumUiState,
                 retryAction = { forumViewModel.getAllThreads() },
                 onCreateThread = { navController.navigate(ForumNavGraph.CreatePost.route) },
-                navController = navController
+                navController = navController,
+                forumViewModel = forumViewModel
             )
         }
         composable(route = ForumNavGraph.CreatePost.route) {

@@ -34,8 +34,7 @@ class EventNotificationService(
             .build()
 
         notificationManager.notify(
-            eventId,
-//            1,
+            1,
             notification
         )
     }
