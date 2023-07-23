@@ -23,14 +23,15 @@ sealed interface EventsUiState {
 
 
 data class Event(
-    @SerializedName("event_id") val eventId: Int = -1,
-    @SerializedName("name") val eventName: String = "",
-    @SerializedName("body") val eventBody: String = "",
-    val eventStartDate: OffsetDateTime = OffsetDateTime.MIN,
-    val eventEndDate: OffsetDateTime = OffsetDateTime.MIN
+    @SerializedName("event_id") val eventId: Int = 1,
+    @SerializedName("event_name") val eventName: String = "",
+    @SerializedName("event_body") val eventBody: String = "",
+    @SerializedName("event_start_date") val eventStartDate: String = OffsetDateTime.now()
+        .toString(), // OffsetDateTime = OffsetDateTime.now(),
+    @SerializedName("event_end_date") val eventEndDate: String = OffsetDateTime.now()
+        .toString(), //OffsetDateTime = OffsetDateTime.now()
 )
 
-val defaultEvent = Event()
 
 class EventsViewModel : ViewModel() {
 
@@ -42,7 +43,8 @@ class EventsViewModel : ViewModel() {
     }
 
 
-    var events: List<Event> by mutableStateOf(listOf(defaultEvent))
+    private val defaultEvent = Event()
+    var events: List<Event> = listOf(defaultEvent)
 //    fun getCurrentTime() {
 //        viewModelScope.launch {
 //            while (true) {
@@ -58,6 +60,7 @@ class EventsViewModel : ViewModel() {
 //    }
 
 
+    // TODO this function is only called on init
     fun getAllEvents() {
 
 
@@ -68,6 +71,7 @@ class EventsViewModel : ViewModel() {
 
             eventsUiState = try {
                 val eventsList = RestApiService.retrofitService.getEvents().body()
+                Log.d("Events", "Events: $eventsList")
 
                 if (eventsList == null) {
                     EventsUiState.Error

@@ -39,7 +39,7 @@ data class Reply(
 sealed interface ForumUiState {
     data class Success(val threadList: List<Thread>) : ForumUiState
 
-    data class Success2(
+    data class GetReplies(
         val thread: Thread,
         val replies: List<Reply>
     ) : ForumUiState
@@ -149,7 +149,7 @@ class ForumViewModel : ViewModel() {
                 if (thread == null || replies == null) {
                     ForumUiState.Error
                 } else {
-                    ForumUiState.Success2(thread, replies)
+                    ForumUiState.GetReplies(thread, replies)
                 }
             } catch (e: Exception) {
                 Log.d("FORUM", "Error getting thread: ${e.message}")

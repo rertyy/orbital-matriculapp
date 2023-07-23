@@ -2,7 +2,6 @@ package com.example.frontend.ui.screens
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,8 +42,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -55,6 +51,7 @@ import com.example.frontend.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import parseStringToDateTime
 import java.text.DateFormat.getDateTimeInstance
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -217,9 +214,14 @@ fun Deadlines(eventsViewModel: EventsViewModel) {
             modifier = Modifier
         ) {
             items(eventList) { event ->
-                if (isUrgentEvent(now = OffsetDateTime.now(), event = event.eventStartDate)) {
+                if (isUrgentEvent(
+                        now = OffsetDateTime.now(),
+                        event = parseStringToDateTime(event.eventStartDate)
+                    )
+                ) {
                     EventDisplayBox(event = event, eventsViewModel = eventsViewModel)
                 } else {
+                    Log.d("Deadlines from EventsScreen", "lmao")
                 }
             }
 
@@ -295,7 +297,11 @@ fun ViewEvent(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(event.eventName, color = Color.White, fontFamily = FontFamily.Monospace)
+                    Text(
+                        "Event Name: ${event.eventName}",
+                        color = Color.Green,
+                        fontFamily = FontFamily.Monospace
+                    )
 
                     Surface(
                         onClick = onDismissAction,
@@ -311,34 +317,42 @@ fun ViewEvent(
                 Text("Event Description: ${event.eventBody}", fontFamily = FontFamily.Monospace)
 
                 Text(
-                    "Event Start Date: ${timeToString(time = event.eventStartDate)}",
+                    "Event Start Date: ${
+                        timeToString(
+                            time =
+                            parseStringToDateTime(
+                                event.eventStartDate
+                            )
+                        )
+                    }",
                     fontFamily = FontFamily.Monospace
                 )
 
                 Text(
-                    "Event End Date: ${timeToString(time = event.eventEndDate)}",
+                    "Event End Date: ${timeToString(time = parseStringToDateTime(event.eventEndDate))}",
                     fontFamily = FontFamily.Monospace
                 )
 
 
             }
-
-            Surface(
-                modifier = Modifier.align(Alignment.Center),
-                onClick = onDismissAction,
-                shape = RectangleShape,
-                color = backgroundColor,
-                border = BorderStroke(Dp.Hairline, Color.Black)
-            ) {
-                Text(
-                    "Close",
-                    fontFamily = FontFamily.Monospace,
-                    modifier = Modifier
-                        .widthIn(120.dp)
-                        .padding(vertical = 8.dp),
-                    textAlign = TextAlign.Center
-                )
-            }
+//            Spacer(modifier = Modifier.height(30.dp))
+//
+//            Surface(
+//                modifier = Modifier.align(Alignment.Center),
+//                onClick = onDismissAction,
+//                shape = RectangleShape,
+//                color = backgroundColor,
+//                border = BorderStroke(Dp.Hairline, Color.Black)
+//            ) {
+//                Text(
+//                    "Close",
+//                    fontFamily = FontFamily.Monospace,
+//                    modifier = Modifier
+//                        .widthIn(120.dp)
+//                        .padding(vertical = 8.dp),
+//                    textAlign = TextAlign.Center
+//                )
+//            }
         }
 
     }
@@ -353,7 +367,7 @@ fun timeToString(time: OffsetDateTime): String {
 }
 
 @Composable
-fun isUrgentEvent(now: OffsetDateTime, event: OffsetDateTime): Boolean {
+fun isUrgentEvent(now: OffsetDateTime = OffsetDateTime.now(), event: OffsetDateTime): Boolean {
     Log.d("isUrgentEvent", "now: $now, event: $event")
 //    return false
     if (event < now) {
@@ -387,7 +401,11 @@ fun UpcomingEvents(eventsViewModel: EventsViewModel) {
             modifier = Modifier
         ) {
             items(eventList) { event ->
-                if (!isUrgentEvent(now = OffsetDateTime.now(), event = event.eventStartDate)) {
+                if (!isUrgentEvent(
+                        now = OffsetDateTime.now(),
+                        event = parseStringToDateTime(event.eventStartDate)
+                    )
+                ) {
                     EventDisplayBox(event = event, eventsViewModel = eventsViewModel)
                 } else {
                 }

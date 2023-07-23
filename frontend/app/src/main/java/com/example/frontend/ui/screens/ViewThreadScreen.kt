@@ -42,7 +42,7 @@ fun ViewThread(
     var replies: List<Reply> by remember { mutableStateOf(listOf(defaultReply)) }
 
     when (forumUiState) {
-        is ForumUiState.Success2 -> {
+        is ForumUiState.GetReplies -> {
             thread = forumUiState.thread
             replies = forumUiState.replies
         }

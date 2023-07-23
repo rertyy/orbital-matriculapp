@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.frontend.ForumNavGraph
 import com.example.frontend.R
 
 @Composable
@@ -51,9 +52,12 @@ fun ForumScreen(
         )
 
         is ForumUiState.Error -> ErrorScreen(retryAction, modifier, onCreateThread)
-        is ForumUiState.Success2 -> navController.navigate(
-            "viewThread"
+        is ForumUiState.GetReplies -> ViewThread(
+            forumViewModel = viewModel(),
+            onBack = { navController.navigate(ForumNavGraph.Posts.route) },
+            forumUiState = forumUiState
         )
+
     }
 }
 

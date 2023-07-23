@@ -5,12 +5,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.example.frontend.EventReceiver
+import parseStringToDateTime
 import java.time.ZoneId
 
 interface EventSchedulerInterface {
     fun schedule(event: Event)
     fun cancel(event: Event)
 }
+
 
 class EventScheduler(
     private val context: Context
@@ -22,10 +24,11 @@ class EventScheduler(
         val intent = Intent(context, EventReceiver::class.java).apply {
             putExtra("MatriculApp scheduled event: ", event.eventName)
         }
+        val dateTimeParsed = parseStringToDateTime(event.eventStartDate)
 
         alarmManager.setExactAndAllowWhileIdle(   //permission needed from users
             AlarmManager.RTC_WAKEUP,
-            event.eventStartDate.toLocalDateTime().atZone(ZoneId.systemDefault())
+            dateTimeParsed.toLocalDateTime().atZone(ZoneId.systemDefault())
                 .toEpochSecond() * 1000,
             PendingIntent.getBroadcast(
                 context,
