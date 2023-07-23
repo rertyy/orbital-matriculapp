@@ -60,7 +60,7 @@ fun ViewThread(
         Spacer(modifier = Modifier.height(10.dp))
 
         TextButton(
-            onClick = { onBack() }
+            onClick = { forumViewModel.getAllThreads() }
         ) {
             Text(
                 text = stringResource(id = R.string.back),
@@ -75,7 +75,8 @@ fun ViewThread(
             value = thread.title,
             onValueChange = {},
             readOnly = true,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Original thread title") }
         )
 
         Spacer(Modifier.height(25.dp))
@@ -85,8 +86,8 @@ fun ViewThread(
             onValueChange = {},
             readOnly = true,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp)
+                .fillMaxWidth(),
+            label = { Text("Original thread body") }
         )
 
         Spacer(Modifier.height(10.dp))
@@ -113,9 +114,10 @@ fun ViewThread(
                 forumViewModel.addReply(newComment)
 
                 commentBody = ""
+
             }
         ) {
-
+            Text("post reply")
         }
 
     }
@@ -124,14 +126,18 @@ fun ViewThread(
 
 @Composable
 fun ReplyList(listReplies: List<Reply>) {
-    LazyColumn(modifier = Modifier.fillMaxWidth()) {
-        items(listReplies) { post ->
-            TextField(
-                value = post.body,
-                onValueChange = {},
-                readOnly = true
-            )
+    Column() {
+        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            items(listReplies) { post ->
+                TextField(
+                    value = post.body,
+                    onValueChange = {},
+                    readOnly = true
+                )
+            }
         }
+
+        Spacer(Modifier.height(30.dp))
     }
 }
 

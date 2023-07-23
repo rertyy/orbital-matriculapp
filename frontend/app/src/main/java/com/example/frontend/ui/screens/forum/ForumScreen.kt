@@ -50,16 +50,17 @@ fun ForumScreen(
             forumUiState.threadList,
             modifier,
             onCreateThread,
-            navController
+            navController,
+            forumViewModel
         )
 
         is ForumUiState.Error -> ErrorScreen(retryAction, modifier, onCreateThread)
         is ForumUiState.GetReplies -> {
             Log.d("ForumUiState Changed", "here")
             ViewThread(
-            forumViewModel = forumViewModel,
-            onBack = { navController.navigate(ForumNavGraph.Posts.route) },
-            forumUiState = forumUiState
+                forumViewModel = forumViewModel,
+                onBack = { navController.navigate(ForumNavGraph.Posts.route) },
+                forumUiState = forumUiState
             )
         }
 
@@ -101,14 +102,20 @@ fun ResultScreen(
     threads: List<Thread>,
     modifier: Modifier = Modifier,
     onCreatePost: () -> Unit,
-    navController: NavController
+    navController: NavController,
+    forumViewModel: ForumViewModel
 ) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize()
     ) {
         Log.d("GET posts", threads.toString())
-        ThreadsList(threads = threads, onCreateThread = onCreatePost, navController = navController)
+        ThreadsList(
+            threads = threads,
+            onCreateThread = onCreatePost,
+            navController = navController,
+            forumViewModel = forumViewModel
+        )
     }
 }
 
@@ -119,7 +126,7 @@ fun ResultScreen(
 fun ThreadsList(
     @PreviewParameter(MultiPostProvider::class) threads: List<Thread>,
     modifier: Modifier = Modifier,
-    forumViewModel: ForumViewModel = viewModel(),
+    forumViewModel: ForumViewModel,
     onCreateThread: () -> Unit,
     navController: NavController
 ) {
@@ -135,7 +142,11 @@ fun ThreadsList(
 
         LazyColumn(modifier = modifier) {
             items(threads) { post ->
-                ThreadCard(thread = post, navController = navController)
+                ThreadCard(
+                    thread = post,
+                    navController = navController,
+                    forumViewModel = forumViewModel
+                )
             }
         }
     }
@@ -146,7 +157,7 @@ fun ThreadsList(
 @Composable
 fun ThreadCard(
     @PreviewParameter(SinglePostProvider::class) thread: Thread,
-    forumViewModel: ForumViewModel = viewModel(),
+    forumViewModel: ForumViewModel,
     navController: NavController
 ) {
     Card(
@@ -169,12 +180,12 @@ fun ThreadCard(
 
 
             Row() {
-                IconButton(
-                    onClick = { forumViewModel.modifyThread(thread, thread2) },
-                    modifier = Modifier
-                ) {
-                    Icon(imageVector = Icons.Rounded.Edit, contentDescription = "edit post")
-                }
+//                IconButton(
+//                    onClick = { forumViewModel.modifyThread(thread, thread2) },
+//                    modifier = Modifier
+//                ) {
+//                    Icon(imageVector = Icons.Rounded.Edit, contentDescription = "edit post")
+//                }
 
                 IconButton(
                     onClick = { forumViewModel.deleteThread(thread.threadId) }

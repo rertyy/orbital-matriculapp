@@ -30,9 +30,10 @@ val defaultThread: Thread = Thread()
 val defaultReply: Reply = Reply()
 
 data class Reply(
-    @SerializedName("reply_id") val replyId: Int = -1,
+    @SerializedName("reply_id") val replyId: Int = 1,
     @SerializedName("reply_body") val body: String = "",
-    @SerializedName("thread_id") val threadId: Int = -1
+    @SerializedName("thread_id") val threadId: Int = 1,
+    @SerializedName("reply_created_by") val createdBy: Int = 1
 )
 
 
@@ -122,6 +123,8 @@ class ForumViewModel : ViewModel() {
                 RestApiService.retrofitService.deleteThread(
                     threadId
                 )
+
+                getAllThreads()
             } catch (e: Exception) {
                 Log.d("FORUM", "Error deleting post: ${e.message}")
             }
@@ -147,8 +150,12 @@ class ForumViewModel : ViewModel() {
 
                 if (thread == null || replies == null) {
 
-                    Log.d("FORUM", "something is null")
-                    ForumUiState.Error
+                    if (thread != null && replies == null) {
+                        Log.d("FORUM", "correct place")
+                        ForumUiState.GetReplies(thread, listOf())
+                    } else {
+                        ForumUiState.Error
+                    }
                 } else {
 
                     Log.d("FORUM", "success getAllReplies $thread $replies")

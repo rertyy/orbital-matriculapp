@@ -68,7 +68,7 @@ interface ApiService {
         @Path("threadId") threadId: Int,
     ): Response<Int>
 
-    @POST("/threads/{threadId}/replies/addReply")
+    @POST("/threads/{threadId}/addReply")
     suspend fun newReply(
         @Path("threadId") threadId: Int,
         @Body request: Reply
