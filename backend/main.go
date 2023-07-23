@@ -2,10 +2,12 @@ package main
 
 import (
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"orbital-backend/api"
-	db2 "orbital-backend/db"
+	"orbital-backend/database"
+	"orbital-backend/util"
 	"os"
 )
 
@@ -13,21 +15,22 @@ import (
 
 func main() {
 	err := godotenv.Load()
+	util.CheckConfig()
+
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	db, err := db2.Connect()
-	if db == nil || err != nil {
-		log.Println("test2", err)
-		panic(err)
-	}
+	db, err := database.Connect()
 
 	r := api.SetupRouter(&api.Handler{DB: db})
 	http.Handle("/", r)
 
 	serverPort := os.Getenv("SERVER_PORT")
 
-	log.Println("Server started on http://localhost" + serverPort)
-	log.Fatal(http.ListenAndServe(serverPort, r))
+	log.Println("Server started")
+	handler := cors.Default().Handler(r)
+	//handler = handlers.LoggingHandler(os.Stdout, handler)
+	log.Fatal(http.ListenAndServe(serverPort, handler))
+
 }

@@ -1,47 +1,57 @@
 package api
 
 import (
-	"database/sql"
+	"context"
 	"encoding/json"
-	"errors"
 	"log"
 	"net/http"
+	"orbital-backend/database/sql/sqlc"
 	"orbital-backend/util"
 )
 
-// TODO clean the logic
-
-func (h *Handler) HandleDeleteUser(writer http.ResponseWriter, request *http.Request) {
-
-}
-
 func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
-	var request LoginRequest
+	ctx := context.Background()
+
+	var request struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
 	err := json.NewDecoder(r.Body).Decode(&request)
+	log.Println("HandleLogin: request", request)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = h.loginRequest(request.Username, request.Password)
+	userReq, err := h.DB.GetUserByUsername(ctx, request.Username)
+	wrongUserNameOrPassword := "Wrong username or password"
 
 	if err != nil {
+		log.Println("HandleLogin: Username not found")
+		_, _ = util.HashPassword("password") // line is solely here to set timeout for security reasons
+		http.Error(w, wrongUserNameOrPassword, http.StatusUnauthorized)
+		return
+	}
+
+	if err := util.CheckPassword(request.Password, userReq.Password); err != nil {
+		log.Println("HandleLogin: CheckPassword", err)
+		http.Error(w, wrongUserNameOrPassword, http.StatusUnauthorized)
+		return
+	}
+
+	jwtToken, err := util.GenerateJwt(userReq.Username)
+
+	if err != nil {
+		log.Println("HandleLogin: GenerateJwt", err)
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 
-	response := HttpResponse{
-		Message: "Login successful",
-	}
+	w.Header().Set("Authorization", "Bearer "+jwtToken)
+	response := HttpResponse{Success: true, Message: "Login successful"}
 
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		return
-	}
-	// TODO modularise this
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Content-Type", "application/json")
+	NewJSONResponse(w, http.StatusOK, response)
 }
 
 // when testing, for security, check that failing username check is not faster than failing password check.
@@ -52,93 +62,81 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 // (n, n), 108ms
 //
 // maybe there is a better way than hashing a random string
-func (h *Handler) loginRequest(username string, password string) error {
-	log.Println("loginRequest")
-
-	// to re-look https://go.dev/doc/database/querying
-
-	var storedHashPassword string
-	sqlStatement := `SELECT password FROM users WHERE username=$1;`
-	row := h.DB.QueryRow(sqlStatement, username)
-	switch err := row.Scan(&storedHashPassword); err {
-	case sql.ErrNoRows:
-		log.Println("Username not found")
-		_, _ = util.HashPassword("password") // line is solely here to set timeout for security reasons
-		return err
-	case nil:
-		log.Println("Username found")
-	default:
-		_, _ = util.HashPassword("password") // line is solely here to set timeout for security reasons
-		log.Println("Unknown err", err)
-		return err
-	}
-
-	err := util.CheckPassword(password, storedHashPassword)
-
-	if err != nil {
-		log.Println("Wrong password")
-		return err
-	}
-	log.Println("Correct password")
-	return nil
-
-}
-
-func (h *Handler) registerRequest(username string, password string, email string) error {
-	log.Println("registerRequest")
-
-	sqlStatement := `SELECT username FROM users WHERE username=$1;`
-	row := h.DB.QueryRow(sqlStatement, username)
-
-	// TODO defer func row
-
-	var storedUsername string
-	switch err := row.Scan(&storedUsername); err {
-	case sql.ErrNoRows: // TODO definitely wrong to use ErrNoRows as a good sign
-		log.Println("User not found, registration can proceed")
-	default:
-		log.Println("Unknown exception", err)
-		return errors.New("unknown exception")
-	}
-	log.Println(storedUsername)
-
-	hashedPassword, err := util.HashPassword(password)
-	log.Println(hashedPassword)
-	sqlUpdate := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3);`
-	_, err = h.DB.Exec(sqlUpdate, username, hashedPassword, email)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	log.Printf("Successfully registered User: %s Email: %s", username, email)
-	return nil
-
-}
 
 func (h *Handler) HandleRegister(w http.ResponseWriter, r *http.Request) {
-	var request RegisterRequest
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
+	ctx := context.Background()
+	var request sqlc.AddUserParams
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = h.registerRequest(request.Username, request.Password, request.Email)
-
-	if err == nil {
-		response := HttpResponse{
-			Message: "Registration successful",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		err := json.NewEncoder(w).Encode(response)
-		if err != nil {
-			return
-		}
-		//w.WriteHeader(http.StatusCreated)
-		log.Println(err)
+	userExists, err := h.DB.CheckUserExists(ctx, request.Username)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-
+	}
+	if userExists {
+		log.Println("HandleRegister: Username already exists in DB")
+		NewJSONResponse(w, http.StatusConflict, "Username already exists")
+		return
 	}
 
-	http.Error(w, "Unable to register user", http.StatusUnauthorized)
+	hashedPassword, err := util.HashPassword(request.Password)
+	if err != nil {
+		log.Println("HandleRegister: Cannot hash password")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	request.Password = hashedPassword
+
+	if err := h.DB.AddUser(ctx, request); err != nil {
+		log.Println("HandleRegister: Cannot add user")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	response := HttpResponse{
+		Success: true,
+		Message: "Registration successful",
+	}
+	NewJSONResponse(w, http.StatusCreated, response)
+}
+
+// HandleDeleteUser user must have correct username and password
+func (h *Handler) HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
+	// check username exists
+	ctx := context.Background()
+
+	var request sqlc.GetUserByUsernameRow
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	userExists, err := h.DB.CheckUserExists(ctx, request.Username)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if !userExists {
+		log.Println("HandleDeleteUser: user exists")
+		NewJSONResponse(w, http.StatusConflict, "User does not exist")
+		return
+	}
+
+	// check password is correct
+	userReq, err := h.DB.GetUserByUsername(ctx, request.Username)
+	if err := util.CheckPassword(request.Password, userReq.Password); err != nil {
+		log.Println("HandleLogin: CheckPassword", err)
+		http.Error(w, "Wrong password", http.StatusUnauthorized)
+		return
+	}
+
+	if err := h.DB.DeleteUser(ctx, request.UserID); err != nil {
+		http.Error(w, "Cannot delete user", http.StatusInternalServerError)
+		return
+	}
+	NewJSONResponse(w, http.StatusOK, HttpResponse{Message: "User deleted"})
 }
