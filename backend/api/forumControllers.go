@@ -88,10 +88,10 @@ func (h *Handler) HandleGetThreadReplies(w http.ResponseWriter, r *http.Request)
 	}
 	ctx := context.Background()
 	replies, err := h.DB.GetRepliesByThread(ctx, int32(threadIdInt))
-	if len(replies) == 0 {
-		NewJSONResponse(w, http.StatusOK, HttpResponse{Success: true, Message: "No threads found"})
-		return
-	}
+	//if len(replies) == 0 {
+	//	NewJSONResponse(w, http.StatusOK, HtpResponse{Success: true, Message: "No threads found"})
+	//	return
+	//}
 
 	NewJSONResponse(w, http.StatusOK, replies)
 }
