@@ -1,4 +1,4 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.home
 
 import android.content.Context
 import android.util.Log
@@ -96,5 +96,4 @@ class EventsViewModel : ViewModel() {
 
 }
 
-// TODO add @SerializedName to use json format
 

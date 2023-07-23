@@ -1,9 +1,10 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.home
 
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.example.frontend.EventReceiver
 import parseStringToDateTime
 import java.time.ZoneId
@@ -25,6 +26,7 @@ class EventScheduler(
             putExtra("MatriculApp scheduled event: ", event.eventName)
         }
         val dateTimeParsed = parseStringToDateTime(event.eventStartDate)
+        Log.d("EventScheduler", "schedule: $dateTimeParsed")
 
         alarmManager.setExactAndAllowWhileIdle(   //permission needed from users
             AlarmManager.RTC_WAKEUP,

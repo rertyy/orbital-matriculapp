@@ -1,12 +1,12 @@
 package com.example.frontend.network
 
 
-import com.example.frontend.ui.screens.Event
 import com.example.frontend.ui.screens.LoginRequest
 import com.example.frontend.ui.screens.LoginResponse
-import com.example.frontend.ui.screens.RegisterRequest
-import com.example.frontend.ui.screens.Reply
-import com.example.frontend.ui.screens.Thread
+import com.example.frontend.ui.screens.auth.RegisterRequest
+import com.example.frontend.ui.screens.forum.Reply
+import com.example.frontend.ui.screens.forum.Thread
+import com.example.frontend.ui.screens.home.Event
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

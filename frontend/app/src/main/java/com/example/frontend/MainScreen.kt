@@ -30,15 +30,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.example.frontend.ui.screens.CalendarScreen
-import com.example.frontend.ui.screens.EventsScreen
-import com.example.frontend.ui.screens.EventsViewModel
-import com.example.frontend.ui.screens.ForumScreen
-import com.example.frontend.ui.screens.ForumViewModel
-import com.example.frontend.ui.screens.LoginScreen
-import com.example.frontend.ui.screens.PostCreation
-import com.example.frontend.ui.screens.RegistrationScreen
-import com.example.frontend.ui.screens.ViewThread
+import com.example.frontend.ui.screens.auth.LoginScreen
+import com.example.frontend.ui.screens.auth.RegistrationScreen
+import com.example.frontend.ui.screens.forum.ForumScreen
+import com.example.frontend.ui.screens.forum.ForumViewModel
+import com.example.frontend.ui.screens.forum.PostCreation
+import com.example.frontend.ui.screens.forum.ViewThread
+import com.example.frontend.ui.screens.home.EventsScreen
+import com.example.frontend.ui.screens.home.EventsViewModel
+import com.example.frontend.ui.screens.secondscreen.CalendarScreen
 
 
 sealed class RootNavGraph(val route: String, val icon: ImageVector, @StringRes val title: Int) {

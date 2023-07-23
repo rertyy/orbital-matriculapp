@@ -1,4 +1,4 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.forum
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -1,8 +1,9 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.home
 
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.rounded.Doorbell
@@ -194,38 +194,42 @@ fun Deadlines(eventsViewModel: EventsViewModel) {
     val eventList = eventsViewModel.events
 
     Box(modifier = Modifier.fillMaxWidth()) {
-
-        Row(
-            modifier = Modifier
-                .background(Color.Red)
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = stringResource(id = R.string.urgent),
-                color = Color.White, fontFamily = FontFamily.Serif,
+        Column(modifier = Modifier.border(1.dp, Color.Red)) {
+            Row(
                 modifier = Modifier
-                    .padding(top = 5.dp, bottom = 5.dp)
+                    .background(Color.Red)
                     .fillMaxWidth()
-                    .align(Alignment.CenterVertically)
-            )
-        }
+            ) {
+                Text(
+                    text = stringResource(id = R.string.urgent),
+                    color = Color.White, fontFamily = FontFamily.Serif,
+                    modifier = Modifier
+                        .padding(top = 5.dp, bottom = 5.dp)
+                        .fillMaxWidth()
+                        .align(Alignment.CenterVertically)
+                )
+            }
 
-        LazyColumn(
-            modifier = Modifier
-        ) {
-            items(eventList) { event ->
-                if (isUrgentEvent(
-                        now = OffsetDateTime.now(),
-                        event = parseStringToDateTime(event.eventStartDate)
-                    )
-                ) {
-                    EventDisplayBox(event = event, eventsViewModel = eventsViewModel)
-                } else {
-                    Log.d("Deadlines from EventsScreen", "lmao")
+            LazyColumn(
+                modifier = Modifier
+            ) {
+                items(eventList) { event ->
+                    if (isUrgentEvent(
+                            now = OffsetDateTime.now(),
+                            event = parseStringToDateTime(event.eventStartDate)
+                        )
+                    ) {
+                        EventDisplayBox(event = event, eventsViewModel = eventsViewModel)
+                    } else {
+                        Log.d("Deadlines from EventsScreen", "lmao")
+                    }
                 }
+
             }
 
         }
+
+
     }
 }
 
@@ -243,7 +247,8 @@ fun EventDisplayBox(event: Event, eventsViewModel: EventsViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
+//            .border(1.dp, Color.Black)
+//            .clip(RoundedCornerShape(30.dp))
     ) {
         Row(
             modifier = Modifier
@@ -253,6 +258,12 @@ fun EventDisplayBox(event: Event, eventsViewModel: EventsViewModel) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            IconButton(
+                onClick = { showEvent = showEvent.not() }
+            ) {
+                Icon(imageVector = Icons.Rounded.Visibility, contentDescription = "show event")
+            }
+
             Text(
                 text = event.eventName,
                 style = LocalTextStyle.current.copy(fontSize = 15.sp, fontWeight = FontWeight.Bold),
@@ -265,13 +276,9 @@ fun EventDisplayBox(event: Event, eventsViewModel: EventsViewModel) {
             }
         }
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(5.dp))
 
-        IconButton(
-            onClick = { showEvent = showEvent.not() }
-        ) {
-            Icon(imageVector = Icons.Rounded.Visibility, contentDescription = "show event")
-        }
+
     }
 }
 
@@ -382,35 +389,38 @@ fun UpcomingEvents(eventsViewModel: EventsViewModel) {
     val eventList = eventsViewModel.events
 
     Box(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .background(Color.Green)
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = stringResource(id = R.string.events),
-                color = Color.White, fontFamily = FontFamily.Serif,
+        Column(modifier = Modifier.border(1.dp, Color.Green)) {
+            Row(
                 modifier = Modifier
-                    .padding(top = 5.dp, bottom = 5.dp)
+                    .background(Color.Green)
                     .fillMaxWidth()
-                    .align(Alignment.CenterVertically)
-            )
-        }
-
-        LazyColumn(
-            modifier = Modifier
-        ) {
-            items(eventList) { event ->
-                if (!isUrgentEvent(
-                        now = OffsetDateTime.now(),
-                        event = parseStringToDateTime(event.eventStartDate)
-                    )
-                ) {
-                    EventDisplayBox(event = event, eventsViewModel = eventsViewModel)
-                } else {
-                }
+            ) {
+                Text(
+                    text = stringResource(id = R.string.events),
+                    color = Color.White, fontFamily = FontFamily.Serif,
+                    modifier = Modifier
+                        .padding(top = 5.dp, bottom = 5.dp)
+                        .fillMaxWidth()
+                        .align(Alignment.CenterVertically)
+                )
             }
 
+            LazyColumn(
+                modifier = Modifier
+            ) {
+                items(eventList) { event ->
+                    if (!isUrgentEvent(
+                            now = OffsetDateTime.now(),
+                            event = parseStringToDateTime(event.eventStartDate)
+                        )
+                    ) {
+                        EventDisplayBox(event = event, eventsViewModel = eventsViewModel)
+                    } else {
+                        //
+                    }
+                }
+
+            }
         }
     }
 

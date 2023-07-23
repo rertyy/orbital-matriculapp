@@ -13,14 +13,12 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.frontend.ui.screens.EventsSuccessScreen
-import com.example.frontend.ui.screens.LoginScreen
-
-import org.junit.Test
-import org.junit.runner.RunWith
-
+import com.example.frontend.ui.screens.auth.LoginScreen
+import com.example.frontend.ui.screens.home.EventsSuccessScreen
 import org.junit.Assert.*
 import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -59,8 +57,8 @@ class ExampleInstrumentedTest {
 
 
     @Test
-    fun `mainUiScreenTest`() {
-        rule.setContent { EventsSuccessScreen() }   //Note: HomeScreen declaration altered
+    fun mainUiScreenTest() {
+        rule.setContent { EventsSuccessScreen }   //Note: HomeScreen declaration altered
         rule.onNodeWithText("MatriculApp")
             .assertExists()
         rule.onNodeWithText("Deadlines")

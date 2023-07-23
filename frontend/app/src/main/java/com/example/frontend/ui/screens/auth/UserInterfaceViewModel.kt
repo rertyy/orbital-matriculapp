@@ -1,9 +1,9 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.auth
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
 
 open class UserInterfaceViewModel : ViewModel() {
     var username: String by mutableStateOf("")

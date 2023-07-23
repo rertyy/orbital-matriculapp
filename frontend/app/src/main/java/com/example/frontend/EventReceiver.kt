@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import com.example.frontend.ui.EventNotificationService
 
-class EventReceiver(private val eventId: Int) : BroadcastReceiver() {
+class EventReceiver(private val eventId: Int = 1) : BroadcastReceiver() {
+    constructor() : this(1)
+
     override fun onReceive(context: Context?, intent: Intent?) {
         val message = intent?.getStringExtra("MatriculApp scheduled event: ") ?: return
 

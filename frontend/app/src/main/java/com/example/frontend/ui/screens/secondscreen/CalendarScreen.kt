@@ -1,4 +1,4 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.secondscreen
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
