@@ -1,6 +1,5 @@
 package com.example.frontend.ui
 
-import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -12,7 +11,7 @@ import com.example.frontend.R
 
 class EventNotificationService(
     private val context: Context,
-    val eventId: Int
+    val eventId: Int = 7
 ) {
 
     private val notificationManager =
