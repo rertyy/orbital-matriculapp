@@ -123,19 +123,20 @@ func (h *Handler) HandleEditThread(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) HandleDeleteThread(w http.ResponseWriter, r *http.Request) {
 	log.Println("HandleDeleteThread")
-	//vars := mux.Vars(r)
-	//threadId := vars["threadId"]
-	//log.Println("threadId is", threadId)
-	//threadIdInt, err := strconv.Atoi(threadId)
+	vars := mux.Vars(r)
+	threadId := vars["threadId"]
+	log.Println("threadId is", threadId)
+	threadIdInt, err := strconv.Atoi(threadId)
 
 	ctx := context.Background()
-	var threadId int
-	if err := json.NewDecoder(r.Body).Decode(&threadId); err != nil {
-		log.Println("unable to delete post")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	//var threadId int
+	//if err := json.NewDecoder(r.Body).Decode(&threadId); err != nil {
+	//	log.Printf("unable to delete post. reason: %s", err)
+	//
+	//	http.Error(w, err.Error(), http.StatusInternalServerError)
+	//}
 
-	_, err := h.DB.GetThreadById(ctx, int32(threadId))
+	_, err = h.DB.GetThreadById(ctx, int32(threadIdInt))
 	switch err {
 	case sql.ErrNoRows:
 		http.Error(w, "post not found", http.StatusNotFound)
@@ -146,7 +147,7 @@ func (h *Handler) HandleDeleteThread(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = h.DB.DeleteThread(ctx, int32(threadId))
+	err = h.DB.DeleteThread(ctx, int32(threadIdInt))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

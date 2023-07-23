@@ -38,7 +38,7 @@ RETURNING *;
 -- name: DeleteThread :exec
 DELETE
 FROM threads
-WHERE thread_created_by = $1;
+WHERE thread_id = $1;
 
 -- name: GetAllReplies :many
 SELECT r.reply_id,
