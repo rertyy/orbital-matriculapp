@@ -19,23 +19,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.example.frontend.R
-
 
 @Composable
 fun ForumScreen(
@@ -203,8 +199,11 @@ fun ThreadCard(
     }
 }
 
-
-val thread1 = Thread("hi", "test", 1)
+val thread1: Thread = Thread(
+    1,
+    "title",
+    "body"
+)
 
 //"cat-name2",
 //1,
@@ -213,7 +212,7 @@ val thread1 = Thread("hi", "test", 1)
 //    OffsetDateTime.now(),
 
 
-val thread2 = Thread("hi", "body", 2)
+val thread2 = Thread(2, "title2", "body2")
 
 //"cat-name2",
 //1,

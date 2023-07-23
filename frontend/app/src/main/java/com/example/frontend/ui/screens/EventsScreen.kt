@@ -257,7 +257,7 @@ fun EventDisplayBox(event: Event, eventsViewModel: EventsViewModel) {
             )
 
             IconButton(
-                onClick = { eventsViewModel.setReminder(event) },
+                onClick = { eventsViewModel.setReminder(event, context) },
             ) {
                 Icon(imageVector = Icons.Rounded.Doorbell, contentDescription = "set reminder")
             }
@@ -286,7 +286,7 @@ fun ViewEvent(
                 .fillMaxWidth()
                 .background(backgroundColor)
         ) {
-            Column() {
+            Column {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

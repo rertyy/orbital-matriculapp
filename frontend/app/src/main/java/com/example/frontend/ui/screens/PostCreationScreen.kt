@@ -36,12 +36,12 @@ import com.example.frontend.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun postCreation(onBack: () -> Unit, forumViewModel: ForumViewModel = viewModel()) {
+fun PostCreation(onBack: () -> Unit, forumViewModel: ForumViewModel = viewModel()) {
 
-    var isExpanded: Boolean by remember {mutableStateOf(false)}
-    var category: String by remember {mutableStateOf("")}
-    var title: String by remember{ mutableStateOf("") }
-    var body: String by remember{ mutableStateOf("") }
+    var isExpanded: Boolean by remember { mutableStateOf(false) }
+    var category: String by remember { mutableStateOf("") }
+    var title: String by remember { mutableStateOf("") }
+    var body: String by remember { mutableStateOf("") }
 
 
     Column(
@@ -50,9 +50,9 @@ fun postCreation(onBack: () -> Unit, forumViewModel: ForumViewModel = viewModel(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
 
-    ) {
+        ) {
         Spacer(modifier = Modifier.height(10.dp))
-        
+
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
@@ -70,7 +70,7 @@ fun postCreation(onBack: () -> Unit, forumViewModel: ForumViewModel = viewModel(
             }
 
             Button(
-                onClick  = {
+                onClick = {
                     val newThread = Thread(title = title, body = body)
                     forumViewModel.addThread(newThread)
                     onBack()
@@ -94,7 +94,7 @@ fun postCreation(onBack: () -> Unit, forumViewModel: ForumViewModel = viewModel(
 
         ExposedDropdownMenuBox(
             expanded = isExpanded,
-            onExpandedChange = {isExpanded = it},
+            onExpandedChange = { isExpanded = it },
             modifier = Modifier
                 .align(Alignment.Start)
                 .clip(RoundedCornerShape(10.dp))
@@ -102,7 +102,7 @@ fun postCreation(onBack: () -> Unit, forumViewModel: ForumViewModel = viewModel(
         ) {
             TextField(
                 value = category,
-                onValueChange = {category = it},
+                onValueChange = { category = it },
                 readOnly = true,
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
@@ -114,14 +114,13 @@ fun postCreation(onBack: () -> Unit, forumViewModel: ForumViewModel = viewModel(
 
             ExposedDropdownMenu(
                 expanded = isExpanded,
-                onDismissRequest = { isExpanded = false},
+                onDismissRequest = { isExpanded = false },
             ) {
 
                 DropdownMenuItem(
                     text = {
                         Text("Academics")
-                           }
-                    , onClick = {
+                    }, onClick = {
                         category = "Academics"
                         isExpanded = false
                     })
@@ -129,28 +128,27 @@ fun postCreation(onBack: () -> Unit, forumViewModel: ForumViewModel = viewModel(
                 DropdownMenuItem(
                     text = {
                         Text("Social")
-                    }
-                    , onClick = {
+                    }, onClick = {
                         category = "Social"
                         isExpanded = false
                     })
-                
+
             }
 
         }
 
         Spacer(Modifier.height(20.dp))
-        
-        editTitle(
+
+        EditTitle(
             value = title,
             onValueChange = { title = it }
         )
 
         Spacer(Modifier.height(30.dp))
 
-        editBody(
+        EditBody(
             value = body,
-            onValueChange = {body = it}
+            onValueChange = { body = it }
         )
 
     }
@@ -158,7 +156,7 @@ fun postCreation(onBack: () -> Unit, forumViewModel: ForumViewModel = viewModel(
 }
 
 @Composable
-fun editTitle(value: String, onValueChange: (String) -> Unit) {
+fun EditTitle(value: String, onValueChange: (String) -> Unit) {
 
     TextField(
         value = value,
@@ -170,12 +168,12 @@ fun editTitle(value: String, onValueChange: (String) -> Unit) {
 }
 
 @Composable
-fun editBody(value: String, onValueChange: (String) -> Unit) {
+fun EditBody(value: String, onValueChange: (String) -> Unit) {
 
     TextField(
         value = value,
         onValueChange = onValueChange,
-        label = {Text(stringResource(id = R.string.body))},
+        label = { Text(stringResource(id = R.string.body)) },
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(),

@@ -14,11 +14,12 @@ import java.io.IOException
 
 // TODO add postId and categoryId to Post
 data class Thread(
-    val title: String = "",
-    val body: String = "",
-    @SerializedName("thread_id") val threadId: Int = -1,
+    @SerializedName("thread_id") var threadId: Int = 1,
+    @SerializedName("thread_name") val title: String = "",
+    @SerializedName("thread_body") val body: String = "",
+
     //@SerializedName("category_name") val categoryName: String,
-    //@SerializedName("created_by") val createdBy: Int,
+    @SerializedName("thread_created_by") val createdBy: Int = 1,
     //@SerializedName("created_by_name") val createdByName: String,
 
 //    @SerializedName("created_at") val createdAt: OffsetDateTime,
@@ -30,7 +31,7 @@ val defaultReply: Reply = Reply()
 
 data class Reply(
     @SerializedName("reply_id") val replyId: Int = -1,
-    val body: String = "",
+    @SerializedName("reply_body") val body: String = "",
     @SerializedName("thread_id") val threadId: Int = -1
 )
 
@@ -60,15 +61,17 @@ class ForumViewModel : ViewModel() {
 
     fun addThread(thread: Thread) {
         Log.d("FORUM", "adding post")
+        val toBeAdded = thread
+        toBeAdded.threadId = 1
         viewModelScope.launch {
             try {
-                RestApiService.retrofitService.addThread(thread.threadId, thread)
+                RestApiService.retrofitService.addThread(toBeAdded)
             } catch (e: Exception) {
                 // TODO change pokemon
                 Log.d("FORUM", "Error: ${e.message}")
             }
         }
-        getAllThreads()
+
     }
 
     fun modifyThread(oldThread: Thread, newThread: Thread) {
@@ -84,7 +87,7 @@ class ForumViewModel : ViewModel() {
                 Log.d("FORUM", "Error editing post: ${e.message}")
             }
         }
-        getAllThreads()
+
     }
 
     fun getAllThreads() {
@@ -124,7 +127,7 @@ class ForumViewModel : ViewModel() {
             }
         }
 
-        getAllThreads()
+
     }
 
     //TODO: correct this
@@ -162,11 +165,12 @@ class ForumViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 RestApiService.retrofitService.newReply(reply.threadId, reply)
+                getReplies(reply.threadId)
             } catch (e: Exception) {
                 Log.d("FORUM", "Error getting thread: ${e.message}")
             }
         }
 
-        getReplies(reply.threadId)
+
     }
 }

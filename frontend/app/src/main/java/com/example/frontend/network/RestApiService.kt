@@ -38,28 +38,14 @@ interface ApiService {
     ): Response<RegisterRequest>
 
     // TODO this might be a Flow<> instead of a List
-    @GET("/threads")
+    @GET("/threads/")
     suspend fun getAllThreads(): Response<List<Thread>>
 
-    @GET("/events/all")
-    suspend fun getEvents(): Response<List<Event>>
 
-    @PUT("/threads/{threadId}/edit")
-    suspend fun editThread(
-        @Path("threadId") threadId: Int,
-        @Body request: Thread
-    ): Response<Thread>
-
-    @POST("/threads/{threadId}/newThread")
+    @POST("/threads/newThread")
     suspend fun addThread(
-        @Path("thread_id") categoryId: Int,
         @Body request: Thread
     ): Response<Thread>
-
-    @DELETE("/threads/{threadId}/delete")
-    suspend fun deleteThread(
-        @Path("threadId") threadId: Int,
-    ): Response<Int>
 
     @GET("/threads/{threadId}")
     suspend fun getThread(
@@ -71,11 +57,25 @@ interface ApiService {
         @Path("threadId") threadId: Int
     ): Response<List<Reply>>
 
+    @PUT("/threads/{threadId}/edit")
+    suspend fun editThread(
+        @Path("threadId") threadId: Int,
+        @Body request: Thread
+    ): Response<Thread>
+
+    @DELETE("/threads/{threadId}/delete")
+    suspend fun deleteThread(
+        @Path("threadId") threadId: Int,
+    ): Response<Int>
+
     @POST("/threads/{threadId}/replies/addReply")
     suspend fun newReply(
         @Path("threadId") threadId: Int,
         @Body request: Reply
     ): Response<Reply>
+
+    @GET("/events/all")
+    suspend fun getEvents(): Response<List<Event>>
 }
 
 // TODO: comment the below out and replace w DI

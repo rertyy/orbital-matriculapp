@@ -32,14 +32,13 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.frontend.ui.screens.CalendarScreen
 import com.example.frontend.ui.screens.EventsScreen
+import com.example.frontend.ui.screens.EventsViewModel
 import com.example.frontend.ui.screens.ForumScreen
 import com.example.frontend.ui.screens.ForumViewModel
-import com.example.frontend.ui.screens.EventsSuccessScreen
-import com.example.frontend.ui.screens.EventsViewModel
 import com.example.frontend.ui.screens.LoginScreen
+import com.example.frontend.ui.screens.PostCreation
 import com.example.frontend.ui.screens.RegistrationScreen
-import com.example.frontend.ui.screens.postCreation
-import com.example.frontend.ui.screens.viewThread
+import com.example.frontend.ui.screens.ViewThread
 
 
 sealed class RootNavGraph(val route: String, val icon: ImageVector, @StringRes val title: Int) {
@@ -148,7 +147,7 @@ fun NavGraphBuilder.forumNavGraph(navController: NavHostController) {
         composable(route = ForumNavGraph.CreatePost.route) {
             val context = LocalContext.current
 
-            postCreation(
+            PostCreation(
                 onBack = { navController.navigate(ForumNavGraph.Posts.route) }
             )
         }
@@ -159,8 +158,7 @@ fun NavGraphBuilder.forumNavGraph(navController: NavHostController) {
             val forumViewModel: ForumViewModel =
                 navBackStackEntry.sharedViewModel<ForumViewModel>(navController = navController)
 
-
-            viewThread(
+            ViewThread(
                 forumViewModel = forumViewModel,
                 onBack = { navController.navigate(ForumNavGraph.Posts.route) },
                 forumUiState = forumViewModel.forumUiState
