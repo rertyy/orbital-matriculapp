@@ -1,10 +1,11 @@
-package com.example.frontend.ui.screens.secondscreen
+package com.example.frontend.ui.screens.ResourcesScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -19,15 +20,56 @@ import androidx.navigation.NavHostController
 
 
 @Composable
-fun CalendarScreen(
+fun ResourcesScreen(
     navController: NavHostController,
 ) {
-    InfoList()
+    Column {
+        AcadResources()
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .size(50.dp)
+        )
+        OtherResources()
+    }
+
 }
 
+@Composable
+fun OtherResources(infoList: List<LinkDetails> = socialList) {
+    Column {
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(10.dp)
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+
+            ) {
+            Text(
+                "List of Other Important Resources",
+                modifier = Modifier.fillMaxWidth(),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(30.dp)
+        )
+        infoList.forEach {
+            LinkWithDetails(linkDetails = it)
+        }
+
+    }
+}
 
 @Composable
-fun InfoList(infoList: List<LinkDetails> = linkList) {
+fun AcadResources(infoList: List<LinkDetails> = acadList) {
     Column {
         Spacer(
             modifier = Modifier
@@ -100,16 +142,55 @@ val link2 = LinkDetails(
     link = "https://telenus.nusmods.com/",
     desc = "Unofficial Telegram chat groups for variable courses"
 )
+
+val su = LinkDetails(
+    text = "S/U details",
+    link = "https://www.nus.edu.sg/registrar/academic-information-policies/undergraduate-students/continuation-and-graduation-requirements",
+    desc = "Find out more about S/U options for acads!"
+)
+
 val link3 = LinkDetails(
     text = "CourseReg Schedule",
     link = "https://www.nus.edu.sg/CourseReg/schedule-and-timeline.html",
     desc = "Details on when to register for courses"
 )
-val linkList = listOf(link1, link2, link3)
+
+val acadList = listOf(link1, link3, su)
+
+val freshmenSite = LinkDetails(
+    text = "Information for Freshmen",
+    link = "https://nuscomputing.com/freshmen.html",
+    desc = "Link for all upcoming events for Freshmen"
+)
+
+val projectIntern = LinkDetails(
+    text = "Project Intern",
+    link = "https://t.me/projectintern",
+    desc = "Connect and ask questions about internships"
+
+)
+
+
+val iaasLink = LinkDetails(
+    text = "Internships-As-A-Service",
+    link = "https://iaas.nus.edu.sg/",
+    desc = "Internships for academic credits"
+)
+
+val socialList = listOf(link2, freshmenSite, iaasLink, projectIntern)
 
 
 @Preview(showBackground = true)
 @Composable
 fun InfoListPreview() {
-    InfoList()
+    Column {
+        AcadResources()
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .size(50.dp)
+        )
+        OtherResources()
+    }
 }

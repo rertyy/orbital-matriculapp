@@ -1,4 +1,4 @@
-package com.example.frontend.ui.screens.secondscreen
+package com.example.frontend.ui.screens.ResourcesScreen
 
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Text

@@ -1,9 +1,8 @@
 package com.example.frontend
 
-import com.example.frontend.ui.screens.LoginViewModel
+import com.example.frontend.ui.screens.auth.LoginViewModel
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 
 /**
  * Example local unit test, which will execute on the development machine (host).

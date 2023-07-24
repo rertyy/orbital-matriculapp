@@ -1,4 +1,4 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.auth
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.network.RestApiService
-import com.example.frontend.ui.screens.auth.UserInterfaceViewModel
 import kotlinx.coroutines.launch
 
 // TODO dependency injection to allow for API testing

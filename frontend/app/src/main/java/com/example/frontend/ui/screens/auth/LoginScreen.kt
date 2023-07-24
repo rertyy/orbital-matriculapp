@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.R
-import com.example.frontend.ui.screens.LoginViewModel
 import com.example.frontend.ui.theme.FrontendTheme
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
@@ -63,10 +62,10 @@ fun LoginScreen(onNavigateToRegister: () -> Unit) {
 fun Login(loginViewModel: LoginViewModel = viewModel(), onNavigateToRegister: () -> Unit) {
     var passwordVisible by remember { mutableStateOf(false) }
 
-    TestLogin(
-        loginViewModel.loginSuccessful,
-        onChange = { loginViewModel.toggleLogin() }
-    )
+//    TestLogin(
+//        loginViewModel.loginSuccessful,
+//        onChange = { loginViewModel.toggleLogin() }
+//    )
 
     Column(
         modifier = Modifier

@@ -4,9 +4,9 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Today
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -30,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.example.frontend.ui.screens.ResourcesScreen.ResourcesScreen
 import com.example.frontend.ui.screens.auth.LoginScreen
 import com.example.frontend.ui.screens.auth.RegistrationScreen
 import com.example.frontend.ui.screens.forum.ForumScreen
@@ -38,19 +39,18 @@ import com.example.frontend.ui.screens.forum.PostCreation
 import com.example.frontend.ui.screens.forum.ViewThread
 import com.example.frontend.ui.screens.home.EventsScreen
 import com.example.frontend.ui.screens.home.EventsViewModel
-import com.example.frontend.ui.screens.secondscreen.CalendarScreen
 
 
 sealed class RootNavGraph(val route: String, val icon: ImageVector, @StringRes val title: Int) {
     object Home : RootNavGraph("home", Icons.Rounded.Home, R.string.home)
-    object Calendar : RootNavGraph("calendar", Icons.Rounded.Today, R.string.calendar)
+    object Resources : RootNavGraph("calendar", Icons.Rounded.Link, R.string.calendar)
     object Forum : RootNavGraph("forum", Icons.Rounded.Person, R.string.forum)
     object Auth : RootNavGraph("auth", Icons.Rounded.Lock, R.string.login)
 }
 
 val bottomNavList = listOf(
     RootNavGraph.Home,
-    RootNavGraph.Calendar,
+    RootNavGraph.Resources,
     RootNavGraph.Forum,
     RootNavGraph.Auth
 )
@@ -115,9 +115,9 @@ fun MainApp(
                 EventsScreen(navController, eventsViewModel) { eventsViewModel.getAllEvents() }
             }
 
-            composable(route = RootNavGraph.Calendar.route) {
+            composable(route = RootNavGraph.Resources.route) {
                 val context = LocalContext.current
-                CalendarScreen(navController = navController)
+                ResourcesScreen(navController = navController)
             }
             forumNavGraph(navController)
 

@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -29,11 +28,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.frontend.ForumNavGraph
 import com.example.frontend.R
-import com.example.frontend.RootNavGraph
 
 @Composable
 fun ForumScreen(
@@ -139,8 +136,21 @@ fun ThreadsList(
         ) {
             Text(stringResource(R.string.addNewPost))
         }
+        ThreadCard(
+            thread = thread1,
+            forumViewModel = forumViewModel,
+            navController = navController,
+            showDelete = false
+        )
+        ThreadCard(
+            thread = thread2,
+            forumViewModel = forumViewModel,
+            navController = navController,
+            showDelete = false
+        )
 
         LazyColumn(modifier = modifier) {
+
             items(threads) { post ->
                 ThreadCard(
                     thread = post,
@@ -158,7 +168,8 @@ fun ThreadsList(
 fun ThreadCard(
     @PreviewParameter(SinglePostProvider::class) thread: Thread,
     forumViewModel: ForumViewModel,
-    navController: NavController
+    navController: NavController,
+    showDelete: Boolean = true
 ) {
     Card(
         modifier = Modifier
@@ -179,22 +190,23 @@ fun ThreadCard(
             )
 
 
-            Row() {
+            Row {
 //                IconButton(
 //                    onClick = { forumViewModel.modifyThread(thread, thread2) },
 //                    modifier = Modifier
 //                ) {
 //                    Icon(imageVector = Icons.Rounded.Edit, contentDescription = "edit post")
 //                }
-
-                IconButton(
-                    onClick = { forumViewModel.deleteThread(thread.threadId) }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Delete,
-                        contentDescription = "delete post",
-                        tint = Color.Red
-                    )
+                if (showDelete) {
+                    IconButton(
+                        onClick = { forumViewModel.deleteThread(thread.threadId) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = "delete post",
+                            tint = Color.Red
+                        )
+                    }
                 }
 
 
@@ -221,8 +233,8 @@ fun ThreadCard(
 
 val thread1: Thread = Thread(
     1,
-    "title",
-    "body"
+    "Hello everyone!",
+    "I'm new to this forum. I'm looking forward to meeting you all!"
 )
 
 //"cat-name2",
@@ -232,7 +244,7 @@ val thread1: Thread = Thread(
 //    OffsetDateTime.now(),
 
 
-val thread2 = Thread(2, "title2", "body2")
+val thread2 = Thread(2, "Courses", "May I know what courses I have to take this sem?")
 
 //"cat-name2",
 //1,

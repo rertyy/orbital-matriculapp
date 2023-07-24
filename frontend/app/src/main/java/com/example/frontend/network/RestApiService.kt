@@ -1,8 +1,8 @@
 package com.example.frontend.network
 
 
-import com.example.frontend.ui.screens.LoginRequest
-import com.example.frontend.ui.screens.LoginResponse
+import com.example.frontend.ui.screens.auth.LoginRequest
+import com.example.frontend.ui.screens.auth.LoginResponse
 import com.example.frontend.ui.screens.auth.RegisterRequest
 import com.example.frontend.ui.screens.forum.Reply
 import com.example.frontend.ui.screens.forum.Thread
@@ -17,15 +17,15 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-
-//private const val BASE_URL =
-//    "http://10.0.2.2:8080/"
 //// NB https://stackoverflow.com/questions/5495534/java-net-connectexception-localhost-127-0-0-18080-connection-refused
+private const val AWS_URL = "http://54.169.25.53"
+private const val LOCALHOST = "http://10.0.2.2:8080/"
+private const val RENDER = "https://orbital-backend-6z61.onrender.com"
 
-private const val BASE_URL =
-    "https://orbital-backend-6z61.onrender.com"
+private const val BASE_URL = AWS_URL
 
 
+// private const
 interface ApiService {
     @POST("/user/login")
     suspend fun authenticateLogin(
